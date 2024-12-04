@@ -1,6 +1,6 @@
 # ISEN-Orbit
 
-ISEN-Orbit est un projet d'application mobile développée en React Native avec Expo et TypeScript. L'objectif de ce projet est de fournir une expérience mobile intuitive pour les étudiants.
+ISEN-Orbit est un projet d'application mobile développée en React Native avec Expo et TypeScript par le club Appen. L'objectif de ce projet est de fournir une expérience mobile intuitive pour les étudiants.
 
 ## 🎯 Fonctionnalités
 
