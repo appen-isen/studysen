@@ -24,7 +24,7 @@ export default function LoginScreen() {
                 text="Se souvenir de moi"
             />
             <Button title="Connexion"></Button>
-            <Link href={"/"} style={styles.helpLink}>
+            <Link href={"/login-help"} style={styles.helpLink}>
                 J'ai besoin d'aide
             </Link>
         </View>
@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: "white",
     },
     title: {
         fontSize: 40,
