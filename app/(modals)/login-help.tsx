@@ -1,6 +1,7 @@
 import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+import { Text, Bold } from "@/components/Texts";
 
 export default function LoginHelpModal() {
     const router = useRouter();
@@ -17,11 +18,9 @@ export default function LoginHelpModal() {
                 .
             </Text>
             <Text style={styles.text}>
-                Le nom d'utilisateur est de la forme:{" "}
-                <Text style={styles.bold}>a_nom</Text> où{" "}
-                <Text style={styles.bold}>a</Text> correspond à la première
-                lettre de votre prénom et <Text style={styles.bold}>nom</Text>{" "}
-                correspond à votre nom de famille.
+                Le nom d'utilisateur est de la forme: <Bold>a_nom</Bold> où{" "}
+                <Bold>a</Bold> correspond à la première lettre de votre prénom
+                et <Bold>nom</Bold> correspond à votre nom de famille.
             </Text>
             <Text style={styles.text}>
                 Si vous n'arrivez toujours pas à vous connecter, vous pouvez
@@ -71,11 +70,8 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginBottom: 10,
     },
-    bold: {
-        fontWeight: "bold",
-    },
     link: {
-        color: Colors.secondaryColor,
+        textDecorationLine: "underline",
         fontWeight: 600,
         marginTop: 15,
     },

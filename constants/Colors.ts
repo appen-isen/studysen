@@ -1,6 +1,6 @@
 export default {
-    primaryColor: "#E30613",
-    secondaryColor: "#FA4747",
+    primaryColor: "#FA4747",
+    secondaryColor: "#E30613",
     hexWithOpacity: (hex: string, opacity: number) => {
         const alpha = Math.round(opacity * 255)
             .toString(16)

@@ -18,7 +18,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
     //On charge les polices de caractères
     const [loaded, error] = useFonts({
-        SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+        OpenSans: require("../assets/fonts/OpenSans.ttf"),
         ...FontAwesome.font,
     });
 
@@ -54,7 +54,7 @@ function RootLayoutNav() {
                 name="(modals)/login-help"
                 options={{
                     presentation: "modal",
-                    animation: "slide_from_right",
+                    animation: "slide_from_bottom",
                     headerTitle: "Aide à la connexion",
                 }}
             />

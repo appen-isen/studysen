@@ -4,16 +4,16 @@ import {
     TextInputProps,
     View,
     TouchableOpacity,
-    Text,
     Pressable,
 } from "react-native";
 import { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { CheckboxProps, Checkbox as PaperCheckbox } from "react-native-paper";
+import { Text } from "@/components/Texts";
 
 export type InputProps = {
-    icon?: string;
+    icon?: React.ReactNode;
     password?: boolean;
     smallInput?: boolean;
 };
@@ -36,21 +36,13 @@ export function Input(props: TextInputProps & InputProps) {
     return (
         <View style={[styles.container, smallInput ? { width: "49%" } : {}]}>
             {/* On affiche l'icone si c'est un Input avec icone */}
-            {icon && (
-                <TouchableOpacity>
-                    <FontAwesome
-                        size={30}
-                        style={withIconStyles.icon}
-                        name={icon as any}
-                    />
-                </TouchableOpacity>
-            )}
+            {icon && <TouchableOpacity>{icon}</TouchableOpacity>}
             {/* Composant Input */}
             <TextInput
                 {...props}
                 style={[inputStyle]}
                 onFocus={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
+                onEndEditing={() => setFocused(false)}
                 secureTextEntry={password && !textVisible}
                 placeholder={focused ? "" : props.placeholder}
             />
@@ -86,7 +78,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: Colors.hexWithOpacity(Colors.primaryColor, 0.1),
-        borderRadius: 5,
+        borderRadius: 15,
         width: "80%",
         height: 50,
         marginBottom: 20,
@@ -107,13 +99,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
+        transform: [{ scale: 1.2 }],
     },
 });
 const withIconStyles = StyleSheet.create({
     icon: {
-        width: 32,
-        height: 32,
-        marginLeft: 5,
+        fontSize: 30,
+        marginRight: 5,
     },
     input: {
         ...styles.input,

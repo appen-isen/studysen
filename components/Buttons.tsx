@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ButtonProps, Pressable, StyleSheet, Text } from "react-native";
+import { ButtonProps, Pressable, StyleSheet } from "react-native";
+import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 
 export type StyledButtonType = {
@@ -9,7 +10,7 @@ export type StyledButtonType = {
 };
 
 export function Button(props: ButtonProps & StyledButtonType): JSX.Element {
-    const { onPress, title, style, textStyle, JSX } = props;
+    const { onPress, style, textStyle, JSX, title } = props;
     const [pressed, setPressed] = useState(false);
 
     return (
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
         paddingRight: 25,
         paddingTop: 9,
         paddingBottom: 9,
-        borderRadius: 6,
+        borderRadius: 15,
         backgroundColor: Colors.primaryColor,
     },
     pressedButton: {
