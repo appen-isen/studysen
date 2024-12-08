@@ -1,6 +1,7 @@
 import {
     KeyboardAvoidingView,
     Platform,
+    Pressable,
     ScrollView,
     StyleSheet,
     View,
@@ -14,11 +15,17 @@ import { Link } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { ErrorModal } from "@/components/Modals";
+import { Dropdown, ErrorModal } from "@/components/Modals";
 
 export default function LoginScreen() {
+    //Menu déroulant pour choisir le campus
+    const [campusMenuVisible, setCampusMenuVisible] = useState(false);
+    const campusOptions = ["Nantes", "Rennes", "Brest", "Caen"];
+    const [selectedCampus, setSelectedCampus] = useState(campusOptions[0]);
+
     //Checkbox pour se souvenir de l'utilisateur
     const [rememberMe, setRememberMe] = useState(true);
+    const [authenticating, setAuthenticating] = useState(false);
     //Message d'erreur
     const [errorVisible, setErrorVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -29,11 +36,18 @@ export default function LoginScreen() {
             "Une erreur s'est produite lors de la connexion, merci de réessayer plus tard."
         );
         setErrorVisible(true);
+        setAuthenticating(true);
+        setTimeout(() => {
+            setAuthenticating(false);
+        }, 2000);
     };
     return (
         <View style={styles.container}>
             {/* Bouton pour choisir le campus */}
-            <View style={styles.campusSelect}>
+            <Pressable
+                style={styles.campusSelect}
+                onPress={() => setCampusMenuVisible(true)}
+            >
                 <Text style={styles.campusSelectText}>
                     Campus de <Bold>Nantes</Bold>
                 </Text>
@@ -42,7 +56,16 @@ export default function LoginScreen() {
                     name="chevron-down"
                     size={24}
                 />
-            </View>
+            </Pressable>
+            <Dropdown
+                visible={campusMenuVisible}
+                setVisible={setCampusMenuVisible}
+                options={campusOptions}
+                selectedItem={selectedCampus}
+                setSelectedItem={setSelectedCampus}
+                modalBoxStyle={styles.dropdownBoxStyle}
+            ></Dropdown>
+
             {/* Haut de la page */}
             <View style={styles.titleBox}>
                 <MaterialIcons name="login" style={styles.loginIcon} />
@@ -85,6 +108,7 @@ export default function LoginScreen() {
                     title="Se connecter"
                     onPress={handleLogin}
                     style={styles.loginBtn}
+                    isLoading={authenticating}
                 ></Button>
                 <Link href={"/login-help"} style={styles.helpLink}>
                     J'ai besoin d'aide
@@ -112,6 +136,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-around",
+        alignItems: "center",
         padding: 10,
         backgroundColor: Colors.primaryColor,
         borderRadius: 50,
@@ -121,6 +146,12 @@ const styles = StyleSheet.create({
         color: "white",
         marginLeft: 5,
         marginRight: 5,
+    },
+    dropdownBoxStyle: {
+        width: 250,
+        display: "flex",
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
     },
     titleBox: {
         alignSelf: "flex-start",
