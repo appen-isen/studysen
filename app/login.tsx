@@ -1,45 +1,63 @@
-import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    View,
-} from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { Button } from "@/components/Buttons";
 import { Input, Checkbox } from "@/components/Inputs";
 import { Bold, Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { useState } from "react";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Dropdown, ErrorModal } from "@/components/Modals";
+import { login } from "webaurion-api";
+
+import useSessionStore from "@/store/sessionStore";
 
 export default function LoginScreen() {
+    const router = useRouter();
     //Menu déroulant pour choisir le campus
     const [campusMenuVisible, setCampusMenuVisible] = useState(false);
     const campusOptions = ["Nantes", "Rennes", "Brest", "Caen"];
     const [selectedCampus, setSelectedCampus] = useState(campusOptions[0]);
 
+    const { setSession } = useSessionStore();
+
     //Checkbox pour se souvenir de l'utilisateur
     const [rememberMe, setRememberMe] = useState(true);
     const [authenticating, setAuthenticating] = useState(false);
+
+    //Utilisateur et mot de passe
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+
     //Message d'erreur
     const [errorVisible, setErrorVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    //Fonction pour se connecter
-    const handleLogin = () => {
-        setErrorMessage(
-            "Une erreur s'est produite lors de la connexion, merci de réessayer plus tard."
-        );
-        setErrorVisible(true);
+    //Gestion de la connexion
+    const handleLogin = async () => {
+        if (username === "" || password === "") {
+            setErrorMessage("Veuillez remplir tous les champs");
+            setErrorVisible(true);
+            return;
+        }
         setAuthenticating(true);
-        setTimeout(() => {
-            setAuthenticating(false);
-        }, 2000);
+
+        // Requête de connexion
+        login(username, password)
+            .then((session) => {
+                setAuthenticating(false);
+                setSession(session);
+                router.navigate("/(tabs)");
+            })
+            .catch((e) => {
+                console.log(e);
+                setAuthenticating(false);
+                setErrorMessage(
+                    "Une erreur est survenue lors de la connexion, veuillez vérifier vos identifiants"
+                );
+                setErrorVisible(true);
+            });
     };
     return (
         <View style={styles.container}>
@@ -49,7 +67,7 @@ export default function LoginScreen() {
                 onPress={() => setCampusMenuVisible(true)}
             >
                 <Text style={styles.campusSelectText}>
-                    Campus de <Bold>Nantes</Bold>
+                    Campus de <Bold>{selectedCampus}</Bold>
                 </Text>
                 <FontAwesome6
                     style={styles.campusSelectText}
@@ -82,6 +100,8 @@ export default function LoginScreen() {
                             name="user-circle"
                         />
                     }
+                    onChangeText={(text) => setUsername(text)}
+                    value={username}
                 ></Input>
                 <Input
                     placeholder="Mot de passe"
@@ -91,6 +111,8 @@ export default function LoginScreen() {
                             style={styles.inputIcon}
                         />
                     }
+                    onChangeText={(text) => setPassword(text)}
+                    value={password}
                     password
                 ></Input>
                 <Checkbox
@@ -138,6 +160,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
         alignItems: "center",
         padding: 10,
+        width: 220,
         backgroundColor: Colors.primaryColor,
         borderRadius: 50,
         marginTop: 10,
