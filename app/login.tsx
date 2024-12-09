@@ -9,9 +9,9 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Dropdown, ErrorModal } from "@/components/Modals";
-import { login } from "webaurion-api";
 
 import useSessionStore from "@/store/sessionStore";
+import Session from "@/webAurion/api/Session";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -44,17 +44,26 @@ export default function LoginScreen() {
         setAuthenticating(true);
 
         // Requête de connexion
-        login(username, password)
-            .then((session) => {
+        const session = new Session();
+
+        session
+            .login(username, password)
+            .then(async (res) => {
+                if (res) {
+                    setSession(session);
+                    router.replace("/(tabs)");
+                } else {
+                    setErrorMessage(
+                        "Nom d'utilisateur ou mot de passe incorrect"
+                    );
+                    setErrorVisible(true);
+                }
                 setAuthenticating(false);
-                setSession(session);
-                router.navigate("/(tabs)");
             })
             .catch((e) => {
-                console.log(e);
                 setAuthenticating(false);
                 setErrorMessage(
-                    "Une erreur est survenue lors de la connexion, veuillez vérifier vos identifiants"
+                    "Une erreur est survenue lors de la connexion: " + e.message
                 );
                 setErrorVisible(true);
             });

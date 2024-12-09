@@ -1,5 +1,5 @@
+import Session from "@/webAurion/api/Session";
 import { create } from "zustand";
-import { Session } from "webaurion-api";
 
 type SessionState = {
     session: Session | null;

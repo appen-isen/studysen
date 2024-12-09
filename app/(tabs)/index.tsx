@@ -2,8 +2,16 @@ import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
+import useSessionStore from "@/store/sessionStore";
 
 export default function TabOneScreen() {
+    // const { session } = useSessionStore();
+    // session
+    //     ?.getPlanningApi()
+    //     .fetchPlanning()
+    //     .then((res) => {
+    //         console.log(res);
+    //     });
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Tab One</Text>
