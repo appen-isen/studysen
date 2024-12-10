@@ -16,6 +16,7 @@ export class Session {
         this.client = axios.create({
             baseURL: this.baseURL,
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            withCredentials: true,
         });
     }
 
@@ -27,13 +28,17 @@ export class Session {
      * @returns {Promise<Session>} Une promesse qui se résout avec une instance de Session si l'authentification réussit.
      * @throws {Error} Si l'authentification échoue.
      */
-    public login(username: string, password: string): Promise<boolean> {
+    public login(
+        username: string,
+        password: string,
+        timeout?: number
+    ): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             const params = new URLSearchParams();
             params.append("username", username);
             params.append("password", password);
             this.client
-                .post(`/login`, params)
+                .post(`/login`, params, { timeout: timeout })
                 .then(async (res) => {
                     if (
                         res.data.includes("Home page") ||

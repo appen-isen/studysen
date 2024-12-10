@@ -1,9 +1,9 @@
-import { Pressable, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import { Button } from "@/components/Buttons";
 import { Input, Checkbox } from "@/components/Inputs";
 import { Bold, Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -12,15 +12,44 @@ import { Dropdown, ErrorModal } from "@/components/Modals";
 
 import useSessionStore from "@/store/sessionStore";
 import Session from "@/webAurion/api/Session";
+import { getSecureStoreItem, setSecureStoreItem } from "@/store/secureStore";
 
 export default function LoginScreen() {
     const router = useRouter();
+    const { setSession } = useSessionStore();
+    //Connexion automatique
+    const [autoLogin, setAutoLogin] = useState(false);
+    useEffect(() => {
+        const fetchStoredCredentials = async () => {
+            //On récupère les identifiants stockés dans le secure store
+            const storedUsername = await getSecureStoreItem("username");
+            const storedPassword = await getSecureStoreItem("password");
+            if (storedUsername && storedPassword) {
+                setAutoLogin(true);
+                //On connecte l'utilisateur automatiquement
+                const session = new Session();
+                try {
+                    await session.login(storedUsername, storedPassword, 6000);
+                    //On sauvegarde la session dans le store
+                    setSession(session);
+                    router.replace("/(tabs)");
+                } catch (err) {
+                    //Probablement un timeout, donc on considère que l'utilisateur est hors ligne
+                    console.log("Offline mode enabled!");
+                    router.replace({
+                        pathname: "/(tabs)",
+                        params: { offlineMode: 1 },
+                    });
+                }
+            }
+        };
+        fetchStoredCredentials();
+    }, []);
+
     //Menu déroulant pour choisir le campus
     const [campusMenuVisible, setCampusMenuVisible] = useState(false);
     const campusOptions = ["Nantes", "Rennes", "Brest", "Caen"];
     const [selectedCampus, setSelectedCampus] = useState(campusOptions[0]);
-
-    const { setSession } = useSessionStore();
 
     //Checkbox pour se souvenir de l'utilisateur
     const [rememberMe, setRememberMe] = useState(true);
@@ -51,6 +80,10 @@ export default function LoginScreen() {
             .then(async (res) => {
                 if (res) {
                     setSession(session);
+                    if (rememberMe) {
+                        await setSecureStoreItem("username", username);
+                        await setSecureStoreItem("password", password);
+                    }
                     router.replace("/(tabs)");
                 } else {
                     setErrorMessage(
@@ -68,6 +101,19 @@ export default function LoginScreen() {
                 setErrorVisible(true);
             });
     };
+
+    // Chargement de la connexion automatique
+    if (autoLogin) {
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator
+                    animating={true}
+                    color={Colors.primaryColor}
+                    size={"large"}
+                />
+            </View>
+        );
+    }
     return (
         <View style={styles.container}>
             {/* Bouton pour choisir le campus */}
