@@ -1,0 +1,72 @@
+import { useState } from "react";
+import {
+    ButtonProps,
+    Pressable,
+    StyleSheet,
+    ActivityIndicator,
+} from "react-native";
+import { Text } from "@/components/Texts";
+import Colors from "@/constants/Colors";
+
+export type StyledButtonType = {
+    textStyle?: object;
+    style?: object;
+    JSX?: JSX.Element;
+    isLoading?: boolean;
+};
+
+export function Button(props: ButtonProps & StyledButtonType): JSX.Element {
+    const { onPress, style, textStyle, JSX, title } = props;
+    const [pressed, setPressed] = useState(false);
+
+    return (
+        <Pressable
+            style={
+                pressed
+                    ? { ...styles.button, ...styles.pressedButton, ...style }
+                    : { ...styles.button, ...style }
+            }
+            onPress={onPress}
+            onPressOut={() => setPressed(false)}
+            onPressIn={() => setPressed(true)}
+        >
+            {/* Contenu JSX ou texte */}
+            {JSX && JSX}
+            {!JSX && props.isLoading && (
+                <ActivityIndicator
+                    animating={true}
+                    color="white"
+                    size={"large"}
+                />
+            )}
+            {/* Si le bouton n'a pas de composant custom et ne charge pas alors on affiche le texte*/}
+            {!JSX && !props.isLoading && (
+                <Text style={{ ...styles.buttonText, ...textStyle }}>
+                    {title}
+                </Text>
+            )}
+        </Pressable>
+    );
+}
+
+const styles = StyleSheet.create({
+    button: {
+        margin: 15,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingLeft: 25,
+        paddingRight: 25,
+        height: 50,
+        borderRadius: 15,
+        backgroundColor: Colors.primaryColor,
+    },
+    pressedButton: {
+        backgroundColor: Colors.secondaryColor,
+    },
+    buttonText: {
+        fontSize: 22,
+        fontWeight: "bold",
+        letterSpacing: 0.25,
+        color: "white",
+    },
+});

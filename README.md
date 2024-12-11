@@ -42,9 +42,9 @@ ISEN-Orbit est un projet d'application mobile développée en React Native avec 
 
 1. Utiliser un VPN pour contourner les restrictions du Wifi (exemple: ProtonVPN)
 2. Puis il faut utiliser cette commande pour lancer le projet:
-   ```bash
-   npx expo start --tunnel
-   ```
+    ```bash
+    npx expo start --tunnel
+    ```
 3. Après cela, vous pourrez scanner le QR code avec l'application Expo Go et tout devrait fonctionner.
 
 ## 🛠️ Technologies utilisées
@@ -52,6 +52,13 @@ ISEN-Orbit est un projet d'application mobile développée en React Native avec 
 -   **React Native** : Framework pour le développement d'applications mobiles (Android et iOS).
 -   **Expo** : Outils et services pour développer et déployer l'application.
 -   **Typescript** : Typage statique pour JavaScript.
+
+## 📚 Bibliothèques utilisées
+
+-   **[Axios](https://github.com/axios/axios)** : Pour effectuer les requêtes HTTP
+-   **[Zustand](https://github.com/pmndrs/zustand)** : Pour la gestion des variables globales de l'application
+-   **[React Native Paper](https://github.com/callstack/react-native-paper)** : Pour des composants graphiques animés
+-   **[WebAurion API](https://github.com/dd060606/WebAurion-API)** : Pour communiquer avec WebAurion
 
 ## 🤝 Contribution
 
