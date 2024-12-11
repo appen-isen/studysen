@@ -1,4 +1,11 @@
-import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import {
+    ActivityIndicator,
+    Keyboard,
+    Platform,
+    Pressable,
+    StyleSheet,
+    View,
+} from "react-native";
 import { Button } from "@/components/Buttons";
 import { Input, Checkbox } from "@/components/Inputs";
 import { Bold, Text } from "@/components/Texts";
@@ -17,6 +24,10 @@ import { getSecureStoreItem, setSecureStoreItem } from "@/store/secureStore";
 export default function LoginScreen() {
     const router = useRouter();
     const { setSession } = useSessionStore();
+
+    //Hauteur du clavier pour iOS (Permet d'éviter le bug du clavier qui cache les inputs)
+    const [iosKeyboardEnabled, setIOSKeyboardEnabled] = useState(false);
+
     //Connexion automatique
     const [autoLogin, setAutoLogin] = useState(false);
     useEffect(() => {
@@ -44,6 +55,31 @@ export default function LoginScreen() {
             }
         };
         fetchStoredCredentials();
+
+        //Gestion du clavier pour iOS
+        if (Platform.OS === "ios") {
+            // Écoute de l'événement keyboardDidShow
+            const showSubscription = Keyboard.addListener(
+                "keyboardDidShow",
+                () => {
+                    setIOSKeyboardEnabled(true);
+                }
+            );
+
+            // Écoute de l'événement keyboardDidHide
+            const hideSubscription = Keyboard.addListener(
+                "keyboardDidHide",
+                () => {
+                    setIOSKeyboardEnabled(false);
+                }
+            );
+
+            // Nettoyage
+            return () => {
+                showSubscription.remove();
+                hideSubscription.remove();
+            };
+        }
     }, []);
 
     //Menu déroulant pour choisir le campus
@@ -80,6 +116,7 @@ export default function LoginScreen() {
             .then(async (res) => {
                 if (res) {
                     setSession(session);
+                    //On sauvegarde la session lorsque l'utilisateur relance l'app
                     if (rememberMe) {
                         await setSecureStoreItem("username", username);
                         await setSecureStoreItem("password", password);
@@ -94,6 +131,7 @@ export default function LoginScreen() {
                 setAuthenticating(false);
             })
             .catch((e) => {
+                //Erreur de connexion
                 setAuthenticating(false);
                 setErrorMessage(
                     "Une erreur est survenue lors de la connexion: " + e.message
@@ -115,7 +153,12 @@ export default function LoginScreen() {
         );
     }
     return (
-        <View style={styles.container}>
+        <View
+            style={[
+                styles.container,
+                iosKeyboardEnabled ? { justifyContent: "flex-start" } : {},
+            ]}
+        >
             {/* Bouton pour choisir le campus */}
             <Pressable
                 style={styles.campusSelect}
