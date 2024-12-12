@@ -10,7 +10,7 @@ ISEN-Orbit est un projet d'application mobile développée en React Native avec 
 
 ## 🌱 Branches en développement
 
-- 
+-   [`feat/planning`](https://github.com/appen-isen/isen-orbit/tree/feat/planning) : Emploi du temps (Page Planning)
 -
 -
 
