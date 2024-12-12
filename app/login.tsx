@@ -147,7 +147,7 @@ export default function LoginScreen() {
                 <ActivityIndicator
                     animating={true}
                     color={Colors.primaryColor}
-                    size={"large"}
+                    size={50}
                 />
             </View>
         );

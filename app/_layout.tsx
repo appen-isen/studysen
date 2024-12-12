@@ -43,12 +43,12 @@ export default function RootLayout() {
 //Il s'agit de la navigation principale de l'application
 function RootLayoutNav() {
     return (
-        <Stack>
-            <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="login" />
             {/* Les parenthèrese permettent de faire comme si les routes étaient directement à la racine de /app 
             Par exemple, <Link href="login-help" /> est possible au lieu de <Link href="(modals)/login-help" /> 
             */}
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" />
             {/* //On définit ici les modales */}
             <Stack.Screen
                 name="(modals)/login-help"
@@ -56,6 +56,7 @@ function RootLayoutNav() {
                     presentation: "modal",
                     animation: "slide_from_bottom",
                     headerTitle: "Aide à la connexion",
+                    headerShown: true,
                 }}
             />
         </Stack>

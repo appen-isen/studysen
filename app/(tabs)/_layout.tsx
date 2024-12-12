@@ -1,40 +1,71 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Tabs } from "expo-router";
+import Colors from "@/constants/Colors";
 
 //Code correspondant à la bottom nav de l'application
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
-    name: React.ComponentProps<typeof FontAwesome>["name"];
+    name: React.ComponentProps<typeof MaterialCommunityIcons>["name"];
     color: string;
 }) {
-    return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+    return (
+        <MaterialCommunityIcons
+            size={28}
+            style={{ marginBottom: -3 }}
+            {...props}
+        />
+    );
 }
 
 export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: "red",
+                tabBarActiveTintColor: Colors.primaryColor,
                 headerShown: false,
             }}
         >
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: "Tab One",
+                    title: "Accueil",
                     tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="code" color={color} />
+                        <TabBarIcon name="home-outline" color={color} />
                     ),
                 }}
             />
             <Tabs.Screen
-                name="two"
+                name="planning"
                 options={{
-                    title: "Tab Two",
+                    title: "Planning",
                     tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="code" color={color} />
+                        <TabBarIcon
+                            name="calendar-month-outline"
+                            color={color}
+                        />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="clubs"
+                options={{
+                    title: "Clubs",
+                    tabBarIcon: ({ color }) => (
+                        <TabBarIcon name="party-popper" color={color} />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="settings"
+                options={{
+                    title: "Mon compte",
+                    tabBarIcon: ({ color }) => (
+                        <TabBarIcon
+                            name="account-circle-outline"
+                            color={color}
+                        />
                     ),
                 }}
             />

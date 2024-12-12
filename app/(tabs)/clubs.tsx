@@ -3,7 +3,7 @@ import { Text } from "@/components/Texts";
 
 import EditScreenInfo from "@/components/EditScreenInfo";
 
-export default function TabTwoScreen() {
+export default function ClubsScreen() {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Tab Two</Text>
