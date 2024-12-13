@@ -3,13 +3,14 @@ import { PlanningEvent } from "@/webAurion/utils/types";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useEffect, useState } from "react";
 
-type GroupedEvents = {
+type DayEvents = {
     [date: string]: PlanningEvent[];
 };
 
-const groupEventsByDay = (events: PlanningEvent[]): GroupedEvents => {
-    return events.reduce<GroupedEvents>((grouped, event) => {
+const groupEventsByDay = (events: PlanningEvent[]): DayEvents => {
+    return events.reduce<DayEvents>((grouped, event) => {
         // On récupère la date de début de l'événement
         const date = new Date(event.start).toISOString().split("T")[0];
         // On crée un tableau pour chaque date
@@ -22,20 +23,127 @@ const groupEventsByDay = (events: PlanningEvent[]): GroupedEvents => {
     }, {});
 };
 
-export default function PlanningList(props: { events: PlanningEvent[] }) {
+export default function PlanningList(props: {
+    events: PlanningEvent[];
+    startDate: Date;
+}) {
     const planning = groupEventsByDay(props.events);
-    return <View style={styles.container}></View>;
+    const [selectedDay, setSelectedDay] = useState(0);
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.daySelector}>
+                {/* On affiche les 5 prochains jours */}
+                <DayBox
+                    dayNumber={0}
+                    selectedDay={selectedDay}
+                    onSelectDay={setSelectedDay}
+                    startDate={props.startDate}
+                ></DayBox>
+                <DayBox
+                    dayNumber={1}
+                    selectedDay={selectedDay}
+                    onSelectDay={setSelectedDay}
+                    startDate={props.startDate}
+                ></DayBox>
+                <DayBox
+                    dayNumber={2}
+                    selectedDay={selectedDay}
+                    onSelectDay={setSelectedDay}
+                    startDate={props.startDate}
+                ></DayBox>
+                <DayBox
+                    dayNumber={3}
+                    selectedDay={selectedDay}
+                    onSelectDay={setSelectedDay}
+                    startDate={props.startDate}
+                ></DayBox>
+                <DayBox
+                    dayNumber={4}
+                    selectedDay={selectedDay}
+                    onSelectDay={setSelectedDay}
+                    startDate={props.startDate}
+                ></DayBox>
+            </View>
+        </View>
+    );
+}
+
+function DayBox(props: {
+    dayNumber: number;
+    startDate: Date;
+    selectedDay: number;
+    onSelectDay: (dayNumber: number) => void;
+}) {
+    // On ajoute le nombre de jours pour obtenir la date cible
+    let targetDate = new Date(props.startDate);
+    let daysToAdd = props.dayNumber;
+
+    // Sauter le weekend
+    while (daysToAdd > 0) {
+        targetDate.setDate(targetDate.getDate() + 1);
+        // Si le jour est samedi (6) ou dimanche (0), on continue d'ajouter des jours
+        if (targetDate.getDay() !== 0 && targetDate.getDay() !== 6) {
+            daysToAdd--;
+        }
+    }
+
+    const dayNames = ["Lun", "Mar", "Mer", "Jeu", "Ven"];
+    //Nom du jour et date au format jour/mois
+    const dayName = dayNames[targetDate.getDay() - 1];
+    const dayDate = `${targetDate.getDate().toString().padStart(2, "0")}/${(
+        targetDate.getMonth() + 1
+    )
+        .toString()
+        .padStart(2, "0")}`;
+
+    const isSelected = props.dayNumber === props.selectedDay;
+
+    return (
+        <Pressable
+            // On change le style du jour sélectionné
+            style={[
+                styles.dayBox,
+                isSelected && { backgroundColor: Colors.primaryColor },
+            ]}
+            onPress={() => props.onSelectDay(props.dayNumber)}
+        >
+            <Text style={[styles.dayTitle, isSelected && { color: "white" }]}>
+                {dayName}
+            </Text>
+            <Text style={[styles.dayDate, isSelected && { color: "white" }]}>
+                {dayDate}
+            </Text>
+        </Pressable>
+    );
 }
 
 export function ListEvent(props: { event: PlanningEvent }) {
+    const [timeText, setTimeText] = useState("");
+    useEffect(() => {
+        // On affiche En cours si l'événement est en cours ou dans x minutes < 60 minutes si l'événement est à venir
+        const now = new Date();
+        const start = new Date(props.event.start);
+        const end = new Date(props.event.end);
+
+        // Si l'événement est en cours
+        if (now >= start && now <= end) {
+            setTimeText(" ● En cours");
+        } else if (start > now) {
+            const diffMinutes = Math.floor(
+                (start.getTime() - now.getTime()) / 6000
+            );
+            // Si l'événement est dans moins d'une heure, on affiche "Dans x minutes"
+            if (diffMinutes < 60) {
+                setTimeText(` ● Dans ${diffMinutes} minutes`);
+            }
+        }
+    }, [props.event]);
+
     return (
         <View style={eventStyles.container}>
             {/* Heure de début et de fin */}
-            <View style={eventStyles.timeView}>
-                <Text style={eventStyles.timeText}>{props.event.start}</Text>
-                <View style={eventStyles.timeSeparator}></View>
-                <Text style={eventStyles.timeText}>{props.event.end}</Text>
-            </View>
+            <View style={eventStyles.timeView}></View>
             {/* Contenu de l'événement */}
             <View style={eventStyles.contentView}>
                 <View style={eventStyles.contentInfo}>
@@ -51,9 +159,7 @@ export function ListEvent(props: { event: PlanningEvent }) {
                                 {props.event.room}
                             </Text>
                         </View>
-                        <Text style={eventStyles.timeTextInfo}>
-                            ● Dans 5 minutes
-                        </Text>
+                        <Text style={eventStyles.timeTextInfo}>{timeText}</Text>
                     </View>
                 </View>
                 {/* Plus d'infos sur l'événement */}
@@ -76,25 +182,31 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         width: "100%",
     },
-    dateSeparator: {
+
+    //Sélecteur de jour
+    daySelector: {
         display: "flex",
         flexDirection: "row",
-        justifyContent: "flex-start",
         alignItems: "center",
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.primaryColor,
-        marginBottom: 15,
-        paddingBottom: 10,
         width: "100%",
+        justifyContent: "space-around",
+        marginTop: 10,
     },
-    dateTitle: {
+    dayBox: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        borderRadius: 15,
+        backgroundColor: Colors.hexWithOpacity(Colors.primaryColor, 0.2),
+    },
+    dayTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: Colors.primaryColor,
-        marginLeft: 10,
     },
-    dateText: {
-        fontSize: 16,
+    dayDate: {
+        fontSize: 13,
     },
 });
 
@@ -160,6 +272,7 @@ const eventStyles = StyleSheet.create({
         fontSize: 15,
         color: Colors.gray,
     },
+    // Style de la box de la salle
     roomContainer: {
         display: "flex",
         flexDirection: "row",
