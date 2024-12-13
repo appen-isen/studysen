@@ -4,37 +4,27 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
-export default function PlanningList() {
-    return (
-        <View>
-            <ListEvent
-                event={{
-                    className: "COURS",
-                    title: "Maths S1",
-                    subject: "Mathématiques",
-                    start: "08h00",
-                    end: "10h00",
-                    id: "AAAA",
-                    instructors: "Mr SMITH",
-                    learners: "CIR1",
-                    room: "A0-48",
-                }}
-            ></ListEvent>
-            <ListEvent
-                event={{
-                    className: "COURS",
-                    title: "Maths S1",
-                    subject: "Mathématiques",
-                    start: "08h00",
-                    end: "10h00",
-                    id: "AAAA",
-                    instructors: "Mr SMITH",
-                    learners: "CIR1",
-                    room: "A0-48",
-                }}
-            ></ListEvent>
-        </View>
-    );
+type GroupedEvents = {
+    [date: string]: PlanningEvent[];
+};
+
+const groupEventsByDay = (events: PlanningEvent[]): GroupedEvents => {
+    return events.reduce<GroupedEvents>((grouped, event) => {
+        // On récupère la date de début de l'événement
+        const date = new Date(event.start).toISOString().split("T")[0];
+        // On crée un tableau pour chaque date
+        if (!grouped[date]) {
+            grouped[date] = [];
+        }
+        grouped[date].push(event);
+
+        return grouped;
+    }, {});
+};
+
+export default function PlanningList(props: { events: PlanningEvent[] }) {
+    const planning = groupEventsByDay(props.events);
+    return <View style={styles.container}></View>;
 }
 
 export function ListEvent(props: { event: PlanningEvent }) {
@@ -78,7 +68,35 @@ export function ListEvent(props: { event: PlanningEvent }) {
     );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    container: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+    },
+    dateSeparator: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.primaryColor,
+        marginBottom: 15,
+        paddingBottom: 10,
+        width: "100%",
+    },
+    dateTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: Colors.primaryColor,
+        marginLeft: 10,
+    },
+    dateText: {
+        fontSize: 16,
+    },
+});
 
 const eventStyles = StyleSheet.create({
     // Style de la vue d'un événement

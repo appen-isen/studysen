@@ -5,9 +5,19 @@ import Colors from "@/constants/Colors";
 import { useState } from "react";
 import PlanningList from "@/components/planning/PlanningList";
 import PlanningWeek from "@/components/planning/PlanningWeek";
+import useSessionStore from "@/store/sessionStore";
+import { PlanningEvent } from "@/webAurion/utils/types";
 
 export default function PlanningScreen() {
+    const { session } = useSessionStore();
     const [planningView, setPlanningView] = useState<"list" | "week">("list");
+    const [planning, setPlanning] = useState<PlanningEvent[]>([]);
+    session
+        ?.getPlanningApi()
+        .fetchPlanning()
+        .then((res: PlanningEvent[]) => {
+            setPlanning(res);
+        });
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Empoi du temps</Text>
@@ -59,7 +69,7 @@ export default function PlanningScreen() {
             </View>
 
             {/* Affichage de l'emploi du temps */}
-            {planningView === "list" && <PlanningList />}
+            {planningView === "list" && <PlanningList events={planning} />}
             {planningView === "week" && <PlanningWeek />}
         </View>
     );
