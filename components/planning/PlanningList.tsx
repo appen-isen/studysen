@@ -11,7 +11,11 @@ import { Text } from "@/components/Texts";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useState } from "react";
 import { AnimatedPressable } from "../Buttons";
-import { groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
+import {
+    getSubjectColor,
+    groupEventsByDay,
+    updatePlanningForListMode,
+} from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 
 export default function PlanningList(props: {
@@ -29,7 +33,6 @@ export default function PlanningList(props: {
     };
     // Calcul de la date cible au format ISO (local)
     const selectedDateISO = getWorkdayFromOffset(props.startDate, selectedDay);
-    console.log(planning[selectedDateISO]);
     return (
         <View style={styles.container}>
             <View style={styles.daySelector}>
@@ -160,7 +163,17 @@ export function ListEvent(props: { event: PlanningEvent }) {
                 <Text style={eventStyles.timeText}>
                     {formatDateToLocalTime(props.event.start)}
                 </Text>
-                <View style={eventStyles.timeSeparator}></View>
+                <View
+                    style={[
+                        eventStyles.timeSeparator,
+                        //Couleur de fond en fonction de la matière
+                        {
+                            backgroundColor: getSubjectColor(
+                                props.event.subject
+                            ),
+                        },
+                    ]}
+                ></View>
                 <Text style={eventStyles.timeText}>
                     {formatDateToLocalTime(props.event.end)}
                 </Text>
@@ -168,12 +181,17 @@ export function ListEvent(props: { event: PlanningEvent }) {
             {/* Contenu de l'événement */}
             <View style={eventStyles.contentView}>
                 <View style={eventStyles.contentInfo}>
+                    {/* Matière */}
                     <Text style={eventStyles.subject}>
                         {props.event.subject}
+                        {props.event.className !== "COURS" &&
+                            ` - ${props.event.className}`}
                     </Text>
+                    {/* Enseignants */}
                     <Text style={eventStyles.instructors}>
                         {props.event.instructors}
                     </Text>
+                    {/* Salle */}
                     <View style={eventStyles.roomContainer}>
                         <View style={eventStyles.roomBox}>
                             <Text style={eventStyles.roomText}>
@@ -253,9 +271,9 @@ const eventStyles = StyleSheet.create({
         paddingVertical: 3,
         borderRadius: 10,
         marginBottom: 15,
-        backgroundColor: Colors.hexWithOpacity(Colors.primaryColor, 0.1),
         width: "95%",
-        height: 100,
+        height: 120,
+        backgroundColor: Colors.hexWithOpacity(Colors.primaryColor, 0.2),
     },
     // Style de la vue de l'heure de début et de fin
     timeView: {
@@ -272,11 +290,11 @@ const eventStyles = StyleSheet.create({
         width: 5,
         borderRadius: 10,
         height: "40%",
-        backgroundColor: Colors.hexWithOpacity(Colors.primaryColor, 0.1),
     },
     timeText: {
         fontSize: 15,
         textAlign: "center",
+        fontWeight: 700,
     },
     // Style de la vue du contenu de l'événement
     contentView: {
@@ -333,6 +351,7 @@ const eventStyles = StyleSheet.create({
         marginLeft: 5,
         color: Colors.primaryColor,
         fontWeight: 700,
+        fontSize: 13,
     },
     contentInfoIcon: {
         fontSize: 25,

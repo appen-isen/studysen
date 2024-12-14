@@ -15,6 +15,7 @@ import {
 } from "@/utils/date";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { AnimatedPressable } from "@/components/Buttons";
+import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 
 export default function PlanningScreen() {
     const { session } = useSessionStore();
@@ -29,27 +30,40 @@ export default function PlanningScreen() {
     const updatePlanning = (weekOffset: number = 0) => {
         if (session) {
             setPlanningLoaded(false);
-            // On récupère l'emploi du temps de l'utilisateur connecté pour la semaine actuelle
+
+            // Calcul de la plage de dates pour la semaine
+            const { startTimestamp, endTimestamp } =
+                getScheduleDates(weekOffset);
+
+            // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
+            const isWeekInPlanning = planning.some(
+                (event) =>
+                    new Date(event.start).getTime() >= startTimestamp &&
+                    new Date(event.end).getTime() <= endTimestamp
+            );
+
+            // Pas besoin de retélécharger les événements si la semaine est déjà chargée
+            if (isWeekInPlanning) {
+                setPlanningLoaded(true);
+                return;
+            }
+
+            // Requête pour charger les événements de la semaine
             session
                 .getPlanningApi()
                 .fetchPlanning(weekOffset)
                 .then((currentWeekPlanning: PlanningEvent[]) => {
-                    // On récupère l'emploi du temps de la semaine prochaine
-                    session
-                        .getPlanningApi()
-                        .fetchPlanning(weekOffset + 1)
-                        .then((nextWeekPlanning: PlanningEvent[]) => {
-                            // On concatène les deux semaines
-                            setPlanning([
-                                ...currentWeekPlanning,
-                                ...nextWeekPlanning,
-                            ]);
-                            setPlanningLoaded(true);
-                        })
-                        .catch((error) => {
-                            console.error(error);
-                            setPlanningLoaded(true);
-                        });
+                    // Concaténer le nouveau planning avec l'existant sans doublons
+                    setPlanning((prevPlanning) => [
+                        ...prevPlanning,
+                        ...currentWeekPlanning.filter(
+                            (newEvent) =>
+                                !prevPlanning.some(
+                                    (event) => event.id === newEvent.id
+                                )
+                        ),
+                    ]);
+                    setPlanningLoaded(true);
                 })
                 .catch((error) => {
                     console.error(error);
@@ -184,7 +198,13 @@ export default function PlanningScreen() {
                     isPlanningLoaded={isPlanningLoaded}
                 />
             )}
-            {planningView === "week" && <PlanningWeek />}
+            {planningView === "week" && (
+                <PlanningWeek
+                    events={planning}
+                    startDate={currentStartDate}
+                    isPlanningLoaded={isPlanningLoaded}
+                />
+            )}
         </View>
     );
 }
