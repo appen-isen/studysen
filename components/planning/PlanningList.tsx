@@ -1,35 +1,35 @@
 import Colors from "@/constants/Colors";
 import { PlanningEvent } from "@/webAurion/utils/types";
-import { Pressable, StyleSheet, View } from "react-native";
+import {
+    ActivityIndicator,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View,
+} from "react-native";
 import { Text } from "@/components/Texts";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useState } from "react";
-
-type DayEvents = {
-    [date: string]: PlanningEvent[];
-};
-
-const groupEventsByDay = (events: PlanningEvent[]): DayEvents => {
-    return events.reduce<DayEvents>((grouped, event) => {
-        // On récupère la date de début de l'événement
-        const date = new Date(event.start).toISOString().split("T")[0];
-        // On crée un tableau pour chaque date
-        if (!grouped[date]) {
-            grouped[date] = [];
-        }
-        grouped[date].push(event);
-
-        return grouped;
-    }, {});
-};
+import { AnimatedPressable } from "../Buttons";
+import { groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
+import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 
 export default function PlanningList(props: {
     events: PlanningEvent[];
     startDate: Date;
+    isPlanningLoaded: boolean;
 }) {
-    const planning = groupEventsByDay(props.events);
+    // On groupe les événements par jour et on change le planning pour fonctionner avec le mode liste
+    const planning = groupEventsByDay(updatePlanningForListMode(props.events));
     const [selectedDay, setSelectedDay] = useState(0);
 
+    // Fonction pour changer le jour sélectionné
+    const handleDayChange = (dayNumber: number) => {
+        setSelectedDay(dayNumber);
+    };
+    // Calcul de la date cible au format ISO (local)
+    const selectedDateISO = getWorkdayFromOffset(props.startDate, selectedDay);
+    console.log(planning[selectedDateISO]);
     return (
         <View style={styles.container}>
             <View style={styles.daySelector}>
@@ -37,33 +37,52 @@ export default function PlanningList(props: {
                 <DayBox
                     dayNumber={0}
                     selectedDay={selectedDay}
-                    onSelectDay={setSelectedDay}
+                    onSelectDay={handleDayChange}
                     startDate={props.startDate}
                 ></DayBox>
                 <DayBox
                     dayNumber={1}
                     selectedDay={selectedDay}
-                    onSelectDay={setSelectedDay}
+                    onSelectDay={handleDayChange}
                     startDate={props.startDate}
                 ></DayBox>
                 <DayBox
                     dayNumber={2}
                     selectedDay={selectedDay}
-                    onSelectDay={setSelectedDay}
+                    onSelectDay={handleDayChange}
                     startDate={props.startDate}
                 ></DayBox>
                 <DayBox
                     dayNumber={3}
                     selectedDay={selectedDay}
-                    onSelectDay={setSelectedDay}
+                    onSelectDay={handleDayChange}
                     startDate={props.startDate}
                 ></DayBox>
                 <DayBox
                     dayNumber={4}
                     selectedDay={selectedDay}
-                    onSelectDay={setSelectedDay}
+                    onSelectDay={handleDayChange}
                     startDate={props.startDate}
                 ></DayBox>
+            </View>
+            <View style={{ maxHeight: "90%" }}>
+                <ScrollView
+                    contentContainerStyle={styles.eventsScroll}
+                    showsVerticalScrollIndicator={false}
+                >
+                    {/* On affiche les événements du jour sélectionné */}
+                    {props.isPlanningLoaded &&
+                        planning[selectedDateISO]?.map((event, index) => (
+                            <ListEvent key={index} event={event} />
+                        ))}
+                    {!props.isPlanningLoaded && (
+                        <ActivityIndicator
+                            animating={true}
+                            color={Colors.primaryColor}
+                            size={50}
+                        />
+                    )}
+                </ScrollView>
             </View>
         </View>
     );
@@ -75,22 +94,16 @@ function DayBox(props: {
     selectedDay: number;
     onSelectDay: (dayNumber: number) => void;
 }) {
-    // On ajoute le nombre de jours pour obtenir la date cible
-    let targetDate = new Date(props.startDate);
-    let daysToAdd = props.dayNumber;
-
-    // Sauter le weekend
-    while (daysToAdd > 0) {
-        targetDate.setDate(targetDate.getDate() + 1);
-        // Si le jour est samedi (6) ou dimanche (0), on continue d'ajouter des jours
-        if (targetDate.getDay() !== 0 && targetDate.getDay() !== 6) {
-            daysToAdd--;
-        }
-    }
+    // Calcul de la date cible au format ISO (local)
+    const targetDateISO = getWorkdayFromOffset(
+        props.startDate,
+        props.dayNumber
+    );
+    const targetDate = new Date(targetDateISO); // Conversion de la chaîne ISO en objet Date
 
     const dayNames = ["Lun", "Mar", "Mer", "Jeu", "Ven"];
-    //Nom du jour et date au format jour/mois
-    const dayName = dayNames[targetDate.getDay() - 1];
+    // Extraction du nom et de la date (jour/mois)
+    const dayName = dayNames[targetDate.getDay() - 1]; // Le tableau commence à lundi
     const dayDate = `${targetDate.getDate().toString().padStart(2, "0")}/${(
         targetDate.getMonth() + 1
     )
@@ -100,7 +113,7 @@ function DayBox(props: {
     const isSelected = props.dayNumber === props.selectedDay;
 
     return (
-        <Pressable
+        <AnimatedPressable
             // On change le style du jour sélectionné
             style={[
                 styles.dayBox,
@@ -114,7 +127,7 @@ function DayBox(props: {
             <Text style={[styles.dayDate, isSelected && { color: "white" }]}>
                 {dayDate}
             </Text>
-        </Pressable>
+        </AnimatedPressable>
     );
 }
 
@@ -143,7 +156,15 @@ export function ListEvent(props: { event: PlanningEvent }) {
     return (
         <View style={eventStyles.container}>
             {/* Heure de début et de fin */}
-            <View style={eventStyles.timeView}></View>
+            <View style={eventStyles.timeView}>
+                <Text style={eventStyles.timeText}>
+                    {formatDateToLocalTime(props.event.start)}
+                </Text>
+                <View style={eventStyles.timeSeparator}></View>
+                <Text style={eventStyles.timeText}>
+                    {formatDateToLocalTime(props.event.end)}
+                </Text>
+            </View>
             {/* Contenu de l'événement */}
             <View style={eventStyles.contentView}>
                 <View style={eventStyles.contentInfo}>
@@ -208,6 +229,17 @@ const styles = StyleSheet.create({
     dayDate: {
         fontSize: 13,
     },
+    // Vue des événements
+    eventsScroll: {
+        width: "100%",
+        display: "flex",
+        flexGrow: 0,
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        paddingBottom: 200,
+        marginTop: 30,
+    },
 });
 
 const eventStyles = StyleSheet.create({
@@ -265,7 +297,8 @@ const eventStyles = StyleSheet.create({
         width: "85%",
     },
     subject: {
-        fontSize: 20,
+        fontSize: 18,
+        width: "100%",
         fontWeight: "bold",
     },
     instructors: {

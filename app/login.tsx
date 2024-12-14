@@ -2,11 +2,10 @@ import {
     ActivityIndicator,
     Keyboard,
     Platform,
-    Pressable,
     StyleSheet,
     View,
 } from "react-native";
-import { Button } from "@/components/Buttons";
+import { AnimatedPressable, Button } from "@/components/Buttons";
 import { Input, Checkbox } from "@/components/Inputs";
 import { Bold, Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
@@ -160,7 +159,7 @@ export default function LoginScreen() {
             ]}
         >
             {/* Bouton pour choisir le campus */}
-            <Pressable
+            <AnimatedPressable
                 style={styles.campusSelect}
                 onPress={() => setCampusMenuVisible(true)}
             >
@@ -172,7 +171,7 @@ export default function LoginScreen() {
                     name="chevron-down"
                     size={24}
                 />
-            </Pressable>
+            </AnimatedPressable>
             <Dropdown
                 visible={campusMenuVisible}
                 setVisible={setCampusMenuVisible}
