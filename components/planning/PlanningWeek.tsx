@@ -2,11 +2,7 @@ import { PlanningEvent } from "@/webAurion/utils/types";
 import { StyleSheet, View } from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
-import {
-    getSubjectColor,
-    groupEventsByDay,
-    updatePlanningForListMode,
-} from "@/utils/planning";
+import { getSubjectColor } from "@/utils/planning";
 
 export default function PlanningWeek(props: {
     events: PlanningEvent[];

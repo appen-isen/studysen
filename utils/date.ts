@@ -1,35 +1,28 @@
-// On récupère le jour de la semaine
-export function getNextWorkday(date: Date): Date {
-    // Clone de la date pour ne pas modifier l'original
-    let d = new Date(date);
-
-    // Si c'est samedi (6), avancer de 2 jours
-    // Si c'est dimanche (0), avancer d'un jour
-    if (d.getDay() === 6) {
+// On récupère la date de début de semaine (lundi)
+export function getCloserMonday(date: Date): Date {
+    const d = new Date(date);
+    // Obtenir le jour actuel (0 = dimanche, 1 = lundi, ..., 6 = samedi)
+    let day = d.getDay();
+    // Ajustement si aujourd'hui est samedi
+    if (day === 6) {
+        // Passer au lundi suivant
         d.setDate(d.getDate() + 2);
-    } else if (d.getDay() === 0) {
-        d.setDate(d.getDate() + 1);
+        day = d.getDay(); // Recalculer le jour après avoir avancé
     }
-
-    // Réinitialiser l'heure à 00:00:00
-    d.setHours(0, 0, 0, 0);
-
-    return d;
+    // Calculer la différence pour atteindre lundi
+    const daysToMonday = day === 0 ? 1 : 1 - day;
+    // Créer la date de début (lundi 6h00)
+    const startDate = new Date(d);
+    startDate.setDate(d.getDate() + daysToMonday); // Passer au lundi de la semaine correspondante
+    startDate.setHours(6, 0, 0, 0); // Fixer à 6h00
+    return startDate;
 }
 
 // On récupère la date de fin de la semaine (semaine de travail = 5 jours)
 export function getEndDate(startDate: Date) {
-    const d = new Date(startDate);
-    let workdays = 0;
-    while (workdays < 4) {
-        // On ajoute un jour
-        d.setDate(d.getDate() + 1);
-        if (d.getDay() !== 0 && d.getDay() !== 6) {
-            // On compte les jours de travail
-            workdays++;
-        }
-    }
-    return d;
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 4); // Ajouter 4 jours
+    return endDate;
 }
 // Format de la date
 export function formatDate(date: Date) {
@@ -41,23 +34,9 @@ export function formatDate(date: Date) {
 
 // Fonction pour calculer la date cible à partir du jour sélectionné (offset)
 export function getWorkdayFromOffset(startDate: Date, offset: number): string {
-    let targetDate = new Date(startDate);
-    targetDate.setHours(0, 0, 0, 0); // Réinitialiser à minuit en heure locale
-    let daysToAdd = offset;
-
-    while (daysToAdd > 0) {
-        targetDate.setDate(targetDate.getDate() + 1);
-        if (targetDate.getDay() !== 0 && targetDate.getDay() !== 6) {
-            daysToAdd--;
-        }
-    }
-
-    // Retourner une chaîne ISO construite manuellement en local (sans UTC 'Z')
-    const year = targetDate.getFullYear();
-    const month = String(targetDate.getMonth() + 1).padStart(2, "0");
-    const day = String(targetDate.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`; // Format YYYY-MM-DD, local
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + offset);
+    return date.toISOString().split("T")[0];
 }
 
 // Fonction pour formater une date ISO en heure locale (format 24h)
@@ -67,11 +46,11 @@ export function formatDateToLocalTime(dateISO: string): string {
         hour: "2-digit", // Format des heures avec 2 chiffres
         minute: "2-digit", // Format des minutes avec 2 chiffres
         hour12: false, // Utiliser un format 24 heures
+        timeZone: "Europe/Paris", // Forcer le fuseau horaire (UTC+1)
     };
 
     // Crée un formatteur pour la date locale française (France)
     const formatter = new Intl.DateTimeFormat("fr-FR", options);
-
     // Formate la date en heure et minutes
     return formatter.format(date);
 }
@@ -82,4 +61,10 @@ export function weekFromNow(startDate: Date, targetDate: Date): number {
     const diffInMs = targetDate.getTime() - start.getTime();
     const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
     return Math.ceil(diffInDays / 7);
+}
+
+// Fonction pour obtenir le numéro du jour dans la semaine de travail (0 = lundi, 4 = vendredi)
+export function getDayNumberInWeek(date: Date): number {
+    const dayOfWeek = date.getDay();
+    return dayOfWeek - 1;
 }

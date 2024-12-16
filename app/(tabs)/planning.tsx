@@ -9,7 +9,7 @@ import useSessionStore from "@/store/sessionStore";
 import { PlanningEvent } from "@/webAurion/utils/types";
 import {
     formatDate,
-    getNextWorkday,
+    getCloserMonday,
     getEndDate,
     weekFromNow,
 } from "@/utils/date";
@@ -23,7 +23,7 @@ export default function PlanningScreen() {
     const [planning, setPlanning] = useState<PlanningEvent[]>([]);
     const [isPlanningLoaded, setPlanningLoaded] = useState(false);
     const [currentStartDate, setCurrentStartDate] = useState(
-        getNextWorkday(new Date())
+        getCloserMonday(new Date())
     );
 
     // Fonction pour mettre à jour l'emploi du temps
@@ -80,43 +80,30 @@ export default function PlanningScreen() {
     const handleWeekChange = (previous: boolean) => {
         //On change la date de début de la semaine
         setCurrentStartDate((prevStart) => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); // Date de début de journée
-
-            // Assurer que "today" est un jour de travail (prochain lundi si nécessaire)
-            const todayDay = today.getDay();
-            if (todayDay === 0) {
-                today.setDate(today.getDate() + 1); // Dimanche -> Lundi
-            } else if (todayDay === 6) {
-                today.setDate(today.getDate() + 2); // Samedi -> Lundi
-            }
+            const closerMonday = getCloserMonday(new Date());
+            closerMonday.setHours(0, 0, 0, 0); // Date de début de journée
 
             const newDate = new Date(prevStart);
             const offset = previous ? -7 : 7; // On avance ou recule d'une semaine
             newDate.setDate(newDate.getDate() + offset);
 
-            // Ajuster au plus proche lundi suivant
-            const day = newDate.getDay();
-            const adjustment = day === 0 ? 1 : day === 6 ? 2 : 0; // Dimanche (1) ou Samedi (2)
-            newDate.setDate(newDate.getDate() + adjustment);
-
-            // Si on recule et que la date est antérieure à aujourd'hui, on retourne le prochain jour de travail
-            if (previous && newDate < today) {
-                return today;
+            // Si on recule et que la date est antérieure au lundi le plus proche, on reste sur le lundi le plus proche
+            if (previous && newDate < closerMonday) {
+                return closerMonday;
             }
             // On met à jour l'emploi du temps
-            updatePlanning(weekFromNow(getNextWorkday(new Date()), newDate));
+            updatePlanning(weekFromNow(getCloserMonday(new Date()), newDate));
             return newDate;
         });
     };
 
     const handlePlanningViewChange = (view: "list" | "week") => {
         setPlanningView(view);
-        const currentDate = getNextWorkday(new Date());
+        const currentDate = getCloserMonday(new Date());
         // On reset la date de début de la semaine
         setCurrentStartDate(currentDate);
         // On met à jour l'emploi du temps
-        updatePlanning(weekFromNow(getNextWorkday(new Date()), currentDate));
+        updatePlanning(weekFromNow(getCloserMonday(new Date()), currentDate));
     };
     return (
         <View style={styles.container}>

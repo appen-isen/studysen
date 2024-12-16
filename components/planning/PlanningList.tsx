@@ -16,7 +16,11 @@ import {
     groupEventsByDay,
     updatePlanningForListMode,
 } from "@/utils/planning";
-import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
+import {
+    formatDateToLocalTime,
+    getDayNumberInWeek,
+    getWorkdayFromOffset,
+} from "@/utils/date";
 
 export default function PlanningList(props: {
     events: PlanningEvent[];
@@ -25,7 +29,10 @@ export default function PlanningList(props: {
 }) {
     // On groupe les événements par jour et on change le planning pour fonctionner avec le mode liste
     const planning = groupEventsByDay(updatePlanningForListMode(props.events));
-    const [selectedDay, setSelectedDay] = useState(0);
+    //On initialise le jour sélectionné à la date actuelle
+    const [selectedDay, setSelectedDay] = useState(
+        getDayNumberInWeek(new Date())
+    );
 
     // Fonction pour changer le jour sélectionné
     const handleDayChange = (dayNumber: number) => {
@@ -106,7 +113,7 @@ function DayBox(props: {
 
     const dayNames = ["Lun", "Mar", "Mer", "Jeu", "Ven"];
     // Extraction du nom et de la date (jour/mois)
-    const dayName = dayNames[targetDate.getDay() - 1]; // Le tableau commence à lundi
+    const dayName = dayNames[props.dayNumber];
     const dayDate = `${targetDate.getDate().toString().padStart(2, "0")}/${(
         targetDate.getMonth() + 1
     )
@@ -183,7 +190,7 @@ export function ListEvent(props: { event: PlanningEvent }) {
                 <View style={eventStyles.contentInfo}>
                     {/* Matière */}
                     <Text style={eventStyles.subject}>
-                        {props.event.subject}
+                        {props.event.title || props.event.subject}
                         {props.event.className !== "COURS" &&
                             ` - ${props.event.className}`}
                     </Text>
