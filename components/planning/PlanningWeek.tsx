@@ -1,14 +1,21 @@
 import { PlanningEvent } from "@/webAurion/utils/types";
-import { StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
-import { getSubjectColor } from "@/utils/planning";
+import {
+    getSubjectColor,
+    groupEventsByDay,
+    updatePlanningForListMode,
+} from "@/utils/planning";
+import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 
 export default function PlanningWeek(props: {
     events: PlanningEvent[];
     startDate: Date;
     isPlanningLoaded: boolean;
 }) {
+    const planning = groupEventsByDay(updatePlanningForListMode(props.events));
+
     return (
         <View style={styles.container}>
             {/* Jours de la semaine */}
@@ -51,36 +58,66 @@ export default function PlanningWeek(props: {
                     <Text style={styles.hourText}>19h</Text>
                 </View>
                 {/* Tableau des événements */}
-                <View style={styles.table}>
-                    <View style={styles.dayCol}>
-                        <WeekEvent event={props.events[0]} />
-                        <WeekEvent event={props.events[0]} />
-                        <WeekEvent event={props.events[0]} />
-                        <WeekEvent event={props.events[0]} />
+                {/* On affiche les événements du jour sélectionné */}
+                {props.isPlanningLoaded && (
+                    <View style={styles.table}>
+                        <View style={styles.dayCol}>
+                            {planning[
+                                getWorkdayFromOffset(props.startDate, 0)
+                            ]?.map((event, index) => {
+                                return <WeekEvent key={index} event={event} />;
+                            })}
+                        </View>
+                        <View style={styles.dayCol}>
+                            {planning[
+                                getWorkdayFromOffset(props.startDate, 1)
+                            ]?.map((event, index) => {
+                                return <WeekEvent key={index} event={event} />;
+                            })}
+                        </View>
+                        <View style={styles.dayCol}>
+                            {planning[
+                                getWorkdayFromOffset(props.startDate, 2)
+                            ]?.map((event, index) => {
+                                return <WeekEvent key={index} event={event} />;
+                            })}
+                        </View>
+                        <View style={styles.dayCol}>
+                            {planning[
+                                getWorkdayFromOffset(props.startDate, 3)
+                            ]?.map((event, index) => {
+                                return <WeekEvent key={index} event={event} />;
+                            })}
+                        </View>
+                        <View style={styles.dayCol}>
+                            {planning[
+                                getWorkdayFromOffset(props.startDate, 4)
+                            ]?.map((event, index) => {
+                                return <WeekEvent key={index} event={event} />;
+                            })}
+                        </View>
                     </View>
-                    <View style={styles.dayCol}></View>
-                    <View style={styles.dayCol}></View>
-                    <View style={styles.dayCol}></View>
-                    <View style={styles.dayCol}></View>
-                </View>
+                )}
+                {!props.isPlanningLoaded && (
+                    <ActivityIndicator
+                        animating={true}
+                        color={Colors.primaryColor}
+                        size={50}
+                    />
+                )}
             </View>
         </View>
     );
 }
 
-function Col(props: { numRows: number; children: React.ReactNode }) {
-    return <View style={styles[`${props.numRows}col`]}>{props.children}</View>;
-}
-
-function Row(props: { children: React.ReactNode }) {
-    return <View style={styles.row}>{props.children}</View>;
-}
-
 export function WeekEvent(props: { event: PlanningEvent }) {
+    const startHour = formatDateToLocalTime(props.event.start);
+    const endHour = formatDateToLocalTime(props.event.end);
+
     return (
-        <View style={eventStyles.container}>
-            <Text style={eventStyles.hour}>8h00</Text>
-            <Text style={eventStyles.hour}>10h00</Text>
+        <View style={[eventStyles.container]}>
+            <Text style={eventStyles.hour}>{startHour}</Text>
+            <Text style={eventStyles.hour}>{endHour}</Text>
             <View
                 style={[
                     eventStyles.separator,
@@ -158,8 +195,8 @@ const styles: { [key: string]: any } = StyleSheet.create({
     },
     dayCol: {
         flex: 1,
-        flexDirection: "column",
-        margin: 1,
+        borderWidth: 1,
+        borderColor: "#ddd",
     },
     dayRow: {
         backgroundColor: "white",
@@ -174,8 +211,9 @@ const eventStyles = StyleSheet.create({
         display: "flex",
         justifyContent: "flex-start",
         alignItems: "center",
-        height: 100,
         borderRadius: 10,
+        width: "100%",
+        height: 100,
         backgroundColor: "white",
         boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
         marginVertical: 3,

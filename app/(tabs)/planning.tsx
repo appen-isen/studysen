@@ -25,6 +25,8 @@ export default function PlanningScreen() {
     const [currentStartDate, setCurrentStartDate] = useState(
         getCloserMonday(new Date())
     );
+    //Permet de reset le jour actuel dans le PlanningList lorsque l'on clique sur le bouton pour changer l'affichage
+    const [resetDayFlag, setResetDayFlag] = useState(false);
 
     // Fonction pour mettre à jour l'emploi du temps
     const updatePlanning = (weekOffset: number = 0) => {
@@ -104,6 +106,8 @@ export default function PlanningScreen() {
         setCurrentStartDate(currentDate);
         // On met à jour l'emploi du temps
         updatePlanning(weekFromNow(getCloserMonday(new Date()), currentDate));
+        // On reset le jour actuel dans le PlanningList
+        setResetDayFlag((prevFlag) => !prevFlag);
     };
     return (
         <View style={styles.container}>
@@ -183,6 +187,7 @@ export default function PlanningScreen() {
                     events={planning}
                     startDate={currentStartDate}
                     isPlanningLoaded={isPlanningLoaded}
+                    resetDayFlag={resetDayFlag}
                 />
             )}
             {planningView === "week" && (

@@ -26,6 +26,7 @@ export default function PlanningList(props: {
     events: PlanningEvent[];
     startDate: Date;
     isPlanningLoaded: boolean;
+    resetDayFlag: boolean;
 }) {
     // On groupe les événements par jour et on change le planning pour fonctionner avec le mode liste
     const planning = groupEventsByDay(updatePlanningForListMode(props.events));
@@ -40,6 +41,10 @@ export default function PlanningList(props: {
     };
     // Calcul de la date cible au format ISO (local)
     const selectedDateISO = getWorkdayFromOffset(props.startDate, selectedDay);
+
+    useEffect(() => {
+        setSelectedDay(getDayNumberInWeek(new Date()));
+    }, [props.resetDayFlag]);
     return (
         <View style={styles.container}>
             <View style={styles.daySelector}>
