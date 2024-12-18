@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
 import {
+    fillDayWithBlankEvents,
     getSubjectColor,
     groupEventsByDay,
     updatePlanningForListMode,
@@ -14,7 +15,20 @@ export default function PlanningWeek(props: {
     startDate: Date;
     isPlanningLoaded: boolean;
 }) {
-    const planning = groupEventsByDay(updatePlanningForListMode(props.events));
+    const planning = fillDayWithBlankEvents(
+        groupEventsByDay(updatePlanningForListMode(props.events))
+    );
+
+    // On affiche un chargement si l'emploi du temps n'est pas encore chargé
+    if (!props.isPlanningLoaded) {
+        return (
+            <ActivityIndicator
+                animating={true}
+                color={Colors.primaryColor}
+                size={50}
+            />
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -56,6 +70,7 @@ export default function PlanningWeek(props: {
                     <Text style={styles.hourText}>17h</Text>
                     <Text style={styles.hourText}>18h</Text>
                     <Text style={styles.hourText}>19h</Text>
+                    <Text style={styles.hourText}>20h</Text>
                 </View>
                 {/* Tableau des événements */}
                 {/* On affiche les événements du jour sélectionné */}
@@ -98,13 +113,6 @@ export default function PlanningWeek(props: {
                         </View>
                     </View>
                 )}
-                {!props.isPlanningLoaded && (
-                    <ActivityIndicator
-                        animating={true}
-                        color={Colors.primaryColor}
-                        size={50}
-                    />
-                )}
             </View>
         </View>
     );
@@ -113,21 +121,50 @@ export default function PlanningWeek(props: {
 export function WeekEvent(props: { event: PlanningEvent }) {
     const startHour = formatDateToLocalTime(props.event.start);
     const endHour = formatDateToLocalTime(props.event.end);
-
-    return (
-        <View style={[eventStyles.container]}>
-            <Text style={eventStyles.hour}>{startHour}</Text>
-            <Text style={eventStyles.hour}>{endHour}</Text>
+    // Calcul de la hauteur de l'événement en fonction de sa durée
+    const durationInHours =
+        (new Date(props.event.end).getTime() -
+            new Date(props.event.start).getTime()) /
+        (1000 * 60 * 60);
+    const eventHeight = durationInHours * 42;
+    //Si l'événement est vide alors on affiche une case vide
+    if (props.event.id === "blank") {
+        return (
             <View
-                style={[
-                    eventStyles.separator,
-                    { backgroundColor: getSubjectColor(props.event.subject) },
-                ]}
+                style={[eventStyles.blankEvent, { height: eventHeight }]}
             ></View>
-            <Text style={eventStyles.subject}>{props.event.subject}</Text>
-            <View style={eventStyles.room}>
-                <Text style={eventStyles.roomText}>{props.event.room}</Text>
+        );
+    }
+    //On n'affiche pas les congés
+    if (props.event.className === "CONGES") {
+        return;
+    }
+    return (
+        <View style={[eventStyles.container, { height: eventHeight }]}>
+            <View style={eventStyles.timeView}>
+                <Text style={eventStyles.hour}>
+                    {startHour} - {endHour}
+                </Text>
+                <View
+                    style={[
+                        eventStyles.separator,
+                        {
+                            backgroundColor: getSubjectColor(
+                                props.event.subject
+                            ),
+                        },
+                    ]}
+                ></View>
             </View>
+            <View>
+                <Text style={eventStyles.subject}>{props.event.subject}</Text>
+            </View>
+            {/* Si la hauteur de l'événement est suffisante alors on affiche la salle */}
+            {eventHeight > 50 && (
+                <View style={eventStyles.room}>
+                    <Text style={eventStyles.roomText}>{props.event.room}</Text>
+                </View>
+            )}
         </View>
     );
 }
@@ -144,9 +181,9 @@ const styles: { [key: string]: any } = StyleSheet.create({
     dayView: {
         display: "flex",
         flexDirection: "row",
-        justifyContent: "flex-end",
-        marginRight: 5,
-        width: "100%",
+        justifyContent: "space-around",
+        alignSelf: "flex-end",
+        width: "90%",
     },
     dayBox: {
         display: "flex",
@@ -179,24 +216,22 @@ const styles: { [key: string]: any } = StyleSheet.create({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "space-between",
-        marginHorizontal: 3,
+        marginHorizontal: 5,
     },
     hourText: {
         fontSize: 18,
         fontWeight: "bold",
-        marginVertical: 6,
+        marginVertical: 9,
     },
     //Tableau des événements
     table: {
         flex: 5, // Nombre de colonnes
         marginHorizontal: "auto",
         flexDirection: "row",
+        marginTop: 20,
     },
     dayCol: {
         flex: 1,
-        borderWidth: 1,
-        borderColor: "#ddd",
     },
     dayRow: {
         backgroundColor: "white",
@@ -209,20 +244,29 @@ const styles: { [key: string]: any } = StyleSheet.create({
 const eventStyles = StyleSheet.create({
     container: {
         display: "flex",
-        justifyContent: "flex-start",
+        justifyContent: "space-between",
         alignItems: "center",
         borderRadius: 10,
-        width: "100%",
-        height: 100,
+        width: "98%",
         backgroundColor: "white",
         boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-        marginVertical: 3,
+    },
+    timeView: {
+        display: "flex",
+        width: "100%",
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 5,
+    },
+    blankEvent: {
+        width: "100%",
+        backgroundColor: "transparent",
     },
     subject: {
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: "bold",
         textAlign: "center",
-        padding: 5,
+        padding: 2,
     },
     separator: {
         width: "90%",
@@ -231,13 +275,15 @@ const eventStyles = StyleSheet.create({
         borderRadius: 10,
     },
     hour: {
-        fontSize: 12,
+        fontSize: 10,
     },
     room: {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         width: "80%",
+        height: 15,
+        marginBottom: 2,
         borderRadius: 10,
         backgroundColor: Colors.primaryColor,
     },
