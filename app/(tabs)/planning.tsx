@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Colors from "@/constants/Colors";
@@ -16,6 +16,7 @@ import {
 import { FontAwesome6 } from "@expo/vector-icons";
 import { AnimatedPressable } from "@/components/Buttons";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
+import EventModal from "@/components/planning/EventModal";
 
 export default function PlanningScreen() {
     const { session } = useSessionStore();
@@ -25,6 +26,9 @@ export default function PlanningScreen() {
     const [currentStartDate, setCurrentStartDate] = useState(
         getCloserMonday(new Date())
     );
+    //Permet de stocker l'événement sélectionné pour l'afficher dans la modal
+    const [selectedEvent, setSelectedEvent] = useState<PlanningEvent | null>();
+    const [eventModalInfoVisible, setEventModalInfoVisible] = useState(false);
     //Permet de reset le jour actuel dans le PlanningList lorsque l'on clique sur le bouton pour changer l'affichage
     const [resetDayFlag, setResetDayFlag] = useState(false);
 
@@ -109,6 +113,7 @@ export default function PlanningScreen() {
         // On reset le jour actuel dans le PlanningList
         setResetDayFlag((prevFlag) => !prevFlag);
     };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Empoi du temps</Text>
@@ -188,6 +193,10 @@ export default function PlanningScreen() {
                     startDate={currentStartDate}
                     isPlanningLoaded={isPlanningLoaded}
                     resetDayFlag={resetDayFlag}
+                    setSelectedEvent={(planningEvent) => {
+                        setSelectedEvent(planningEvent);
+                        setEventModalInfoVisible(true);
+                    }}
                 />
             )}
             {planningView === "week" && (
@@ -195,7 +204,16 @@ export default function PlanningScreen() {
                     events={planning}
                     startDate={currentStartDate}
                     isPlanningLoaded={isPlanningLoaded}
+                    setSelectedEvent={() => {}}
                 />
+            )}
+            {/* Modal pour afficher les informations d'un cours */}
+            {selectedEvent && (
+                <EventModal
+                    event={selectedEvent}
+                    visible={eventModalInfoVisible}
+                    setVisible={setEventModalInfoVisible}
+                ></EventModal>
             )}
         </View>
     );

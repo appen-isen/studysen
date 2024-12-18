@@ -25,10 +25,11 @@ export function getEndDate(startDate: Date) {
     return endDate;
 }
 // Format de la date
-export function formatDate(date: Date) {
+export function formatDate(date: Date, includeYear = false) {
     return date.toLocaleDateString("fr-FR", {
         day: "2-digit",
         month: "2-digit",
+        year: includeYear ? "2-digit" : undefined,
     });
 }
 

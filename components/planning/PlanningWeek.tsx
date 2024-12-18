@@ -14,6 +14,7 @@ export default function PlanningWeek(props: {
     events: PlanningEvent[];
     startDate: Date;
     isPlanningLoaded: boolean;
+    setSelectedEvent: (event: PlanningEvent) => void;
 }) {
     const planning = fillDayWithBlankEvents(
         groupEventsByDay(updatePlanningForListMode(props.events))
@@ -57,25 +58,27 @@ export default function PlanningWeek(props: {
             </View>
             <View style={styles.weekView}>
                 {/* Les heures */}
-                <View style={styles.hoursView}>
-                    <Text style={styles.hourText}>8h</Text>
-                    <Text style={styles.hourText}>9h</Text>
-                    <Text style={styles.hourText}>10h</Text>
-                    <Text style={styles.hourText}>11h</Text>
-                    <Text style={styles.hourText}>12h</Text>
-                    <Text style={styles.hourText}>13h</Text>
-                    <Text style={styles.hourText}>14h</Text>
-                    <Text style={styles.hourText}>15h</Text>
-                    <Text style={styles.hourText}>16h</Text>
-                    <Text style={styles.hourText}>17h</Text>
-                    <Text style={styles.hourText}>18h</Text>
-                    <Text style={styles.hourText}>19h</Text>
-                    <Text style={styles.hourText}>20h</Text>
-                </View>
+
                 {/* Tableau des événements */}
                 {/* On affiche les événements du jour sélectionné */}
                 {props.isPlanningLoaded && (
                     <View style={styles.table}>
+                        <View style={styles.hoursView}>
+                            <Text style={styles.hourText}>8h</Text>
+                            <Text style={styles.hourText}>9h</Text>
+                            <Text style={styles.hourText}>10h</Text>
+                            <Text style={styles.hourText}>11h</Text>
+                            <Text style={styles.hourText}>12h</Text>
+                            <Text style={styles.hourText}>13h</Text>
+                            <Text style={styles.hourText}>14h</Text>
+                            <Text style={styles.hourText}>15h</Text>
+                            <Text style={styles.hourText}>16h</Text>
+                            <Text style={styles.hourText}>17h</Text>
+                            <Text style={styles.hourText}>18h</Text>
+                            <Text style={styles.hourText}>19h</Text>
+
+                            <Text style={styles.hourText}>20h</Text>
+                        </View>
                         <View style={styles.dayCol}>
                             {planning[
                                 getWorkdayFromOffset(props.startDate, 0)
@@ -117,7 +120,7 @@ export default function PlanningWeek(props: {
         </View>
     );
 }
-
+const PIXEL_PER_HOUR = 36;
 export function WeekEvent(props: { event: PlanningEvent }) {
     const startHour = formatDateToLocalTime(props.event.start);
     const endHour = formatDateToLocalTime(props.event.end);
@@ -126,7 +129,7 @@ export function WeekEvent(props: { event: PlanningEvent }) {
         (new Date(props.event.end).getTime() -
             new Date(props.event.start).getTime()) /
         (1000 * 60 * 60);
-    const eventHeight = durationInHours * 42;
+    const eventHeight = durationInHours * PIXEL_PER_HOUR;
     //Si l'événement est vide alors on affiche une case vide
     if (props.event.id === "blank") {
         return (
@@ -160,7 +163,7 @@ export function WeekEvent(props: { event: PlanningEvent }) {
                 <Text style={eventStyles.subject}>{props.event.subject}</Text>
             </View>
             {/* Si la hauteur de l'événement est suffisante alors on affiche la salle */}
-            {eventHeight > 50 && (
+            {eventHeight > PIXEL_PER_HOUR * 1.5 && (
                 <View style={eventStyles.room}>
                     <Text style={eventStyles.roomText}>{props.event.room}</Text>
                 </View>
@@ -169,7 +172,7 @@ export function WeekEvent(props: { event: PlanningEvent }) {
     );
 }
 
-const styles: { [key: string]: any } = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         display: "flex",
         flexDirection: "column",
@@ -213,19 +216,20 @@ const styles: { [key: string]: any } = StyleSheet.create({
     },
     //Partie des heures
     hoursView: {
+        flex: 1,
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        marginHorizontal: 5,
+        height: 100 * 6,
+        maxWidth: 40,
     },
     hourText: {
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: "bold",
-        marginVertical: 9,
+        marginVertical: 7,
     },
     //Tableau des événements
     table: {
-        flex: 5, // Nombre de colonnes
+        flex: 6, // Nombre de colonnes
         marginHorizontal: "auto",
         flexDirection: "row",
         marginTop: 20,
@@ -263,7 +267,7 @@ const eventStyles = StyleSheet.create({
         backgroundColor: "transparent",
     },
     subject: {
-        fontSize: 10,
+        fontSize: 9,
         fontWeight: "bold",
         textAlign: "center",
         padding: 2,
@@ -275,7 +279,7 @@ const eventStyles = StyleSheet.create({
         borderRadius: 10,
     },
     hour: {
-        fontSize: 10,
+        fontSize: 8,
     },
     room: {
         display: "flex",

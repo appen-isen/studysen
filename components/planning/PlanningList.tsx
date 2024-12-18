@@ -1,12 +1,6 @@
 import Colors from "@/constants/Colors";
 import { PlanningEvent } from "@/webAurion/utils/types";
-import {
-    ActivityIndicator,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    View,
-} from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useEffect, useState } from "react";
@@ -27,6 +21,7 @@ export default function PlanningList(props: {
     startDate: Date;
     isPlanningLoaded: boolean;
     resetDayFlag: boolean;
+    setSelectedEvent: (event: PlanningEvent) => void;
 }) {
     // On groupe les événements par jour et on change le planning pour fonctionner avec le mode liste
     const planning = groupEventsByDay(updatePlanningForListMode(props.events));
@@ -45,6 +40,7 @@ export default function PlanningList(props: {
     useEffect(() => {
         setSelectedDay(getDayNumberInWeek(new Date()));
     }, [props.resetDayFlag]);
+
     return (
         <View style={styles.container}>
             <View style={styles.daySelector}>
@@ -88,7 +84,11 @@ export default function PlanningList(props: {
                     {/* On affiche les événements du jour sélectionné */}
                     {props.isPlanningLoaded &&
                         planning[selectedDateISO]?.map((event, index) => (
-                            <ListEvent key={index} event={event} />
+                            <ListEvent
+                                key={index}
+                                event={event}
+                                onPress={props.setSelectedEvent}
+                            />
                         ))}
                     {!props.isPlanningLoaded && (
                         <ActivityIndicator
@@ -146,7 +146,10 @@ function DayBox(props: {
     );
 }
 
-export function ListEvent(props: { event: PlanningEvent }) {
+export function ListEvent(props: {
+    event: PlanningEvent;
+    onPress?: (event: PlanningEvent) => void;
+}) {
     const [timeText, setTimeText] = useState("");
 
     useEffect(() => {
@@ -176,7 +179,11 @@ export function ListEvent(props: { event: PlanningEvent }) {
     }, [props.event]);
 
     return (
-        <View style={eventStyles.container}>
+        <AnimatedPressable
+            style={eventStyles.container}
+            onPress={() => props.onPress && props.onPress(props.event)}
+            scale={0.95}
+        >
             {/* Heure de début et de fin */}
             <View style={eventStyles.timeView}>
                 <Text style={eventStyles.timeText}>
@@ -221,14 +228,16 @@ export function ListEvent(props: { event: PlanningEvent }) {
                     </View>
                 </View>
                 {/* Plus d'infos sur l'événement */}
-                <Pressable>
+                <AnimatedPressable
+                    onPress={() => props.onPress && props.onPress(props.event)}
+                >
                     <FontAwesome6
                         name="chevron-right"
                         style={eventStyles.contentInfoIcon}
                     />
-                </Pressable>
+                </AnimatedPressable>
             </View>
-        </View>
+        </AnimatedPressable>
     );
 }
 
