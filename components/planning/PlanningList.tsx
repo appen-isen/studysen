@@ -148,6 +148,7 @@ function DayBox(props: {
 
 export function ListEvent(props: { event: PlanningEvent }) {
     const [timeText, setTimeText] = useState("");
+
     useEffect(() => {
         // On affiche En cours si l'événement est en cours ou dans x minutes < 60 minutes si l'événement est à venir
         const now = new Date();
@@ -164,7 +165,13 @@ export function ListEvent(props: { event: PlanningEvent }) {
             // Si l'événement est dans moins d'une heure, on affiche "Dans x minutes"
             if (diffMinutes < 60) {
                 setTimeText(` ● Dans ${diffMinutes} minutes`);
+            } else {
+                // Sinon, on affiche rien
+                setTimeText("");
             }
+        } else {
+            // Sinon, on affiche rien
+            setTimeText("");
         }
     }, [props.event]);
 
