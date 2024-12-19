@@ -9,6 +9,7 @@ import {
     updatePlanningForListMode,
 } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
+import { AnimatedPressable } from "../Buttons";
 
 export default function PlanningWeek(props: {
     events: PlanningEvent[];
@@ -76,42 +77,71 @@ export default function PlanningWeek(props: {
                             <Text style={styles.hourText}>17h</Text>
                             <Text style={styles.hourText}>18h</Text>
                             <Text style={styles.hourText}>19h</Text>
-
-                            <Text style={styles.hourText}>20h</Text>
                         </View>
+                        {/* On affiche les événements de chaque jour dynamiquement */}
                         <View style={styles.dayCol}>
                             {planning[
                                 getWorkdayFromOffset(props.startDate, 0)
                             ]?.map((event, index) => {
-                                return <WeekEvent key={index} event={event} />;
+                                return (
+                                    <WeekEvent
+                                        key={index}
+                                        event={event}
+                                        onPress={props.setSelectedEvent}
+                                    />
+                                );
                             })}
                         </View>
                         <View style={styles.dayCol}>
                             {planning[
                                 getWorkdayFromOffset(props.startDate, 1)
                             ]?.map((event, index) => {
-                                return <WeekEvent key={index} event={event} />;
+                                return (
+                                    <WeekEvent
+                                        key={index}
+                                        event={event}
+                                        onPress={props.setSelectedEvent}
+                                    />
+                                );
                             })}
                         </View>
                         <View style={styles.dayCol}>
                             {planning[
                                 getWorkdayFromOffset(props.startDate, 2)
                             ]?.map((event, index) => {
-                                return <WeekEvent key={index} event={event} />;
+                                return (
+                                    <WeekEvent
+                                        key={index}
+                                        event={event}
+                                        onPress={props.setSelectedEvent}
+                                    />
+                                );
                             })}
                         </View>
                         <View style={styles.dayCol}>
                             {planning[
                                 getWorkdayFromOffset(props.startDate, 3)
                             ]?.map((event, index) => {
-                                return <WeekEvent key={index} event={event} />;
+                                return (
+                                    <WeekEvent
+                                        key={index}
+                                        event={event}
+                                        onPress={props.setSelectedEvent}
+                                    />
+                                );
                             })}
                         </View>
                         <View style={styles.dayCol}>
                             {planning[
                                 getWorkdayFromOffset(props.startDate, 4)
                             ]?.map((event, index) => {
-                                return <WeekEvent key={index} event={event} />;
+                                return (
+                                    <WeekEvent
+                                        key={index}
+                                        event={event}
+                                        onPress={props.setSelectedEvent}
+                                    />
+                                );
                             })}
                         </View>
                     </View>
@@ -120,8 +150,11 @@ export default function PlanningWeek(props: {
         </View>
     );
 }
-const PIXEL_PER_HOUR = 36;
-export function WeekEvent(props: { event: PlanningEvent }) {
+const PIXEL_PER_HOUR = 38;
+export function WeekEvent(props: {
+    event: PlanningEvent;
+    onPress?: (event: PlanningEvent) => void;
+}) {
     const startHour = formatDateToLocalTime(props.event.start);
     const endHour = formatDateToLocalTime(props.event.end);
     // Calcul de la hauteur de l'événement en fonction de sa durée
@@ -143,7 +176,11 @@ export function WeekEvent(props: { event: PlanningEvent }) {
         return;
     }
     return (
-        <View style={[eventStyles.container, { height: eventHeight }]}>
+        <AnimatedPressable
+            style={[eventStyles.container, { height: eventHeight }]}
+            scale={0.95}
+            onPress={() => props.onPress && props.onPress(props.event)}
+        >
             <View style={eventStyles.timeView}>
                 <Text style={eventStyles.hour}>
                     {startHour} - {endHour}
@@ -168,7 +205,7 @@ export function WeekEvent(props: { event: PlanningEvent }) {
                     <Text style={eventStyles.roomText}>{props.event.room}</Text>
                 </View>
             )}
-        </View>
+        </AnimatedPressable>
     );
 }
 
@@ -213,19 +250,19 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         width: "100%",
+        height: PIXEL_PER_HOUR * 2 * 6,
     },
     //Partie des heures
     hoursView: {
         flex: 1,
         display: "flex",
         alignItems: "center",
-        height: 100 * 6,
+        justifyContent: "space-between",
         maxWidth: 40,
     },
     hourText: {
         fontSize: 15,
         fontWeight: "bold",
-        marginVertical: 7,
     },
     //Tableau des événements
     table: {
@@ -236,6 +273,7 @@ const styles = StyleSheet.create({
     },
     dayCol: {
         flex: 1,
+        borderColor: "black",
     },
     dayRow: {
         backgroundColor: "white",
@@ -253,7 +291,7 @@ const eventStyles = StyleSheet.create({
         borderRadius: 10,
         width: "98%",
         backgroundColor: "white",
-        boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.15)",
     },
     timeView: {
         display: "flex",
@@ -267,10 +305,10 @@ const eventStyles = StyleSheet.create({
         backgroundColor: "transparent",
     },
     subject: {
-        fontSize: 9,
+        fontSize: 7,
         fontWeight: "bold",
         textAlign: "center",
-        padding: 2,
+        padding: 1,
     },
     separator: {
         width: "90%",
@@ -285,8 +323,8 @@ const eventStyles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        width: "80%",
-        height: 15,
+        width: "70%",
+        height: 13,
         marginBottom: 2,
         borderRadius: 10,
         backgroundColor: Colors.primaryColor,
@@ -295,6 +333,6 @@ const eventStyles = StyleSheet.create({
         color: "white",
         textAlign: "center",
         fontWeight: "bold",
-        fontSize: 10,
+        fontSize: 9,
     },
 });

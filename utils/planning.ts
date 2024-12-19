@@ -163,3 +163,11 @@ export function getSubjectColor(subject: string): string {
     }
     return Colors.hexWithOpacity(color, 0.5);
 }
+
+// Fonction pour retrouver un événement dans le planning
+export function findEvent(planning: PlanningEvent[], event: PlanningEvent) {
+    return planning.find(
+        (e) =>
+            e.id === event.id && e.start === event.start && e.end === event.end
+    );
+}

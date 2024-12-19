@@ -17,11 +17,13 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { AnimatedPressable } from "@/components/Buttons";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import EventModal from "@/components/planning/EventModal";
+import { findEvent } from "@/utils/planning";
+import { usePlanningStore } from "@/store/webaurionStore";
 
 export default function PlanningScreen() {
     const { session } = useSessionStore();
+    const { planning, setPlanning } = usePlanningStore();
     const [planningView, setPlanningView] = useState<"list" | "week">("list");
-    const [planning, setPlanning] = useState<PlanningEvent[]>([]);
     const [isPlanningLoaded, setPlanningLoaded] = useState(false);
     const [currentStartDate, setCurrentStartDate] = useState(
         getCloserMonday(new Date())
@@ -60,11 +62,11 @@ export default function PlanningScreen() {
                 .fetchPlanning(weekOffset)
                 .then((currentWeekPlanning: PlanningEvent[]) => {
                     // Concaténer le nouveau planning avec l'existant sans doublons
-                    setPlanning((prevPlanning) => [
-                        ...prevPlanning,
+                    setPlanning([
+                        ...planning,
                         ...currentWeekPlanning.filter(
                             (newEvent) =>
-                                !prevPlanning.some(
+                                !planning.some(
                                     (event) => event.id === newEvent.id
                                 )
                         ),
@@ -193,8 +195,17 @@ export default function PlanningScreen() {
                     startDate={currentStartDate}
                     isPlanningLoaded={isPlanningLoaded}
                     resetDayFlag={resetDayFlag}
+                    //Affiche les informations d'un cours dans une modal
                     setSelectedEvent={(planningEvent) => {
-                        setSelectedEvent(planningEvent);
+                        //Si c'est un congé, on affiche directement les informations
+                        if (planningEvent.className === "CONGES") {
+                            setSelectedEvent(planningEvent);
+                        } else {
+                            //Sinon on affiche les informations complètes de l'événement
+                            setSelectedEvent(
+                                findEvent(planning, planningEvent)
+                            );
+                        }
                         setEventModalInfoVisible(true);
                     }}
                 />
@@ -204,7 +215,11 @@ export default function PlanningScreen() {
                     events={planning}
                     startDate={currentStartDate}
                     isPlanningLoaded={isPlanningLoaded}
-                    setSelectedEvent={() => {}}
+                    //Affiche les informations d'un cours dans une modal
+                    setSelectedEvent={(planningEvent) => {
+                        setSelectedEvent(findEvent(planning, planningEvent));
+                        setEventModalInfoVisible(true);
+                    }}
                 />
             )}
             {/* Modal pour afficher les informations d'un cours */}

@@ -4,6 +4,8 @@ import {
     View,
     TouchableWithoutFeedback,
     StyleSheet,
+    Animated,
+    ScrollView,
 } from "react-native";
 import { Bold, Text } from "../Texts";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
@@ -11,6 +13,7 @@ import { AnimatedPressable } from "../Buttons";
 import Colors from "@/constants/Colors";
 import { getSubjectColor } from "@/utils/planning";
 import { formatDate, formatDateToLocalTime } from "@/utils/date";
+import { useEffect, useRef } from "react";
 
 type EventModalProps = {
     visible: boolean;
@@ -18,26 +21,53 @@ type EventModalProps = {
     event: PlanningEvent;
 };
 export default function EventModal(props: EventModalProps) {
+    const slideAnim = useRef(new Animated.Value(800)).current; // Valeur initiale (hors de l'écran)
+
+    useEffect(() => {
+        if (props.visible) {
+            // Animation pour faire glisser la modal vers le haut
+            Animated.timing(slideAnim, {
+                toValue: 0, // Position finale (visible)
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [props.visible]);
+
+    // Fermeture de la modal
+    const handleDismiss = () => {
+        // Animation pour faire glisser la modal vers le bas
+        Animated.timing(slideAnim, {
+            toValue: 800, // Position initiale (hors de l'écran)
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+        props.setVisible(false);
+    };
+
     return (
         <Modal
             animationType="fade"
             transparent={true}
             visible={props.visible}
-            onRequestClose={() => props.setVisible(false)}
+            onRequestClose={handleDismiss}
         >
             <View style={styles.modalOverlay}>
                 {/* Overlay pour fermer la modal en cliquant à l'extérieur */}
-                <TouchableWithoutFeedback
-                    onPress={() => props.setVisible(false)}
-                >
-                    <View style={styles.modalBackground} />
+                <TouchableWithoutFeedback onPress={handleDismiss}>
+                    <Animated.View style={styles.modalBackground} />
                 </TouchableWithoutFeedback>
 
                 {/* Contenu de la modal */}
-                <View style={styles.modalContent}>
+                <Animated.View
+                    style={[
+                        styles.modalContent,
+                        { transform: [{ translateY: slideAnim }] },
+                    ]}
+                >
                     {/* Bouton pour fermer la modal */}
                     <AnimatedPressable
-                        onPress={() => props.setVisible(false)}
+                        onPress={handleDismiss}
                         style={styles.closeIconPressable}
                     >
                         <FontAwesome6
@@ -45,10 +75,14 @@ export default function EventModal(props: EventModalProps) {
                             style={styles.closeIcon}
                         />
                     </AnimatedPressable>
-
-                    <Text style={styles.title}>{props.event.title}</Text>
+                    {/* Info sur la matière */}
+                    <Text style={styles.title}>
+                        {props.event.title || props.event.subject}
+                    </Text>
                     <Text style={styles.subject}>{props.event.subject}</Text>
+                    {/* Info sur les dates */}
                     <View style={styles.timeBox}>
+                        {/* Date de début */}
                         <View style={styles.dateBox}>
                             <Bold style={styles.dateTitle}>Début</Bold>
                             <Text style={styles.dateText}>
@@ -56,6 +90,7 @@ export default function EventModal(props: EventModalProps) {
                                 {formatDateToLocalTime(props.event.start)}
                             </Text>
                         </View>
+                        {/* Séparateur */}
                         <View
                             style={[
                                 styles.separator,
@@ -66,6 +101,7 @@ export default function EventModal(props: EventModalProps) {
                                 },
                             ]}
                         ></View>
+                        {/* Date de fin */}
                         <View style={styles.dateBox}>
                             <Bold style={styles.dateTitle}>Fin</Bold>
                             <Text style={styles.dateText}>
@@ -74,7 +110,32 @@ export default function EventModal(props: EventModalProps) {
                             </Text>
                         </View>
                     </View>
-                </View>
+                    {/* Salle de classe */}
+                    <View style={styles.roomBox}>
+                        <FontAwesome6
+                            name="location-dot"
+                            style={styles.roomIcon}
+                        />
+                        <Text style={styles.roomText}>
+                            {props.event.room || "Salle inconnue"}
+                        </Text>
+                    </View>
+                    {/* Intervenants */}
+                    <Text style={styles.peopleInfoTitle}>Intervenants</Text>
+                    <ScrollView style={styles.infoScrollView}>
+                        <Text style={styles.peopleInfo}>
+                            {props.event.instructors}
+                        </Text>
+                    </ScrollView>
+
+                    {/* Etudiants */}
+                    <Text style={styles.peopleInfoTitle}>Étudiants</Text>
+                    <ScrollView style={styles.infoScrollView}>
+                        <Text style={styles.peopleInfo}>
+                            {props.event.learners}
+                        </Text>
+                    </ScrollView>
+                </Animated.View>
             </View>
         </Modal>
     );
@@ -137,7 +198,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
         alignSelf: "center",
         width: "100%",
-        marginTop: 20,
+        marginVertical: 40,
     },
     separator: {
         width: 4,
@@ -156,5 +217,49 @@ const styles = StyleSheet.create({
     },
     dateText: {
         fontSize: 18,
+    },
+    //Salle de classe
+    roomBox: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignSelf: "center",
+        alignItems: "center",
+        paddingHorizontal: 20,
+        paddingVertical: 2,
+        backgroundColor: Colors.primaryColor,
+        borderRadius: 20,
+    },
+    roomIcon: {
+        color: "white",
+        fontSize: 20,
+        marginRight: 5,
+    },
+    roomText: {
+        color: "white",
+        fontSize: 20,
+        fontWeight: "bold",
+        textAlign: "center",
+        marginLeft: 5,
+    },
+    //Intervenants et Etudiants
+    peopleInfoTitle: {
+        color: Colors.primaryColor,
+        textDecorationLine: "underline",
+        fontWeight: "bold",
+        fontSize: 20,
+        marginTop: 20,
+    },
+    peopleInfo: {
+        alignSelf: "center",
+        textAlign: "center",
+        width: "90%",
+        fontSize: 18,
+        color: "black",
+        marginTop: 5,
+    },
+    infoScrollView: {
+        width: "100%",
+        height: 30,
     },
 });
