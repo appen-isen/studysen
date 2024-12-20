@@ -224,6 +224,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
         alignSelf: "flex-end",
         width: "90%",
+        marginTop: 10,
     },
     dayBox: {
         display: "flex",

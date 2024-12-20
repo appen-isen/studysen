@@ -23,3 +23,15 @@ export const usePlanningStore = create<PlanningState>()(
         }
     )
 );
+
+// Planning synchronisé avec Internet (pas de persistance pour celui ci)
+type SyncedPlanningState = {
+    syncedPlanning: PlanningEvent[];
+    setSyncedPlanning: (planning: PlanningEvent[]) => void;
+    clearSyncedPlanning: () => void;
+};
+export const useSyncedPlanningStore = create<SyncedPlanningState>((set) => ({
+    syncedPlanning: [],
+    setSyncedPlanning: (syncedPlanning) => set({ syncedPlanning }),
+    clearSyncedPlanning: () => set({ syncedPlanning: [] }),
+}));

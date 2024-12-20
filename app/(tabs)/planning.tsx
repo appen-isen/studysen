@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { AppState, AppStateStatus, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Colors from "@/constants/Colors";
@@ -18,13 +18,21 @@ import { AnimatedPressable } from "@/components/Buttons";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import EventModal from "@/components/planning/EventModal";
 import { findEvent } from "@/utils/planning";
-import { usePlanningStore } from "@/store/webaurionStore";
+import {
+    usePlanningStore,
+    useSyncedPlanningStore,
+} from "@/store/webaurionStore";
+import { SyncMessage } from "@/components/Sync";
 
 export default function PlanningScreen() {
     const { session } = useSessionStore();
     const { planning, setPlanning } = usePlanningStore();
+    const { syncedPlanning, setSyncedPlanning, clearSyncedPlanning } =
+        useSyncedPlanningStore();
     const [planningView, setPlanningView] = useState<"list" | "week">("list");
     const [isPlanningLoaded, setPlanningLoaded] = useState(false);
+    //Permet de savoir si le planning est synchronisé avec Internet ou s'il est en local
+    const [isSyncing, setSyncing] = useState(planning.length == 0);
     const [currentStartDate, setCurrentStartDate] = useState(
         getCloserMonday(new Date())
     );
@@ -33,52 +41,6 @@ export default function PlanningScreen() {
     const [eventModalInfoVisible, setEventModalInfoVisible] = useState(false);
     //Permet de reset le jour actuel dans le PlanningList lorsque l'on clique sur le bouton pour changer l'affichage
     const [resetDayFlag, setResetDayFlag] = useState(false);
-
-    // Fonction pour mettre à jour l'emploi du temps
-    const updatePlanning = (weekOffset: number = 0) => {
-        if (session) {
-            setPlanningLoaded(false);
-
-            // Calcul de la plage de dates pour la semaine
-            const { startTimestamp, endTimestamp } =
-                getScheduleDates(weekOffset);
-
-            // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
-            const isWeekInPlanning = planning.some(
-                (event) =>
-                    new Date(event.start).getTime() >= startTimestamp &&
-                    new Date(event.end).getTime() <= endTimestamp
-            );
-
-            // Pas besoin de retélécharger les événements si la semaine est déjà chargée
-            if (isWeekInPlanning) {
-                setPlanningLoaded(true);
-                return;
-            }
-
-            // Requête pour charger les événements de la semaine
-            session
-                .getPlanningApi()
-                .fetchPlanning(weekOffset)
-                .then((currentWeekPlanning: PlanningEvent[]) => {
-                    // Concaténer le nouveau planning avec l'existant sans doublons
-                    setPlanning([
-                        ...planning,
-                        ...currentWeekPlanning.filter(
-                            (newEvent) =>
-                                !planning.some(
-                                    (event) => event.id === newEvent.id
-                                )
-                        ),
-                    ]);
-                    setPlanningLoaded(true);
-                })
-                .catch((error) => {
-                    console.error(error);
-                    setPlanningLoaded(true);
-                });
-        }
-    };
 
     useEffect(() => {
         updatePlanning();
@@ -116,8 +78,71 @@ export default function PlanningScreen() {
         setResetDayFlag((prevFlag) => !prevFlag);
     };
 
+    // Fonction pour mettre à jour l'emploi du temps
+    const updatePlanning = (weekOffset: number = 0) => {
+        if (session) {
+            setPlanningLoaded(false);
+            // Calcul de la plage de dates pour la semaine
+            const { startTimestamp, endTimestamp } =
+                getScheduleDates(weekOffset);
+
+            // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
+            const isWeekInPlanning = planning.some(
+                (event) =>
+                    new Date(event.start).getTime() >= startTimestamp &&
+                    new Date(event.end).getTime() <= endTimestamp
+            );
+            // On vérifie si les événements sont déjà synchronisés avec Internet
+            const isWeekInSyncedPlanning = syncedPlanning.some(
+                (event) =>
+                    new Date(event.start).getTime() >= startTimestamp &&
+                    new Date(event.end).getTime() <= endTimestamp
+            );
+
+            // Pas besoin de retélécharger les événements si la semaine est déjà chargée
+            if (isWeekInPlanning) {
+                setPlanningLoaded(true);
+            }
+            // Si la semaine n'est pas à jour avec Internet, on lance la synchronisation
+            if (!isWeekInSyncedPlanning) {
+                setSyncing(true);
+            }
+
+            // Requête pour charger les événements de la semaine
+            session
+                .getPlanningApi()
+                .fetchPlanning(weekOffset)
+                .then((currentWeekPlanning: PlanningEvent[]) => {
+                    // Concaténer le nouveau planning avec l'existant sans doublons
+                    setPlanning([
+                        ...planning,
+                        ...currentWeekPlanning.filter(
+                            (newEvent) =>
+                                !planning.some(
+                                    (event) => event.id === newEvent.id
+                                )
+                        ),
+                    ]);
+                    setPlanningLoaded(true);
+                    // Mettre à jour le planning synchronisé
+                    setSyncedPlanning([
+                        ...syncedPlanning,
+                        ...currentWeekPlanning,
+                    ]);
+                    setSyncing(false);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setPlanningLoaded(true);
+                });
+        }
+    };
+
     return (
         <View style={styles.container}>
+            {/* Message de synchronisation */}
+            <SyncMessage isVisible={isSyncing} />
+            {/* Titre de la page */}
             <Text style={styles.title}>Empoi du temps</Text>
             {/* Sélecteur pour l'affichage de l'emploi du temps */}
             <View style={styles.planningViewSelector}>
