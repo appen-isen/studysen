@@ -1,4 +1,4 @@
-import { AppState, AppStateStatus, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Colors from "@/constants/Colors";
@@ -42,9 +42,100 @@ export default function PlanningScreen() {
     //Permet de reset le jour actuel dans le PlanningList lorsque l'on clique sur le bouton pour changer l'affichage
     const [resetDayFlag, setResetDayFlag] = useState(false);
 
+    //Permet de stocker la date de la dernière mise à jour du planning
+    const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
+
     useEffect(() => {
-        updatePlanning();
-    }, []);
+        autoUpdatePlanningIfNeeded();
+
+        const interval = setInterval(() => {
+            autoUpdatePlanningIfNeeded(); // On regarde si on doit mettre à jour le planning toute les 30 secondes
+        }, 15 * 1000);
+
+        return () => clearInterval(interval); // Cleanup interval on unmount
+    }, [lastUpdateTime]);
+
+    // Mettre à jour le planning toutes les 10 minutes
+    const autoUpdatePlanningIfNeeded = () => {
+        if (lastUpdateTime) {
+            const now = new Date();
+            const elapsedTime = now.getTime() - lastUpdateTime.getTime();
+
+            if (elapsedTime > 10 * 60 * 1000) {
+                clearSyncedPlanning();
+                // Si plus de 10 minutes se sont écoulées depuis la dernière mise à jour, on met à jour
+                updatePlanning();
+            }
+        } else {
+            // Si c'est le premier chargement, on télécharge le planning
+            updatePlanning();
+        }
+    };
+
+    // Fonction pour mettre à jour l'emploi du temps
+    const updatePlanning = (weekOffset: number = 0) => {
+        if (session) {
+            setPlanningLoaded(false);
+            // Calcul de la plage de dates pour la semaine
+            const { startTimestamp, endTimestamp } =
+                getScheduleDates(weekOffset);
+
+            // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
+            const isWeekInPlanning = planning.some(
+                (event) =>
+                    new Date(event.start).getTime() >= startTimestamp &&
+                    new Date(event.end).getTime() <= endTimestamp
+            );
+            // On vérifie si les événements sont déjà synchronisés avec Internet
+            // On récupère le store directement de cette manière pour éviter les problèmes d'attentes de rendu
+            const isWeekInSyncedPlanning = useSyncedPlanningStore
+                .getState()
+                .syncedPlanning.some(
+                    (event) =>
+                        new Date(event.start).getTime() >= startTimestamp &&
+                        new Date(event.end).getTime() <= endTimestamp
+                );
+
+            // Pas besoin de retélécharger les événements si la semaine est déjà chargée
+            if (isWeekInPlanning) {
+                setPlanningLoaded(true);
+            }
+            // Si la semaine n'est pas à jour avec Internet, on lance la synchronisation
+            if (!isWeekInSyncedPlanning) {
+                setSyncing(true);
+            }
+
+            // Requête pour charger les événements de la semaine
+            session
+                .getPlanningApi()
+                .fetchPlanning(weekOffset)
+                .then((currentWeekPlanning: PlanningEvent[]) => {
+                    // Concaténer le nouveau planning avec l'existant sans doublons
+                    setPlanning([
+                        ...planning,
+                        ...currentWeekPlanning.filter(
+                            (newEvent) =>
+                                !planning.some(
+                                    (event) => event.id === newEvent.id
+                                )
+                        ),
+                    ]);
+                    setPlanningLoaded(true);
+                    // Mettre à jour le planning synchronisé
+                    setSyncedPlanning([
+                        ...useSyncedPlanningStore.getState().syncedPlanning,
+                        ...currentWeekPlanning,
+                    ]);
+                    setSyncing(false);
+                    // On met à jour la date de la dernière mise à jour
+                    setLastUpdateTime(new Date());
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setPlanningLoaded(true);
+                });
+        }
+    };
 
     // Fonction pour changer la semaine affichée
     const handleWeekChange = (previous: boolean) => {
@@ -76,66 +167,6 @@ export default function PlanningScreen() {
         updatePlanning(weekFromNow(getCloserMonday(new Date()), currentDate));
         // On reset le jour actuel dans le PlanningList
         setResetDayFlag((prevFlag) => !prevFlag);
-    };
-
-    // Fonction pour mettre à jour l'emploi du temps
-    const updatePlanning = (weekOffset: number = 0) => {
-        if (session) {
-            setPlanningLoaded(false);
-            // Calcul de la plage de dates pour la semaine
-            const { startTimestamp, endTimestamp } =
-                getScheduleDates(weekOffset);
-
-            // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
-            const isWeekInPlanning = planning.some(
-                (event) =>
-                    new Date(event.start).getTime() >= startTimestamp &&
-                    new Date(event.end).getTime() <= endTimestamp
-            );
-            // On vérifie si les événements sont déjà synchronisés avec Internet
-            const isWeekInSyncedPlanning = syncedPlanning.some(
-                (event) =>
-                    new Date(event.start).getTime() >= startTimestamp &&
-                    new Date(event.end).getTime() <= endTimestamp
-            );
-
-            // Pas besoin de retélécharger les événements si la semaine est déjà chargée
-            if (isWeekInPlanning) {
-                setPlanningLoaded(true);
-            }
-            // Si la semaine n'est pas à jour avec Internet, on lance la synchronisation
-            if (!isWeekInSyncedPlanning) {
-                setSyncing(true);
-            }
-
-            // Requête pour charger les événements de la semaine
-            session
-                .getPlanningApi()
-                .fetchPlanning(weekOffset)
-                .then((currentWeekPlanning: PlanningEvent[]) => {
-                    // Concaténer le nouveau planning avec l'existant sans doublons
-                    setPlanning([
-                        ...planning,
-                        ...currentWeekPlanning.filter(
-                            (newEvent) =>
-                                !planning.some(
-                                    (event) => event.id === newEvent.id
-                                )
-                        ),
-                    ]);
-                    setPlanningLoaded(true);
-                    // Mettre à jour le planning synchronisé
-                    setSyncedPlanning([
-                        ...syncedPlanning,
-                        ...currentWeekPlanning,
-                    ]);
-                    setSyncing(false);
-                })
-                .catch((error) => {
-                    console.error(error);
-                    setPlanningLoaded(true);
-                });
-        }
     };
 
     return (
