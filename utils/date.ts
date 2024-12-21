@@ -67,5 +67,6 @@ export function weekFromNow(startDate: Date, targetDate: Date): number {
 // Fonction pour obtenir le numéro du jour dans la semaine de travail (0 = lundi, 4 = vendredi)
 export function getDayNumberInWeek(date: Date): number {
     const dayOfWeek = date.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) return 0; // On gère le cas du week-end
     return dayOfWeek - 1;
 }

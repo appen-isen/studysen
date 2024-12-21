@@ -112,13 +112,13 @@ export default function PlanningScreen() {
                 .then((currentWeekPlanning: PlanningEvent[]) => {
                     // Concaténer le nouveau planning avec l'existant sans doublons
                     setPlanning([
-                        ...planning,
-                        ...currentWeekPlanning.filter(
-                            (newEvent) =>
-                                !planning.some(
-                                    (event) => event.id === newEvent.id
+                        ...planning.filter(
+                            (event) =>
+                                !currentWeekPlanning.some(
+                                    (newEvent) => newEvent.id === event.id
                                 )
                         ),
+                        ...currentWeekPlanning,
                     ]);
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé

@@ -21,6 +21,19 @@ export default function PlanningWeek(props: {
         groupEventsByDay(updatePlanningForListMode(props.events))
     );
 
+    //Jours au format JOUR/MOIS
+    const daysDate: string[] = [];
+    for (let i = 0; i < 5; i++) {
+        const targetDate = new Date(getWorkdayFromOffset(props.startDate, i));
+        daysDate.push(
+            `${targetDate.getDate().toString().padStart(2, "0")}/${(
+                targetDate.getMonth() + 1
+            )
+                .toString()
+                .padStart(2, "0")}`
+        );
+    }
+
     // On affiche un chargement si l'emploi du temps n'est pas encore chargé
     if (!props.isPlanningLoaded) {
         return (
@@ -38,23 +51,23 @@ export default function PlanningWeek(props: {
             <View style={styles.dayView}>
                 <View style={styles.dayBox}>
                     <Text style={styles.dayText}>Lun</Text>
-                    <Text style={styles.dateText}>01/01</Text>
+                    <Text style={styles.dateText}>{daysDate[0]}</Text>
                 </View>
                 <View style={styles.dayBox}>
                     <Text style={styles.dayText}>Mar</Text>
-                    <Text style={styles.dateText}>01/01</Text>
+                    <Text style={styles.dateText}>{daysDate[1]}</Text>
                 </View>
                 <View style={styles.dayBox}>
                     <Text style={styles.dayText}>Mer</Text>
-                    <Text style={styles.dateText}>01/01</Text>
+                    <Text style={styles.dateText}>{daysDate[2]}</Text>
                 </View>
                 <View style={styles.dayBox}>
                     <Text style={styles.dayText}>Jeu</Text>
-                    <Text style={styles.dateText}>01/01</Text>
+                    <Text style={styles.dateText}>{daysDate[3]}</Text>
                 </View>
                 <View style={styles.dayBox}>
                     <Text style={styles.dayText}>Ven</Text>
-                    <Text style={styles.dateText}>01/01</Text>
+                    <Text style={styles.dateText}>{daysDate[4]}</Text>
                 </View>
             </View>
             <View style={styles.weekView}>
