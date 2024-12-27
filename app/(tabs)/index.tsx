@@ -1,9 +1,11 @@
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
+import { Button } from "@/components/Buttons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import {
+    useNotesStore,
     usePlanningStore,
     useSyncedPlanningStore,
 } from "@/store/webaurionStore";
@@ -18,11 +20,16 @@ import {
 } from "@/utils/planning";
 import { ListEvent } from "@/components/planning/PlanningList";
 import EventModal from "@/components/planning/EventModal";
+import { calculateAverage } from "@/utils/notes";
 
 export default function HomeScreen() {
     const { session } = useSessionStore();
+    const { notes, setNotes } = useNotesStore();
+    const [noteAverageValue, setNoteAverageValue] = useState<string>(
+        calculateAverage(notes)
+    );
     // Gestion du planning
-    const { planning, setPlanning, clearPlanning } = usePlanningStore();
+    const { planning, setPlanning } = usePlanningStore();
     const [isPlanningLoaded, setPlanningLoaded] = useState(false);
     const { setSyncedPlanning, clearSyncedPlanning } = useSyncedPlanningStore();
     //Permet de stocker la date de la dernière mise à jour du planning
@@ -35,7 +42,9 @@ export default function HomeScreen() {
     const [selectedEvent, setSelectedEvent] = useState<PlanningEvent | null>();
     const [eventModalInfoVisible, setEventModalInfoVisible] = useState(false);
 
+    //Lorsque la page est chargée
     useEffect(() => {
+        updateNotes();
         autoUpdatePlanningIfNeeded();
 
         const interval = setInterval(() => {
@@ -108,6 +117,23 @@ export default function HomeScreen() {
                 .catch((error) => {
                     console.error(error);
                     setPlanningLoaded(true);
+                });
+        }
+    };
+
+    // Fonction pour mettre à jour les notes
+    const updateNotes = () => {
+        if (session) {
+            // Requête pour charger les notes
+            session
+                .getNotesApi()
+                .fetchNotes()
+                .then((fetchedNotes) => {
+                    setNotes(fetchedNotes);
+                    setNoteAverageValue(calculateAverage(fetchedNotes));
+                })
+                .catch((error) => {
+                    console.error(error);
                 });
         }
     };
@@ -208,6 +234,24 @@ export default function HomeScreen() {
                 </View>
             </View>
 
+            {/* Notes */}
+            <View style={sectionStyles.section}>
+                {/* Titre de la section */}
+                <View style={sectionStyles.titleBox}>
+                    <MaterialCommunityIcons
+                        name="school-outline"
+                        style={sectionStyles.icon}
+                    />
+                    <Text style={sectionStyles.titleText}>MES NOTES</Text>
+                </View>
+                {/* Contenu de la section */}
+                <View style={sectionStyles.content}>
+                    <Text style={styles.noteTitle}> Moyenne générale</Text>
+                    <Text style={styles.noteValue}>{noteAverageValue}</Text>
+                    <Button title="Voir mes notes"></Button>
+                </View>
+            </View>
+
             {/* Modal pour afficher les informations d'un cours */}
             {selectedEvent && (
                 <EventModal
@@ -236,6 +280,16 @@ const styles = StyleSheet.create({
     noEventText: {
         fontSize: 16,
         textAlign: "center",
+    },
+    noteTitle: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    noteValue: {
+        color: Colors.primaryColor,
+        fontWeight: "bold",
+        fontSize: 30,
+        marginTop: 10,
     },
 });
 
