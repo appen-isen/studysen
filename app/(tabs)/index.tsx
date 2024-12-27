@@ -1,33 +1,14 @@
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
-
-import EditScreenInfo from "@/components/EditScreenInfo";
-import useSessionStore from "@/store/sessionStore";
-import Colors from "@/constants/Colors";
-import { removeSecureStoreItem } from "@/store/secureStore";
-import { useRouter } from "expo-router";
+import { FontAwesome6 } from "@expo/vector-icons";
 
 export default function TabOneScreen() {
-    const router = useRouter();
-    const { clearSession } = useSessionStore();
-
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Tab One</Text>
-
-            <View style={styles.separator} />
-            <EditScreenInfo path="app/(tabs)/index.tsx" />
-            {/* Bouton de debug pour tester l'authentification (déconnexion) */}
-            <Pressable
-                onPress={() => {
-                    clearSession();
-                    removeSecureStoreItem("username");
-                    removeSecureStoreItem("password");
-                    router.replace("/login");
-                }}
-            >
-                <Text style={{ color: Colors.primaryColor }}>Déconnexion</Text>
-            </Pressable>
+            <FontAwesome6 name="hammer" size={24} color="black" />
+            <Text style={styles.title}>
+                La page d'accueil est encore en développement.
+            </Text>
         </View>
     );
 }
@@ -41,10 +22,6 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: "bold",
-    },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: "80%",
+        textAlign: "center",
     },
 });
