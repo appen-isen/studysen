@@ -55,6 +55,12 @@ export function getScheduleDates(weeksFromNow: number = 0): {
     const now = new Date();
     // Obtenir le jour actuel (0 = dimanche, 1 = lundi, ..., 6 = samedi)
     let day = now.getDay();
+    // Ajustement si aujourd'hui est samedi
+    if (day === 6) {
+        // Passer au lundi suivant
+        now.setDate(now.getDate() + 2);
+        day = now.getDay(); // Recalculer le jour après avoir avancé
+    }
     // Calculer la différence pour atteindre lundi
     const daysToMonday = day === 0 ? 1 : 1 - day;
     // Créer la date de début (lundi 6h00)

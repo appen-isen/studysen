@@ -5,7 +5,7 @@ ISEN-Orbit est un projet d'application mobile développée en React Native avec 
 ## 🎯 Fonctionnalités
 
 -   Authentification avec ISEN - Page Login
--
+-   Emploi du temps WebAurion - Page Planning
 -
 
 ## 🌱 Branches en développement

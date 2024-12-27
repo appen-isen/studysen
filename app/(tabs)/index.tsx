@@ -9,14 +9,8 @@ import { useRouter } from "expo-router";
 
 export default function TabOneScreen() {
     const router = useRouter();
-    const { session, clearSession } = useSessionStore();
-    // session
-    //     ?.getPlanningApi()
-    //     .fetchPlanning()
-    //     .then((res) => {
-    //         //Debug permet de voir si la session fonctionne correctement
-    //         console.log(res);
-    //     });
+    const { clearSession } = useSessionStore();
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Tab One</Text>

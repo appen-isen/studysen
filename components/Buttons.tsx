@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
     ButtonProps,
     Pressable,
     StyleSheet,
     ActivityIndicator,
+    Animated,
+    GestureResponderEvent,
+    StyleProp,
+    ViewStyle,
 } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
@@ -48,6 +52,50 @@ export function Button(props: ButtonProps & StyledButtonType): JSX.Element {
         </Pressable>
     );
 }
+
+interface AnimatedPressableProps {
+    onPress?: (event: GestureResponderEvent) => void;
+    style?: StyleProp<ViewStyle>;
+    children: React.ReactNode;
+    scale?: number;
+}
+// Pressable animé (scale)
+export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
+    onPress,
+    style,
+    children,
+    scale = 0.8,
+}) => {
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+
+    const handlePressIn = () => {
+        Animated.spring(scaleAnim, {
+            toValue: scale,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const handlePressOut = () => {
+        Animated.spring(scaleAnim, {
+            toValue: 1,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    return (
+        <Pressable
+            onPress={onPress}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+        >
+            <Animated.View
+                style={[style, { transform: [{ scale: scaleAnim }] }]}
+            >
+                {children}
+            </Animated.View>
+        </Pressable>
+    );
+};
 
 const styles = StyleSheet.create({
     button: {

@@ -1,0 +1,72 @@
+// On récupère la date de début de semaine (lundi)
+export function getCloserMonday(date: Date): Date {
+    const d = new Date(date);
+    // Obtenir le jour actuel (0 = dimanche, 1 = lundi, ..., 6 = samedi)
+    let day = d.getDay();
+    // Ajustement si aujourd'hui est samedi
+    if (day === 6) {
+        // Passer au lundi suivant
+        d.setDate(d.getDate() + 2);
+        day = d.getDay(); // Recalculer le jour après avoir avancé
+    }
+    // Calculer la différence pour atteindre lundi
+    const daysToMonday = day === 0 ? 1 : 1 - day;
+    // Créer la date de début (lundi 6h00)
+    const startDate = new Date(d);
+    startDate.setDate(d.getDate() + daysToMonday); // Passer au lundi de la semaine correspondante
+    startDate.setHours(6, 0, 0, 0); // Fixer à 6h00
+    return startDate;
+}
+
+// On récupère la date de fin de la semaine (semaine de travail = 5 jours)
+export function getEndDate(startDate: Date) {
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 4); // Ajouter 4 jours
+    return endDate;
+}
+// Format de la date
+export function formatDate(date: Date, includeYear = false) {
+    return date.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: includeYear ? "2-digit" : undefined,
+    });
+}
+
+// Fonction pour calculer la date cible à partir du jour sélectionné (offset)
+export function getWorkdayFromOffset(startDate: Date, offset: number): string {
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + offset);
+    return date.toISOString().split("T")[0];
+}
+
+// Fonction pour formater une date ISO en heure locale (format 24h)
+export function formatDateToLocalTime(dateISO: string): string {
+    const date = new Date(dateISO); // Convertit la chaîne ISO en objet Date
+    const options: Intl.DateTimeFormatOptions = {
+        hour: "2-digit", // Format des heures avec 2 chiffres
+        minute: "2-digit", // Format des minutes avec 2 chiffres
+        hour12: false, // Utiliser un format 24 heures
+        timeZone: "Europe/Paris", // Forcer le fuseau horaire (UTC+1)
+    };
+
+    // Crée un formatteur pour la date locale française (France)
+    const formatter = new Intl.DateTimeFormat("fr-FR", options);
+    // Formate la date en heure et minutes
+    return formatter.format(date);
+}
+
+// Fonction pour obtenir le numéro de la semaine à partir d'une date
+export function weekFromNow(startDate: Date, targetDate: Date): number {
+    const start = new Date(startDate);
+    const diffInMs = targetDate.getTime() - start.getTime();
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    return Math.ceil(diffInDays / 7);
+}
+
+// Fonction pour obtenir le numéro du jour dans la semaine de travail (0 = lundi, 4 = vendredi)
+export function getDayNumberInWeek(date: Date): number {
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) return 0; // On gère le cas du week-end
+    return dayOfWeek - 1;
+}
