@@ -14,7 +14,7 @@ import {
     weekFromNow,
 } from "@/utils/date";
 import { FontAwesome6 } from "@expo/vector-icons";
-import { AnimatedPressable } from "@/components/Buttons";
+import { AnimatedPressable, DoubleSelector } from "@/components/Buttons";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import EventModal from "@/components/planning/EventModal";
 import { findEvent } from "@/utils/planning";
@@ -175,54 +175,35 @@ export default function PlanningScreen() {
             <SyncMessage isVisible={isSyncing} />
             {/* Titre de la page */}
             <Text style={styles.title}>Empoi du temps</Text>
+
             {/* Sélecteur pour l'affichage de l'emploi du temps */}
-            <View style={styles.planningViewSelector}>
-                {/* Boutons pour change l'affichage de l'emploi du temps (mode liste ou mode semaine) */}
-                <AnimatedPressable
-                    style={[
-                        styles.viewSelectorList,
-                        planningView === "list" && {
-                            backgroundColor: Colors.primaryColor,
-                        },
-                    ]}
-                    onPress={() => handlePlanningViewChange("list")}
-                    scale={0.95}
-                >
+            <DoubleSelector
+                containerStyle={styles.planningViewSelector}
+                //Sélection de l'affichage mode liste ou mode semaine
+                selected={planningView === "list" ? 0 : 1}
+                setSelected={(selected) =>
+                    handlePlanningViewChange(selected === 0 ? "list" : "week")
+                }
+                //Icones pour le sélecteur
+                firstSelector={
                     <MaterialCommunityIcons
                         name="calendar-text-outline"
                         style={[
                             styles.selectorIcon,
-                            //On change la couleur si le mode liste est actif
-                            {
-                                color:
-                                    planningView === "list" ? "white" : "black",
-                            },
+                            planningView === "list" && { color: "white" },
                         ]}
                     />
-                </AnimatedPressable>
-                <AnimatedPressable
-                    style={[
-                        styles.viewSelectorWeek,
-                        planningView === "week" && {
-                            backgroundColor: Colors.primaryColor,
-                        },
-                    ]}
-                    onPress={() => handlePlanningViewChange("week")}
-                    scale={0.95}
-                >
+                }
+                secondSelector={
                     <MaterialCommunityIcons
                         name="calendar-range-outline"
                         style={[
                             styles.selectorIcon,
-                            //On change la couleur si le mode semaine est actif
-                            {
-                                color:
-                                    planningView === "week" ? "white" : "black",
-                            },
+                            planningView === "week" && { color: "white" },
                         ]}
                     />
-                </AnimatedPressable>
-            </View>
+                }
+            />
 
             {/* Sélecteur de semaine */}
             <View style={styles.weekSelector}>
@@ -305,27 +286,10 @@ const styles = StyleSheet.create({
     },
     // Style du sélecteur de l'affichage de l'emploi du temps
     planningViewSelector: {
-        display: "flex",
-        flexDirection: "row",
         alignSelf: "flex-end",
         marginTop: 20,
         marginRight: 20,
         marginBottom: 20,
-        backgroundColor: "white",
-        borderRadius: 10,
-        boxShadow: "0px 2px 5px 0px rgba(0,0,0,0.25)",
-    },
-    viewSelectorList: {
-        borderTopLeftRadius: 10,
-        borderBottomLeftRadius: 10,
-        paddingHorizontal: 15,
-        paddingVertical: 2,
-    },
-    viewSelectorWeek: {
-        borderTopRightRadius: 10,
-        borderBottomRightRadius: 10,
-        paddingHorizontal: 15,
-        paddingVertical: 2,
     },
     selectorIcon: {
         fontSize: 30,

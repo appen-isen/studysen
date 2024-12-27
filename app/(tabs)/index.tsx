@@ -21,8 +21,10 @@ import {
 import { ListEvent } from "@/components/planning/PlanningList";
 import EventModal from "@/components/planning/EventModal";
 import { calculateAverage } from "@/utils/notes";
+import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
+    const router = useRouter();
     const { session } = useSessionStore();
     const { notes, setNotes } = useNotesStore();
     const [noteAverageValue, setNoteAverageValue] = useState<string>(
@@ -137,6 +139,14 @@ export default function HomeScreen() {
                 });
         }
     };
+
+    // Action lors de l'appui sur le bouton pour afficher les notes
+    const handleViewNotes = () => {
+        // Si l'utilisateur a des notes, on redirige vers l'onglet notes
+        if (notes.length > 0) {
+            router.push("/notes");
+        }
+    };
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Accueil</Text>
@@ -248,7 +258,11 @@ export default function HomeScreen() {
                 <View style={sectionStyles.content}>
                     <Text style={styles.noteTitle}> Moyenne générale</Text>
                     <Text style={styles.noteValue}>{noteAverageValue}</Text>
-                    <Button title="Voir mes notes"></Button>
+                    <Button
+                        title="Voir mes notes"
+                        //On redirige vers l'onglet notes
+                        onPress={handleViewNotes}
+                    ></Button>
                 </View>
             </View>
 

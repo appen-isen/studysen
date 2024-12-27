@@ -70,3 +70,17 @@ export function getDayNumberInWeek(date: Date): number {
     if (dayOfWeek === 0 || dayOfWeek === 6) return 0; // On gère le cas du week-end
     return dayOfWeek - 1;
 }
+
+// Fonction pour récupèrer le semestre actuel
+export function getSemester(date: Date = new Date()): 0 | 1 {
+    const month = date.getMonth(); // Mois actuel (0 = Janvier, 11 = Décembre)
+    // Déterminer le semestre
+    let semester: 0 | 1;
+    if (month >= 8 || month <= 0) {
+        semester = 0; // Septembre à Janvier -> Premier semestre
+    } else {
+        semester = 1; // Février à Juillet -> Deuxième semestre
+    }
+
+    return semester;
+}

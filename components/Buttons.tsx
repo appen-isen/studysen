@@ -8,19 +8,27 @@ import {
     GestureResponderEvent,
     StyleProp,
     ViewStyle,
+    View,
 } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-export type StyledButtonType = {
+interface StyledButtonProps {
     textStyle?: object;
     style?: object;
     JSX?: JSX.Element;
     isLoading?: boolean;
-};
+}
 
-export function Button(props: ButtonProps & StyledButtonType): JSX.Element {
-    const { onPress, style, textStyle, JSX, title } = props;
+export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
+    onPress,
+    style,
+    textStyle,
+    JSX,
+    title,
+    isLoading,
+}) => {
     const [pressed, setPressed] = useState(false);
 
     return (
@@ -36,7 +44,7 @@ export function Button(props: ButtonProps & StyledButtonType): JSX.Element {
         >
             {/* Contenu JSX ou texte */}
             {JSX && JSX}
-            {!JSX && props.isLoading && (
+            {!JSX && isLoading && (
                 <ActivityIndicator
                     animating={true}
                     color="white"
@@ -44,14 +52,14 @@ export function Button(props: ButtonProps & StyledButtonType): JSX.Element {
                 />
             )}
             {/* Si le bouton n'a pas de composant custom et ne charge pas alors on affiche le texte*/}
-            {!JSX && !props.isLoading && (
+            {!JSX && !isLoading && (
                 <Text style={{ ...styles.buttonText, ...textStyle }}>
                     {title}
                 </Text>
             )}
         </Pressable>
     );
-}
+};
 
 interface AnimatedPressableProps {
     onPress?: (event: GestureResponderEvent) => void;
@@ -97,6 +105,52 @@ export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
     );
 };
 
+interface DoubleSelectorProps {
+    containerStyle?: StyleProp<ViewStyle>;
+    selected: 0 | 1;
+    setSelected: (selected: 0 | 1) => void;
+    firstSelector: React.ReactNode;
+    secondSelector: React.ReactNode;
+}
+
+export const DoubleSelector: React.FC<DoubleSelectorProps> = ({
+    containerStyle,
+    selected,
+    setSelected,
+    firstSelector,
+    secondSelector,
+}) => {
+    return (
+        <View style={[doubleSelectorStyles.container, containerStyle]}>
+            {/* Boutons pour change l'affichage de l'emploi du temps (mode liste ou mode semaine) */}
+            <AnimatedPressable
+                style={[
+                    doubleSelectorStyles.selectorItem1,
+                    selected === 0 && {
+                        backgroundColor: Colors.primaryColor,
+                    },
+                ]}
+                onPress={() => setSelected(0)}
+                scale={0.95}
+            >
+                {firstSelector}
+            </AnimatedPressable>
+            <AnimatedPressable
+                style={[
+                    doubleSelectorStyles.selectorItem2,
+                    selected === 1 && {
+                        backgroundColor: Colors.primaryColor,
+                    },
+                ]}
+                onPress={() => setSelected(1)}
+                scale={0.95}
+            >
+                {secondSelector}
+            </AnimatedPressable>
+        </View>
+    );
+};
+
 const styles = StyleSheet.create({
     button: {
         margin: 15,
@@ -116,5 +170,28 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         letterSpacing: 0.25,
         color: "white",
+    },
+});
+
+const doubleSelectorStyles = StyleSheet.create({
+    // Style du sélecteur double
+    container: {
+        display: "flex",
+        flexDirection: "row",
+        backgroundColor: "white",
+        borderRadius: 10,
+        boxShadow: "0px 2px 5px 0px rgba(0,0,0,0.25)",
+    },
+    selectorItem1: {
+        borderTopLeftRadius: 10,
+        borderBottomLeftRadius: 10,
+        paddingHorizontal: 15,
+        paddingVertical: 2,
+    },
+    selectorItem2: {
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+        paddingHorizontal: 15,
+        paddingVertical: 2,
     },
 });
