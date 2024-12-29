@@ -1,4 +1,3 @@
-import Colors from "@/constants/Colors";
 import { Link, useRouter } from "expo-router";
 import { View, StyleSheet } from "react-native";
 import { Text, Bold } from "@/components/Texts";

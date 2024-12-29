@@ -43,9 +43,9 @@ export default function TabLayout() {
                 // L'application revient en premier plan
                 if (
                     lastBackgroundTime &&
-                    Date.now() - lastBackgroundTime > 10 * 60 * 1000
+                    Date.now() - lastBackgroundTime > 5 * 60 * 1000
                 ) {
-                    // Plus de 10 minutes se sont écoulées depuis la dernière fois que l'application était en premier plan
+                    // Plus de 5 minutes se sont écoulées depuis la dernière fois que l'application était en premier plan
                     setShouldRestart(true);
                 }
             }
@@ -127,7 +127,7 @@ function RestartApp() {
         // On va réinitialiser l'application en rechargeant l'état
         setTimeout(() => {
             router.replace("/login");
-        }, 0);
+        }, 10);
     }, []);
 
     return null;

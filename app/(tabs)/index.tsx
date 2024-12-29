@@ -19,7 +19,7 @@ import {
     updatePlanningForListMode,
 } from "@/utils/planning";
 import { ListEvent } from "@/components/planning/PlanningList";
-import EventModal from "@/components/planning/EventModal";
+import EventModal from "@/components/modals/EventModal";
 import { calculateAverage } from "@/utils/notes";
 import { useRouter } from "expo-router";
 
@@ -315,7 +315,7 @@ const sectionStyles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         width: "90%",
-        marginTop: 50,
+        marginTop: 35,
     },
     titleBox: {
         display: "flex",

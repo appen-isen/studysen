@@ -1,4 +1,5 @@
 import { AnimatedPressable, DoubleSelector } from "@/components/Buttons";
+import NoteModal from "@/components/modals/NoteModal";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { useNotesStore } from "@/store/webaurionStore";
@@ -10,19 +11,29 @@ import {
     getRealSubjectName,
 } from "@/utils/notes";
 import { noteAverage } from "@/webAurion/utils/NoteUtils";
-import { NotesList } from "@/webAurion/utils/types";
+import { Note, NotesList } from "@/webAurion/utils/types";
+import { Octicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 export default function NotesScreen() {
+    const router = useRouter();
     const [selectedSemester, setSelectedSemester] = useState<0 | 1>(
         getSemester()
     );
-
     // Récupération des notes
     const { notes } = useNotesStore();
-    const selectedNotes = filterNotesBySemester(notes, selectedSemester);
+    // Tableau des notes du semestre sélectionné
+    const selectedNotes = filterNotesBySemester(notes, selectedSemester)
+        // Tri des matières par nombre de notes
+        .sort((a, b) => b.notes.length - a.notes.length);
     const noteAverageValue = calculateAverage(selectedNotes);
+
+    // Note sélectionnée pour l'affichage de la modal
+    const [currentNote, setCurrentNote] = useState<Note | null>(null);
+    const [noteModalInfoVisible, setNoteModalInfoVisible] = useState(false);
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Mes notes</Text>
@@ -52,24 +63,73 @@ export default function NotesScreen() {
                 }
                 containerStyle={styles.semesterSelector}
             ></DoubleSelector>
-            {/* Moyenne générale */}
-            <View style={styles.noteAverageView}>
-                <Text style={styles.noteAverageTitle}>Moyenne générale</Text>
-                <Text style={styles.noteAverageValue}>{noteAverageValue}</Text>
-            </View>
+
+            {selectedNotes.length > 0 && (
+                // Moyenne générale s'il y a des notes
+                <View style={styles.noteAverageView}>
+                    <Text style={styles.noteAverageTitle}>
+                        Moyenne générale
+                    </Text>
+                    <View style={styles.noteAverageValContainer}>
+                        {/* Valeur de la moyenne */}
+                        <Text style={styles.noteAverageValue}>
+                            {noteAverageValue}
+                        </Text>
+                        {/* Bouton d'information */}
+                        <AnimatedPressable
+                            onPress={() => router.push("/notes-help")}
+                        >
+                            <Octicons
+                                name="info"
+                                style={styles.noteAverageInfo}
+                            />
+                        </AnimatedPressable>
+                    </View>
+                </View>
+            )}
+
+            {/* Message si aucune note n'est disponible */}
+            {selectedNotes.length === 0 && (
+                <View style={styles.noNoteContainer}>
+                    <Text style={styles.noNoteText}>
+                        Il n'y a pas encore de notes pour ce semestre
+                    </Text>
+                </View>
+            )}
+
             {/* Notes par matière */}
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 {selectedNotes.map((notesList, index) => (
                     <NotesGroup
                         notesList={notesList}
+                        setCurrentNote={(note) => {
+                            //On sélectionne la note pour l'affichage de la modal
+                            setCurrentNote(note);
+                            setNoteModalInfoVisible(true);
+                        }}
                         key={`group-${notesList.code}-${index}`}
                     ></NotesGroup>
                 ))}
             </ScrollView>
+            {/* Modal pour afficher les informations d'une note */}
+            {currentNote && (
+                <NoteModal
+                    note={currentNote}
+                    noteCode={currentNote.code}
+                    visible={noteModalInfoVisible}
+                    setVisible={setNoteModalInfoVisible}
+                ></NoteModal>
+            )}
         </View>
     );
 }
-function NotesGroup(props: { notesList: NotesList }) {
+
+// Composant pour afficher un groupe de notes
+function NotesGroup(props: {
+    notesList: NotesList;
+    setCurrentNote: (note: Note) => void;
+}) {
+    const notes = props.notesList.notes;
     return (
         <View style={notesGroupStyles.container}>
             {/* En-tête du groupe de notes */}
@@ -77,21 +137,23 @@ function NotesGroup(props: { notesList: NotesList }) {
                 {/* Matière */}
                 <View style={notesGroupStyles.headerSubject}>
                     <Text style={notesGroupStyles.headerSubjectText}>
-                        {getRealSubjectName(props.notesList.notes[0].subject)}
+                        {getRealSubjectName(notes[0].subject)}
                     </Text>
                 </View>
                 {/* Moyenne */}
                 <View style={notesGroupStyles.headerAverage}>
                     <Text style={notesGroupStyles.headerAverageText}>
-                        {noteAverage(props.notesList.notes)}
+                        {noteAverage(notes).toFixed(2)}
                     </Text>
                 </View>
             </View>
             <View style={notesGroupStyles.content}>
                 {/* Notes */}
-                {props.notesList.notes.map((note, index) => (
+                {notes.map((note, index) => (
                     <AnimatedPressable
                         style={notesGroupStyles.noteContainer}
+                        // Affichage de la modal au clic
+                        onPress={() => props.setCurrentNote(note)}
                         key={`note-${note.code}-${index}`}
                     >
                         <Text style={notesGroupStyles.noteNumber}>
@@ -128,9 +190,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginVertical: 5,
     },
-    noNoteText: {
-        alignSelf: "center",
-    },
     // Moyenne générale
     noteAverageView: {
         width: "100%",
@@ -143,11 +202,23 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
     },
+    // Valeur de la moyenne
+    noteAverageValContainer: {
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    noteAverageInfo: {
+        color: Colors.primaryColor,
+        fontSize: 25,
+        textAlign: "center",
+        marginLeft: 10,
+    },
     noteAverageValue: {
         color: Colors.primaryColor,
         fontWeight: "bold",
         fontSize: 30,
-        marginTop: 10,
+        marginRight: 10,
     },
     // Conteneur de la liste de notes
     scrollContainer: {
@@ -156,6 +227,15 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingBottom: 40,
         marginTop: 20,
+    },
+    // Message si aucune note n'est disponible
+    noNoteContainer: {
+        marginTop: 40,
+    },
+    noNoteText: {
+        fontWeight: "bold",
+        fontSize: 16,
+        textAlign: "center",
     },
 });
 

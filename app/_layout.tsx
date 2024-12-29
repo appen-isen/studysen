@@ -59,6 +59,15 @@ function RootLayoutNav() {
                     headerShown: true,
                 }}
             />
+            <Stack.Screen
+                name="(modals)/notes-help"
+                options={{
+                    presentation: "modal",
+                    animation: "slide_from_bottom",
+                    headerTitle: "Informations sur les notes",
+                    headerShown: true,
+                }}
+            />
         </Stack>
     );
 }

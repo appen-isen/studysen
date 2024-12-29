@@ -19,13 +19,19 @@ export function calculateAverage(notes: NotesList[]): string {
 export function getRealSubjectName(subject: string): string {
     // On retire l'indication du semestre et le numéro de DS
     subject = subject.replaceAll(/S\d$/g, "");
-    subject = subject.replaceAll(/ DS\d /g, "");
+    subject = subject.replaceAll(/ DS\d? /g, "");
     return subject.trim();
 }
 
 // Fonction pour récupérer le numéro du DS à partir du titre de la note
 export function getDSNumber(subject: string): number {
     const match = subject.match(/DS(\d)/);
+    return match ? parseInt(match[1]) : 1;
+}
+
+// Fonction pour récupérer le semestre à partir du code de la note
+export function getSemesterFromCode(code: string): number {
+    const match = code.match(/_S(\d)_/);
     return match ? parseInt(match[1]) : 1;
 }
 

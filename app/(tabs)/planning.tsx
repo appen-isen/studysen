@@ -16,7 +16,7 @@ import {
 import { FontAwesome6 } from "@expo/vector-icons";
 import { AnimatedPressable, DoubleSelector } from "@/components/Buttons";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
-import EventModal from "@/components/planning/EventModal";
+import EventModal from "@/components/modals/EventModal";
 import { findEvent } from "@/utils/planning";
 import {
     usePlanningStore,
