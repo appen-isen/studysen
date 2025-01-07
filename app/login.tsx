@@ -46,6 +46,7 @@ export default function LoginScreen() {
                 } catch (err) {
                     //Probablement un timeout, donc on considère que l'utilisateur est hors ligne
                     console.log("Offline mode enabled!");
+                    console.error(err);
                     router.replace({
                         pathname: "/(tabs)",
                         params: { offlineMode: 1 },

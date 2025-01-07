@@ -1,5 +1,5 @@
 import PlanningApi from "./PlanningApi";
-import { getJSFFormParams, getViewState } from "../utils/AurionUtils";
+import { getJSFFormParams, getName, getViewState } from "../utils/AurionUtils";
 import NotesApi from "./NotesApi";
 import axios, { AxiosInstance } from "axios";
 
@@ -11,6 +11,9 @@ export class Session {
     //Cela a pour but d'éviter d'effectuer 3 requêtes lorsque l'on refait la même demande (emploi du temps de la semaine suivante par exemple)
     private viewStateCache: string = "";
     private subMenuIdCache: string = "";
+
+    // Nom et prénom de l'utilisateur
+    private username: string = "";
 
     constructor() {
         this.client = axios.create({
@@ -44,6 +47,9 @@ export class Session {
                         res.data.includes("Home page") ||
                         res.data.includes("Page d'accueil")
                     ) {
+                        // On récupère le nom de l'utilisateur
+                        this.username = getName(res.data);
+                        console.log(`Logged in as ${this.username}`);
                         resolve(true);
                     } else {
                         resolve(false);
@@ -53,6 +59,11 @@ export class Session {
                     reject(e);
                 });
         });
+    }
+
+    //On retourne le nom de l'utilisateur
+    public getUsername(): string {
+        return this.username;
     }
 
     // API pour le calendrier

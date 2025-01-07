@@ -7,11 +7,11 @@ import Colors from "@/constants/Colors";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { AnimatedPressable } from "@/components/Buttons";
 import { ConfirmModal, Dropdown } from "@/components/Modals";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function SettingsScreen() {
     const router = useRouter();
-    const { clearSession } = useSessionStore();
+    const { clearSession, session } = useSessionStore();
 
     // Message de confirmation pour la déconnexion
     const [confirmVisible, setConfirmVisible] = useState(false);
@@ -20,6 +20,23 @@ export default function SettingsScreen() {
     const [campusMenuVisible, setCampusMenuVisible] = useState(false);
     const campusOptions = ["Nantes", "Rennes", "Brest", "Caen"];
     const [selectedCampus, setSelectedCampus] = useState(campusOptions[0]);
+
+    //Nom de l'utilisateur et email
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [firstLetters, setFirstLetters] = useState("");
+    useEffect(() => {
+        if (session) {
+            const username = session.getUsername();
+            const firstLetters = username.split(" ");
+            setUsername(username);
+            setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
+            setEmail(
+                session.getUsername().replace(" ", ".").toLowerCase() +
+                    "@isen-ouest.yncrea.fr"
+            );
+        }
+    }, [session]);
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Mon compte</Text>
@@ -38,12 +55,12 @@ export default function SettingsScreen() {
                 {/* Profil */}
                 <View style={styles.profileView}>
                     <View style={styles.profileCircle}>
-                        <Text style={styles.profileCircleText}>DD</Text>
+                        <Text style={styles.profileCircleText}>
+                            {firstLetters}
+                        </Text>
                     </View>
-                    <Text style={styles.profileName}>Prénom Nom</Text>
-                    <Text style={styles.profileEmail}>
-                        prénom.nom@isen-ouest.yncrea.fr
-                    </Text>
+                    <Text style={styles.profileName}>{username}</Text>
+                    <Text style={styles.profileEmail}>{email}</Text>
                     {/* Bouton pour choisir le campus */}
                     <AnimatedPressable
                         style={styles.campusSelect}
