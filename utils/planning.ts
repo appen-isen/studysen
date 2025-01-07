@@ -171,3 +171,40 @@ export function findEvent(planning: PlanningEvent[], event: PlanningEvent) {
             e.id === event.id && e.start === event.start && e.end === event.end
     );
 }
+
+// Fonction pour obtenir l'événement en cours si disponible
+export function getCurrentEvent(events: PlanningEvent[]): PlanningEvent | null {
+    const now = new Date();
+
+    for (const event of events) {
+        const start = new Date(event.start);
+        const end = new Date(event.end);
+        // Vérifier si l'événement est en cours
+        if (now >= start && now <= end) {
+            return event;
+        }
+    }
+
+    return null;
+}
+
+// Fonction pour obtenir le prochain événement de la journée
+export function getNextEventToday(
+    events: PlanningEvent[]
+): PlanningEvent | null {
+    const now = new Date();
+
+    // Filtre les événements qui commencent après maintenant et qui sont aujourd'hui
+    const upcomingEvents = events.filter((event) => {
+        const start = new Date(event.start);
+        return start > now && start.toDateString() === now.toDateString();
+    });
+
+    // Trie les événements par date de début (croissant)
+    upcomingEvents.sort(
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+    );
+
+    // Retourne le premier événement du tableau trié, ou null s'il n'y en a pas
+    return upcomingEvents.length > 0 ? upcomingEvents[0] : null;
+}

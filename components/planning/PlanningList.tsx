@@ -153,29 +153,38 @@ export function ListEvent(props: {
     const [timeText, setTimeText] = useState("");
 
     useEffect(() => {
-        // On affiche En cours si l'événement est en cours ou dans x minutes < 60 minutes si l'événement est à venir
-        const now = new Date();
-        const start = new Date(props.event.start);
-        const end = new Date(props.event.end);
+        // On met à jour le texte de l'heure de l'événement
+        const updateEventTime = () => {
+            const now = new Date();
+            const start = new Date(props.event.start);
+            const end = new Date(props.event.end);
 
-        // Si l'événement est en cours
-        if (now >= start && now <= end) {
-            setTimeText(" ● En cours");
-        } else if (start > now) {
-            const diffMinutes = Math.floor(
-                (start.getTime() - now.getTime()) / 6000
-            );
-            // Si l'événement est dans moins d'une heure, on affiche "Dans x minutes"
-            if (diffMinutes < 60) {
-                setTimeText(` ● Dans ${diffMinutes} minutes`);
+            if (now >= start && now <= end) {
+                // L'événement est en cours
+                setTimeText(" ● En cours");
+            } else if (start > now) {
+                const diffMinutes = Math.floor(
+                    (start.getTime() - now.getTime()) / 60000
+                );
+                // L'événement n'a pas encore commencé mais débute dans moins d'une heure
+                if (diffMinutes < 60) {
+                    setTimeText(` ● Dans ${diffMinutes} minutes`);
+                } else {
+                    setTimeText("");
+                }
             } else {
-                // Sinon, on affiche rien
                 setTimeText("");
             }
-        } else {
-            // Sinon, on affiche rien
-            setTimeText("");
-        }
+        };
+
+        // Mise à jour du temps
+        updateEventTime();
+
+        // Mise à jour réuglière du temps toutes les minutes
+        const interval = setInterval(updateEventTime, 60000);
+
+        // Nettoyage de l'intervalle
+        return () => clearInterval(interval);
     }, [props.event]);
 
     return (

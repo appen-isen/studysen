@@ -6,18 +6,24 @@ import {
     TouchableWithoutFeedback,
     FlatList,
     TouchableOpacity,
+    Animated,
 } from "react-native";
 import { Text } from "@/components/Texts";
-import { Button } from "@/components/Buttons";
-import { ReactNode } from "react";
+import { AnimatedPressable, Button } from "@/components/Buttons";
+import { ReactNode, useEffect, useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
+import { FontAwesome6 } from "@expo/vector-icons";
 
 type ModalProps = {
     visible: boolean;
     setVisible: (visible: boolean) => void;
     children?: ReactNode;
     modalBoxStyle?: object;
+};
+
+type BottomModalProps = ModalProps & {
+    flexSize?: number;
 };
 type ErrorModalProps = ModalProps & {
     message: string;
@@ -54,6 +60,79 @@ function ModalBase(props: ModalProps) {
     );
 }
 
+// Modal qui s'ouvre depuis le bas de l'écran pour les informations supplémentaires
+export function BottomModal(props: BottomModalProps) {
+    const slideAnim = useRef(new Animated.Value(800)).current; // Valeur initiale (hors de l'écran)
+
+    useEffect(() => {
+        if (props.visible) {
+            // Animation pour faire glisser la modal vers le haut
+            Animated.timing(slideAnim, {
+                toValue: 0, // Position finale (visible)
+                duration: 300,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [props.visible]);
+
+    // Fermeture de la modal
+    const handleDismiss = () => {
+        // Animation pour faire glisser la modal vers le bas
+        Animated.timing(slideAnim, {
+            toValue: 800, // Position initiale (hors de l'écran)
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+        props.setVisible(false);
+    };
+    return (
+        <Modal
+            animationType="fade"
+            transparent={true}
+            visible={props.visible}
+            onRequestClose={handleDismiss}
+        >
+            <View style={[styles.modalOverlay, bottomModalStyles.modalOverlay]}>
+                {/* Overlay pour fermer la modal en cliquant à l'extérieur */}
+                <TouchableWithoutFeedback onPress={handleDismiss}>
+                    <Animated.View style={styles.modalBackground} />
+                </TouchableWithoutFeedback>
+
+                {/* Contenu de la modal */}
+                <Animated.View
+                    style={[
+                        styles.modalContent,
+                        bottomModalStyles.modalContent,
+                        {
+                            // Animation de la modal
+                            transform: [{ translateY: slideAnim }],
+                            // Taille de la modal
+                            flex:
+                                props.flexSize !== undefined
+                                    ? props.flexSize
+                                    : 0.7,
+                        },
+                    ]}
+                >
+                    {/* Bouton pour fermer la modal */}
+                    <AnimatedPressable
+                        onPress={handleDismiss}
+                        style={bottomModalStyles.closeIconPressable}
+                    >
+                        <FontAwesome6
+                            name="arrow-left"
+                            style={bottomModalStyles.closeIcon}
+                        />
+                    </AnimatedPressable>
+                    {/* Contenu de la modal */}
+                    {props.children}
+                </Animated.View>
+            </View>
+        </Modal>
+    );
+}
+
+// Modal d'erreur
 export function ErrorModal(props: ErrorModalProps) {
     return (
         <ModalBase setVisible={props.setVisible} visible={props.visible}>
@@ -74,6 +153,7 @@ export function ErrorModal(props: ErrorModalProps) {
     );
 }
 
+// Sélecteur de choix
 export function Dropdown(props: DropdownProps) {
     const handleOptionPress = (item: string) => {
         props.setSelectedItem(item);
@@ -86,11 +166,13 @@ export function Dropdown(props: DropdownProps) {
             visible={props.visible}
             modalBoxStyle={props.modalBoxStyle}
         >
+            {/* Liste des options */}
             <FlatList
                 data={props.options}
                 keyExtractor={(item, index) => index.toString()}
                 style={styles.flatList}
                 renderItem={({ item }) => (
+                    // Option sélectionnable
                     <TouchableOpacity
                         style={styles.dropdownItem}
                         onPress={() => handleOptionPress(item)}
@@ -175,5 +257,27 @@ const styles = StyleSheet.create({
     },
     flatList: {
         width: "100%",
+    },
+});
+
+const bottomModalStyles = StyleSheet.create({
+    modalOverlay: {
+        justifyContent: "flex-end",
+    },
+    modalContent: {
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+        width: "100%",
+        borderTopRightRadius: 10,
+        borderTopLeftRadius: 10,
+    },
+    // Bouton pour fermer la modal
+    closeIconPressable: {
+        justifyContent: "flex-start",
+        padding: 10,
+    },
+    closeIcon: {
+        fontSize: 40,
+        color: Colors.primaryColor,
     },
 });
