@@ -1,7 +1,6 @@
-import { Note, NotesList } from "@/webAurion/utils/types";
+import { Note } from "@/webAurion/utils/types";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Bold, Text } from "../Texts";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Colors from "@/constants/Colors";
 import { BottomModal } from "../Modals";
 import {
@@ -9,7 +8,6 @@ import {
     getRealSubjectName,
     getSemesterFromCode,
 } from "@/utils/notes";
-import { formatDate } from "@/utils/date";
 
 type NoteModalProps = {
     visible: boolean;
@@ -29,7 +27,10 @@ export default function NoteModal(props: NoteModalProps) {
             <Text style={styles.title}>{getRealSubjectName(note.subject)}</Text>
             {/* Nom du DS */}
             <Text style={styles.noteName}>
-                DS{getDSNumber(note.subject)} S{getSemesterFromCode(noteCode)}
+                {note.code.endsWith("_CC")
+                    ? "CC "
+                    : `DS${getDSNumber(note.code)} `}
+                S{getSemesterFromCode(noteCode)}
             </Text>
             {/* Info sur la note */}
             <View style={styles.infoContainer}>

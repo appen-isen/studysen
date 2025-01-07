@@ -157,7 +157,9 @@ function NotesGroup(props: {
                         key={`note-${note.code}-${index}`}
                     >
                         <Text style={notesGroupStyles.noteNumber}>
-                            DS{getDSNumber(note.subject)}
+                            {note.code.endsWith("_CC")
+                                ? "CC"
+                                : `DS${getDSNumber(note.code)}`}
                         </Text>
                         <Text style={notesGroupStyles.noteValue}>
                             {note.note}
