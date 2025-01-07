@@ -19,6 +19,7 @@ interface StyledButtonProps {
     style?: object;
     JSX?: JSX.Element;
     isLoading?: boolean;
+    bgColor?: string;
 }
 
 export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
@@ -28,16 +29,18 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
     JSX,
     title,
     isLoading,
+    bgColor,
 }) => {
     const [pressed, setPressed] = useState(false);
 
     return (
         <Pressable
-            style={
+            style={[
                 pressed
                     ? { ...styles.button, ...styles.pressedButton, ...style }
-                    : { ...styles.button, ...style }
-            }
+                    : { ...styles.button, ...style },
+                bgColor && { backgroundColor: bgColor },
+            ]}
             onPress={onPress}
             onPressOut={() => setPressed(false)}
             onPressIn={() => setPressed(true)}

@@ -162,6 +162,7 @@ export default function LoginScreen() {
             <AnimatedPressable
                 style={styles.campusSelect}
                 onPress={() => setCampusMenuVisible(true)}
+                scale={0.95}
             >
                 <Text style={styles.campusSelectText}>
                     Campus de <Bold>{selectedCampus}</Bold>
