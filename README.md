@@ -6,11 +6,12 @@ ISEN-Orbit est un projet d'application mobile développée en React Native avec 
 
 -   Authentification avec ISEN - Page Login
 -   Emploi du temps WebAurion - Page Planning
--
+-   Notes WebAurion - Page Notes
+-   Affichage du cours actuel et à venir, ainsi que la moyenne de l'étudiant - Page Accueil
 
 ## 🌱 Branches en développement
 
--   [`feat/home`](https://github.com/appen-isen/isen-orbit/tree/feat/home) : Accueil (Page Principale)
+-   [`feat/settings`](https://github.com/appen-isen/isen-orbit/tree/feat/settings) : Mon compte (Paramètres)
 -
 -
 
