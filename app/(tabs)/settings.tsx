@@ -8,18 +8,18 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { AnimatedPressable } from "@/components/Buttons";
 import { ConfirmModal, Dropdown } from "@/components/Modals";
 import { useEffect, useState } from "react";
+import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
 
 export default function SettingsScreen() {
     const router = useRouter();
     const { clearSession, session } = useSessionStore();
+    const { settings, setSettings } = useSettingsStore();
 
     // Message de confirmation pour la déconnexion
     const [confirmVisible, setConfirmVisible] = useState(false);
     const confirmMessage = "Êtes-vous sûr de vouloir vous déconnecter ?";
     //Menu déroulant pour choisir le campus
     const [campusMenuVisible, setCampusMenuVisible] = useState(false);
-    const campusOptions = ["Nantes", "Rennes", "Brest", "Caen"];
-    const [selectedCampus, setSelectedCampus] = useState(campusOptions[0]);
 
     //Nom de l'utilisateur et email
     const [username, setUsername] = useState("");
@@ -68,7 +68,7 @@ export default function SettingsScreen() {
                         onPress={() => setCampusMenuVisible(true)}
                     >
                         <Text style={styles.campusSelectText}>
-                            Campus de <Bold>{selectedCampus}</Bold>
+                            Campus de <Bold>{settings.campus}</Bold>
                         </Text>
                         <FontAwesome6
                             style={styles.campusSelectText}
@@ -79,9 +79,14 @@ export default function SettingsScreen() {
                     <Dropdown
                         visible={campusMenuVisible}
                         setVisible={setCampusMenuVisible}
-                        options={campusOptions}
-                        selectedItem={selectedCampus}
-                        setSelectedItem={setSelectedCampus}
+                        options={[...CAMPUS]}
+                        selectedItem={settings.campus}
+                        setSelectedItem={(newCampus) =>
+                            setSettings(
+                                "campus",
+                                newCampus as (typeof CAMPUS)[number]
+                            )
+                        }
                         modalBoxStyle={styles.dropdownBoxStyle}
                     ></Dropdown>
                 </View>

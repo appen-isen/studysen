@@ -19,10 +19,13 @@ import { Dropdown, ErrorModal } from "@/components/Modals";
 import useSessionStore from "@/store/sessionStore";
 import Session from "@/webAurion/api/Session";
 import { getSecureStoreItem, setSecureStoreItem } from "@/store/secureStore";
+import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
 
 export default function LoginScreen() {
     const router = useRouter();
     const { setSession } = useSessionStore();
+
+    const { settings, setSettings } = useSettingsStore();
 
     //Hauteur du clavier pour iOS (Permet d'éviter le bug du clavier qui cache les inputs)
     const [iosKeyboardEnabled, setIOSKeyboardEnabled] = useState(false);
@@ -84,8 +87,6 @@ export default function LoginScreen() {
 
     //Menu déroulant pour choisir le campus
     const [campusMenuVisible, setCampusMenuVisible] = useState(false);
-    const campusOptions = ["Nantes", "Rennes", "Brest", "Caen"];
-    const [selectedCampus, setSelectedCampus] = useState(campusOptions[0]);
 
     //Checkbox pour se souvenir de l'utilisateur
     const [rememberMe, setRememberMe] = useState(true);
@@ -166,7 +167,7 @@ export default function LoginScreen() {
                 scale={0.95}
             >
                 <Text style={styles.campusSelectText}>
-                    Campus de <Bold>{selectedCampus}</Bold>
+                    Campus de <Bold>{settings.campus}</Bold>
                 </Text>
                 <FontAwesome6
                     style={styles.campusSelectText}
@@ -177,9 +178,11 @@ export default function LoginScreen() {
             <Dropdown
                 visible={campusMenuVisible}
                 setVisible={setCampusMenuVisible}
-                options={campusOptions}
-                selectedItem={selectedCampus}
-                setSelectedItem={setSelectedCampus}
+                options={[...CAMPUS]}
+                selectedItem={settings.campus}
+                setSelectedItem={(newCampus) =>
+                    setSettings("campus", newCampus as (typeof CAMPUS)[number])
+                }
                 modalBoxStyle={styles.dropdownBoxStyle}
             ></Dropdown>
 
