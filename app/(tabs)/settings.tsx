@@ -1,13 +1,13 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Bold, Text } from "@/components/Texts";
-import { useRouter } from "expo-router";
+import { Href, useRouter } from "expo-router";
 import useSessionStore from "@/store/sessionStore";
 import { removeSecureStoreItem } from "@/store/secureStore";
 import Colors from "@/constants/Colors";
-import { FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { AnimatedPressable } from "@/components/Buttons";
 import { ConfirmModal, Dropdown } from "@/components/Modals";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
 
 export default function SettingsScreen() {
@@ -28,12 +28,18 @@ export default function SettingsScreen() {
     useEffect(() => {
         if (session) {
             const username = session.getUsername();
-            const firstLetters = username.split(" ");
             setUsername(username);
+            //Initiales du prénom et du nom
+            const firstLetters = username.split(" ");
             setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
+
+            //On convertit le Prénom Nom en email valide
+            const normalizedName = username
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase();
             setEmail(
-                session.getUsername().replace(" ", ".").toLowerCase() +
-                    "@isen-ouest.yncrea.fr"
+                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
             );
         }
     }, [session]);
@@ -90,6 +96,30 @@ export default function SettingsScreen() {
                         modalBoxStyle={styles.dropdownBoxStyle}
                     ></Dropdown>
                 </View>
+
+                {/* Les paramètres */}
+                <View style={styles.settingsNav}>
+                    <SettingsNav
+                        name="Notifications"
+                        icon="bell"
+                        route={"/notifications"}
+                    />
+                    <SettingsNav
+                        name="Crédits"
+                        icon="users"
+                        route={"/credits"}
+                    />
+                    <SettingsNav
+                        name="Contact"
+                        icon="contact-book"
+                        route={"/contact"}
+                    />
+                    <SettingsNav
+                        name="Réglages avancés"
+                        icon="code"
+                        route={"/advanced"}
+                    />
+                </View>
             </View>
 
             {/* Modal de confirmation */}
@@ -105,6 +135,27 @@ export default function SettingsScreen() {
                 }}
             />
         </View>
+    );
+}
+
+function SettingsNav(props: { name: string; icon: string; route: Href }) {
+    const { name, icon, route } = props;
+    const router = useRouter();
+    return (
+        <TouchableOpacity
+            style={navStyles.container}
+            onPress={() => router.push(route)}
+        >
+            {/* Nom de la section avec icon*/}
+            <View style={navStyles.nameContainer}>
+                <FontAwesome6 name={icon} style={navStyles.icon}></FontAwesome6>
+                <Text style={navStyles.name}>{name}</Text>
+            </View>
+            {/* Flèche de navigation */}
+            <AnimatedPressable onPress={() => router.push(route)}>
+                <FontAwesome6 name="chevron-right" style={navStyles.icon} />
+            </AnimatedPressable>
+        </TouchableOpacity>
     );
 }
 
@@ -194,5 +245,38 @@ const styles = StyleSheet.create({
         color: "white",
         marginLeft: 5,
         marginRight: 5,
+    },
+    //Les paramètres
+    settingsNav: {
+        width: "100%",
+        marginTop: 40,
+    },
+});
+
+//Styles pour les boutons de navigation dans les paramètres
+const navStyles = StyleSheet.create({
+    container: {
+        width: "95%",
+        paddingVertical: 20,
+        alignSelf: "center",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexDirection: "row",
+    },
+    nameContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    name: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginLeft: 10,
+    },
+    icon: {
+        fontSize: 30,
+        width: 40,
+        textAlign: "center",
+        color: Colors.primaryColor,
     },
 });
