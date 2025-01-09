@@ -1,15 +1,16 @@
 import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import { FontAwesome6 } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ClubsScreen() {
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <FontAwesome6 name="hammer" size={24} color="black" />
             <Text style={styles.title}>
                 La page des clubs est encore en développement.
             </Text>
-        </View>
+        </SafeAreaView>
     );
 }
 

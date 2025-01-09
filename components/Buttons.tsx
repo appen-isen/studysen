@@ -12,8 +12,6 @@ import {
 } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-
 interface StyledButtonProps {
     textStyle?: object;
     style?: object;
@@ -70,6 +68,7 @@ interface AnimatedPressableProps {
     children: React.ReactNode;
     scale?: number;
 }
+const AnimatedPressableComp = Animated.createAnimatedComponent(Pressable);
 // Pressable animé (scale)
 export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
     onPress,
@@ -94,17 +93,14 @@ export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
     };
 
     return (
-        <Pressable
+        <AnimatedPressableComp
             onPress={onPress}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
+            style={[style, { transform: [{ scale: scaleAnim }] }]}
         >
-            <Animated.View
-                style={[style, { transform: [{ scale: scaleAnim }] }]}
-            >
-                {children}
-            </Animated.View>
-        </Pressable>
+            {children}
+        </AnimatedPressableComp>
     );
 };
 

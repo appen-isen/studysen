@@ -9,6 +9,7 @@ import { AnimatedPressable } from "@/components/Buttons";
 import { ConfirmModal, Dropdown } from "@/components/Modals";
 import { ReactNode, useEffect, useState } from "react";
 import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
     const router = useRouter();
@@ -44,7 +45,7 @@ export default function SettingsScreen() {
         }
     }, [session]);
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Mon compte</Text>
             <View style={styles.settingsView}>
                 {/* Bouton de déconnexion */}
@@ -134,7 +135,7 @@ export default function SettingsScreen() {
                     router.replace("/login");
                 }}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -236,7 +237,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
         alignItems: "center",
         padding: 5,
-        width: 190,
+        width: 250,
         backgroundColor: Colors.primaryColor,
         borderRadius: 50,
         marginTop: 20,
@@ -249,6 +250,8 @@ const styles = StyleSheet.create({
     //Les paramètres
     settingsNav: {
         width: "100%",
+        alignSelf: "center",
+        maxWidth: 600,
         marginTop: 40,
     },
 });

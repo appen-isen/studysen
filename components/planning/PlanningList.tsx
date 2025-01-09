@@ -76,7 +76,7 @@ export default function PlanningList(props: {
                     startDate={props.startDate}
                 ></DayBox>
             </View>
-            <View style={{ maxHeight: "90%" }}>
+            <View style={styles.eventsView}>
                 <ScrollView
                     contentContainerStyle={styles.eventsScroll}
                     showsVerticalScrollIndicator={false}
@@ -265,6 +265,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         width: "100%",
+        maxWidth: 600,
         justifyContent: "space-around",
         marginTop: 10,
     },
@@ -285,6 +286,10 @@ const styles = StyleSheet.create({
         fontSize: 13,
     },
     // Vue des événements
+    eventsView: {
+        width: "100%",
+        maxWidth: 600,
+    },
     eventsScroll: {
         width: "100%",
         display: "flex",

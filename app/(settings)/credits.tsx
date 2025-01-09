@@ -4,12 +4,13 @@ import { AnimatedPressable } from "@/components/Buttons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 //Les crédits
 export default function Credits() {
     const router = useRouter();
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {/* Bouton de retour */}
             <AnimatedPressable onPress={() => router.back()}>
                 <FontAwesome6 name="arrow-left" style={styles.backIcon} />
@@ -35,7 +36,7 @@ export default function Credits() {
                     <Text style={styles.contributors}>Dorian DESMARS</Text>
                 </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -71,13 +72,15 @@ const styles = StyleSheet.create({
     //Sections
     section: {
         width: "90%",
+        maxWidth: 600,
         flexDirection: "column",
-        marginTop: 10,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 20,
     },
     sectionTitle: {
         fontSize: 18,
         color: Colors.primaryColor,
-        marginBottom: 10,
     },
     contributors: {
         fontSize: 16,

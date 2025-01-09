@@ -4,12 +4,13 @@ import { AnimatedPressable } from "@/components/Buttons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold } from "@/components/Texts";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 //Paramètres des notifications
 export default function NotifSettings() {
     const router = useRouter();
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {/* Bouton de retour */}
             <AnimatedPressable onPress={() => router.back()}>
                 <FontAwesome6 name="arrow-left" style={styles.backIcon} />
@@ -21,7 +22,7 @@ export default function NotifSettings() {
                     l'application.
                 </Bold>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 

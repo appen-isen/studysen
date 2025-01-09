@@ -15,6 +15,8 @@ export class Session {
     // Nom et prénom de l'utilisateur
     private username: string = "";
 
+    private demo_mode: boolean = false;
+
     constructor() {
         this.client = axios.create({
             baseURL: this.baseURL,
@@ -37,6 +39,13 @@ export class Session {
         timeout?: number
     ): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
+            //Mode de démo
+            if (username === "demo" && password === "demo") {
+                this.demo_mode = true;
+                this.username = "Demo User";
+                console.log(`Logged in as ${this.username}`);
+                return resolve(true);
+            }
             const params = new URLSearchParams();
             params.append("username", username);
             params.append("password", password);
@@ -174,6 +183,11 @@ export class Session {
     public clearViewStateCache(): void {
         this.viewStateCache = "";
         this.subMenuIdCache = "";
+    }
+
+    //Le mode démo permet de tester l'application avec des données fictives
+    public isDemo(): boolean {
+        return this.demo_mode;
     }
 
     public sendGET<T>(url: string): Promise<T> {

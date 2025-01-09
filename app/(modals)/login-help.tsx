@@ -1,12 +1,13 @@
 import { Link, useRouter } from "expo-router";
 import { View, StyleSheet } from "react-native";
 import { Text, Bold } from "@/components/Texts";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginHelpModal() {
     const router = useRouter();
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Problèmes de connexion ?</Text>
             <Text style={styles.text}>
                 Les identifiants demandés par l'application sont les mêmes que
@@ -46,7 +47,7 @@ export default function LoginHelpModal() {
             >
                 J'ai compris
             </Link>
-        </View>
+        </SafeAreaView>
     );
 }
 

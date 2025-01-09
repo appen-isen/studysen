@@ -14,6 +14,7 @@ import {
 } from "@/store/webaurionStore";
 import { removeSecureStoreItem } from "@/store/secureStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 //Paramètres avancés
 export default function AdvancedSettings() {
@@ -42,7 +43,7 @@ export default function AdvancedSettings() {
         }, 500);
     };
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <AnimatedPressable onPress={() => router.back()}>
                 <FontAwesome6 name="arrow-left" style={styles.backIcon} />
             </AnimatedPressable>
@@ -66,7 +67,7 @@ export default function AdvancedSettings() {
                     Version: {nativeApplicationVersion}
                 </Text>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -101,8 +102,11 @@ const styles = StyleSheet.create({
     //Sections de paramètres
     section: {
         width: "90%",
+        maxWidth: 600,
         flexDirection: "column",
-        marginTop: 10,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 20,
     },
     sectionTitle: {
         fontSize: 18,
@@ -112,7 +116,6 @@ const styles = StyleSheet.create({
     btn: {
         width: "70%",
         height: 40,
-        alignSelf: "center",
     },
     btnText: {
         fontSize: 16,

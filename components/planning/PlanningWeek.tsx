@@ -1,5 +1,5 @@
 import { PlanningEvent } from "@/webAurion/utils/types";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Dimensions, StyleSheet, View } from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
 import {
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-around",
-        alignSelf: "flex-end",
+        alignSelf: "center",
         width: "90%",
         marginTop: 10,
     },
@@ -245,9 +245,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 10,
-        paddingHorizontal: 15,
-        paddingVertical: 5,
-        marginHorizontal: 3,
+        width: "15%",
+        maxWidth: 100,
+        height: 50,
         backgroundColor: Colors.primaryColor,
     },
     dayText: {
@@ -263,6 +263,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
+        marginTop: 20,
         width: "100%",
         height: PIXEL_PER_HOUR * 2 * 6,
     },
@@ -272,7 +273,7 @@ const styles = StyleSheet.create({
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        maxWidth: 40,
+        maxWidth: 35,
     },
     hourText: {
         fontSize: 15,
@@ -319,25 +320,27 @@ const eventStyles = StyleSheet.create({
         backgroundColor: "transparent",
     },
     subject: {
-        fontSize: 7,
+        fontSize: Dimensions.get("window").width < 500 ? 8 : 12,
         fontWeight: "bold",
         textAlign: "center",
         padding: 1,
     },
     separator: {
         width: "90%",
+        maxWidth: 100,
         height: 3,
         backgroundColor: Colors.primaryColor,
         borderRadius: 10,
     },
     hour: {
-        fontSize: 8,
+        fontSize: Dimensions.get("window").width < 500 ? 9 : 11,
     },
     room: {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         width: "70%",
+        maxWidth: 100,
         height: 13,
         marginBottom: 2,
         borderRadius: 10,

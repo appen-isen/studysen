@@ -1,5 +1,6 @@
 import {
     ActivityIndicator,
+    Dimensions,
     Keyboard,
     Platform,
     StyleSheet,
@@ -20,6 +21,7 @@ import useSessionStore from "@/store/sessionStore";
 import Session from "@/webAurion/api/Session";
 import { getSecureStoreItem, setSecureStoreItem } from "@/store/secureStore";
 import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -154,7 +156,7 @@ export default function LoginScreen() {
         );
     }
     return (
-        <View
+        <SafeAreaView
             style={[
                 styles.container,
                 iosKeyboardEnabled ? { justifyContent: "flex-start" } : {},
@@ -193,7 +195,7 @@ export default function LoginScreen() {
                 <Text>Utilisez les identifiants de l'ENT</Text>
             </View>
             {/* Champs */}
-            <View>
+            <View style={styles.fieldsView}>
                 <Input
                     placeholder="Nom d'utilisateur"
                     icon={
@@ -245,7 +247,7 @@ export default function LoginScreen() {
                 message={errorMessage}
                 setVisible={(visible) => setErrorVisible(visible)}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -259,10 +261,11 @@ const styles = StyleSheet.create({
     campusSelect: {
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-around",
+        justifyContent: "center",
         alignItems: "center",
         padding: 10,
-        width: 220,
+        width: "60%",
+        maxWidth: 300,
         backgroundColor: Colors.primaryColor,
         borderRadius: 50,
         marginTop: 10,
@@ -279,9 +282,12 @@ const styles = StyleSheet.create({
         alignItems: "flex-start",
     },
     titleBox: {
-        alignSelf: "flex-start",
-        marginLeft: 20,
-        marginBottom: 10,
+        alignSelf: "center",
+        //Si l'écran est grand, on centre le texte
+        alignItems:
+            Dimensions.get("window").width > 600 ? "center" : "flex-start",
+        width: "100%",
+        paddingHorizontal: 20,
     },
     title: {
         fontSize: 45,
@@ -290,6 +296,13 @@ const styles = StyleSheet.create({
         fontSize: 60,
         marginBottom: 10,
         color: Colors.primaryColor,
+    },
+    //Les champs
+    fieldsView: {
+        justifyContent: "center",
+        alignItems: "center",
+        width: "80%",
+        maxWidth: 600,
     },
     inputIcon: {
         marginLeft: 5,
@@ -303,6 +316,7 @@ const styles = StyleSheet.create({
     },
     loginBtn: {
         width: "80%",
+        maxWidth: 600,
     },
     helpLink: {
         fontWeight: 600,

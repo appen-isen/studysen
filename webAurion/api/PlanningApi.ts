@@ -1,4 +1,5 @@
 import { getJSFFormParams } from "../utils/AurionUtils";
+import { generateDemoPlanning } from "../utils/demo";
 import {
     getScheduleDates,
     planningResponseToEvents,
@@ -15,6 +16,10 @@ class PlanningApi {
     // Récupération de l'emploi du temps en fonction de la date de début et de fin (timestamps en millisecondes)
     public fetchPlanning(weeksFromNow?: number): Promise<PlanningEvent[]> {
         return new Promise<PlanningEvent[]>(async (resolve, reject) => {
+            //Mode démo
+            if (this.session.isDemo()) {
+                return resolve(generateDemoPlanning(weeksFromNow));
+            }
             try {
                 // On récupère le ViewState pour effectuer la requête
                 // Ici 1_4 correspond au sous-menu 'Emploi du temps' dans la sidebar

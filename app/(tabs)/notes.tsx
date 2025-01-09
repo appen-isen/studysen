@@ -16,6 +16,7 @@ import { Octicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function NotesScreen() {
     const router = useRouter();
@@ -35,7 +36,7 @@ export default function NotesScreen() {
     const [noteModalInfoVisible, setNoteModalInfoVisible] = useState(false);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Mes notes</Text>
             {/* Sélecteur de semestre */}
             <DoubleSelector
@@ -98,7 +99,10 @@ export default function NotesScreen() {
             )}
 
             {/* Notes par matière */}
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <ScrollView
+                contentContainerStyle={styles.scrollContainer}
+                style={styles.scrollView}
+            >
                 {selectedNotes.map((notesList, index) => (
                     <NotesGroup
                         notesList={notesList}
@@ -120,7 +124,7 @@ export default function NotesScreen() {
                     setVisible={setNoteModalInfoVisible}
                 ></NoteModal>
             )}
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -223,6 +227,9 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     // Conteneur de la liste de notes
+    scrollView: {
+        width: "100%",
+    },
     scrollContainer: {
         display: "flex",
         justifyContent: "flex-start",
@@ -245,6 +252,7 @@ const styles = StyleSheet.create({
 const notesGroupStyles = StyleSheet.create({
     container: {
         width: "90%",
+        maxWidth: 500,
         backgroundColor: "white",
         borderRadius: 10,
         boxShadow: "0px 0px 8px 2px rgba(0,0,0,0.1)",
@@ -292,8 +300,8 @@ const notesGroupStyles = StyleSheet.create({
     // Contenu du groupe de notes
     content: {
         flexDirection: "row",
-        flexWrap: "wrap",
-        columnGap: 45,
+        justifyContent: "space-around",
+        alignItems: "center",
         padding: 10,
     },
     noteContainer: {

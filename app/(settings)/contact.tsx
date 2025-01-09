@@ -4,12 +4,13 @@ import { AnimatedPressable } from "@/components/Buttons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 //Nous contacter
 export default function Contact() {
     const router = useRouter();
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <AnimatedPressable onPress={() => router.back()}>
                 <FontAwesome6 name="arrow-left" style={styles.backIcon} />
             </AnimatedPressable>
@@ -22,7 +23,7 @@ export default function Contact() {
                     Appen'ISEN de Nantes.
                 </Text>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 

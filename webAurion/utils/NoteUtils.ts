@@ -53,7 +53,6 @@ export function getNotesFromResponse(htmlReponse: string): NotesList[] {
             });
         }
     });
-
     return notesByCode;
 }
 

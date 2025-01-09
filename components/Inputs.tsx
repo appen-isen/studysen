@@ -40,7 +40,7 @@ export function Input(props: TextInputProps & InputProps) {
             {/* Composant Input */}
             <TextInput
                 {...props}
-                style={[inputStyle]}
+                style={inputStyle}
                 onFocus={() => setFocused(true)}
                 onEndEditing={() => setFocused(false)}
                 secureTextEntry={password && !textVisible}
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: Colors.hexWithOpacity(Colors.primaryColor, 0.1),
         borderRadius: 15,
-        width: "80%",
+        width: "100%",
         height: 50,
         marginBottom: 20,
     },
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         backgroundColor: "transparent",
         width: "100%",
-        height: "100%",
+        height: "95%",
     },
     inputFocused: {
         borderColor: "#54c2f0",
