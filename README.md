@@ -8,10 +8,11 @@ ISEN-Orbit est un projet d'application mobile développée en React Native avec 
 -   Emploi du temps WebAurion - Page Planning
 -   Notes WebAurion - Page Notes
 -   Affichage du cours actuel et à venir, ainsi que la moyenne de l'étudiant - Page Accueil
+-   Affichage des informations du compte et des réglages de l'application - Page Paramètres (Mon compte)
 
 ## 🌱 Branches en développement
 
--   [`feat/settings`](https://github.com/appen-isen/isen-orbit/tree/feat/settings) : Mon compte (Paramètres)
+-
 -
 -
 
@@ -48,7 +49,7 @@ ISEN-Orbit est un projet d'application mobile développée en React Native avec 
     ```
 3. Après cela, vous pourrez scanner le QR code avec l'application Expo Go et tout devrait fonctionner.
 
-## 🛠️ Technologies utilisées
+## 🤖 Technologies utilisées
 
 -   **React Native** : Framework pour le développement d'applications mobiles (Android et iOS).
 -   **Expo** : Outils et services pour développer et déployer l'application.
@@ -67,21 +68,63 @@ Pour contribuer au projet:
 
 1. Créez une branche pour votre fonctionnalité/correctif :
 
-```bash
-git checkout -b feat/nouvelle-fonctionnalité
-```
+    ```bash
+    git checkout -b feat/nouvelle-fonctionnalité
+    ```
 
 2. Faites vos modifications et ajoutez des commits :
 
-```bash
-git commit -m "feat: [votre fonctionnalité/modifs]"
-```
+    ```bash
+    git commit -m "feat: [votre fonctionnalité/modifs]"
+    ```
 
 3. Synchronisez votre travail sur le repo GitHub en envoyant votre branche
 
-```bash
-git push origin feat/nouvelle-fonctionnalité
-```
+    ```bash
+    git push origin feat/nouvelle-fonctionnalité
+    ```
+
+## 🛠️ Build de l'application
+
+Pour constuire l'application (obtenir un exécutable Android/iOS), vous pouvez utiliser la démarche suivante:
+
+1. Installer les service EAS
+
+    ```bash
+    npm install --global eas-cli
+    ```
+
+2. Connectez-vous à votre compte Expo (il doit faire parti de l'organisation Appen)
+
+    ```bash
+    eas login
+    ```
+
+3. Construire l'application
+
+    - En mode 'preview':
+
+        ```bash
+        eas build --platform all --profile preview
+        ```
+
+    - En mode 'production':
+
+        ```bash
+        eas build --platform all --profile production
+        ```
+
+4. Faire une mise à jour rapide (quickfix)
+
+    ```bash
+    eas update --channel preview --message "[message]"
+    ```
+
+    ou
+
+    ```bash
+    eas update --channel production --message "[message]"
+    ```
 
 ### Ressources utiles
 
