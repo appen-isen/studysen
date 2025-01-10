@@ -4,7 +4,7 @@ import { AnimatedPressable, Button } from "@/components/Buttons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
-import { nativeApplicationVersion } from "expo-application";
+import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import useSettingsStore from "@/store/settingsStore";
 import useSessionStore from "@/store/sessionStore";
 import {
@@ -65,6 +65,9 @@ export default function AdvancedSettings() {
                 </View>
                 <Text style={styles.infoText}>
                     Version: {nativeApplicationVersion}
+                </Text>
+                <Text style={styles.infoText}>
+                    Version du build: {nativeBuildVersion}
                 </Text>
             </View>
         </SafeAreaView>
