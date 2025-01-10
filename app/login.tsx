@@ -1,5 +1,6 @@
 import {
     ActivityIndicator,
+    Dimensions,
     Keyboard,
     Platform,
     StyleSheet,
@@ -19,10 +20,14 @@ import { Dropdown, ErrorModal } from "@/components/Modals";
 import useSessionStore from "@/store/sessionStore";
 import Session from "@/webAurion/api/Session";
 import { getSecureStoreItem, setSecureStoreItem } from "@/store/secureStore";
+import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
     const router = useRouter();
     const { setSession } = useSessionStore();
+
+    const { settings, setSettings } = useSettingsStore();
 
     //Hauteur du clavier pour iOS (Permet d'éviter le bug du clavier qui cache les inputs)
     const [iosKeyboardEnabled, setIOSKeyboardEnabled] = useState(false);
@@ -46,6 +51,7 @@ export default function LoginScreen() {
                 } catch (err) {
                     //Probablement un timeout, donc on considère que l'utilisateur est hors ligne
                     console.log("Offline mode enabled!");
+                    console.error(err);
                     router.replace({
                         pathname: "/(tabs)",
                         params: { offlineMode: 1 },
@@ -83,8 +89,6 @@ export default function LoginScreen() {
 
     //Menu déroulant pour choisir le campus
     const [campusMenuVisible, setCampusMenuVisible] = useState(false);
-    const campusOptions = ["Nantes", "Rennes", "Brest", "Caen"];
-    const [selectedCampus, setSelectedCampus] = useState(campusOptions[0]);
 
     //Checkbox pour se souvenir de l'utilisateur
     const [rememberMe, setRememberMe] = useState(true);
@@ -152,7 +156,7 @@ export default function LoginScreen() {
         );
     }
     return (
-        <View
+        <SafeAreaView
             style={[
                 styles.container,
                 iosKeyboardEnabled ? { justifyContent: "flex-start" } : {},
@@ -162,9 +166,10 @@ export default function LoginScreen() {
             <AnimatedPressable
                 style={styles.campusSelect}
                 onPress={() => setCampusMenuVisible(true)}
+                scale={0.95}
             >
                 <Text style={styles.campusSelectText}>
-                    Campus de <Bold>{selectedCampus}</Bold>
+                    Campus de <Bold>{settings.campus}</Bold>
                 </Text>
                 <FontAwesome6
                     style={styles.campusSelectText}
@@ -175,9 +180,11 @@ export default function LoginScreen() {
             <Dropdown
                 visible={campusMenuVisible}
                 setVisible={setCampusMenuVisible}
-                options={campusOptions}
-                selectedItem={selectedCampus}
-                setSelectedItem={setSelectedCampus}
+                options={[...CAMPUS]}
+                selectedItem={settings.campus}
+                setSelectedItem={(newCampus) =>
+                    setSettings("campus", newCampus as (typeof CAMPUS)[number])
+                }
                 modalBoxStyle={styles.dropdownBoxStyle}
             ></Dropdown>
 
@@ -188,7 +195,7 @@ export default function LoginScreen() {
                 <Text>Utilisez les identifiants de l'ENT</Text>
             </View>
             {/* Champs */}
-            <View>
+            <View style={styles.fieldsView}>
                 <Input
                     placeholder="Nom d'utilisateur"
                     icon={
@@ -240,7 +247,7 @@ export default function LoginScreen() {
                 message={errorMessage}
                 setVisible={(visible) => setErrorVisible(visible)}
             />
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -254,10 +261,11 @@ const styles = StyleSheet.create({
     campusSelect: {
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-around",
+        justifyContent: "center",
         alignItems: "center",
         padding: 10,
-        width: 220,
+        width: "60%",
+        maxWidth: 300,
         backgroundColor: Colors.primaryColor,
         borderRadius: 50,
         marginTop: 10,
@@ -274,9 +282,12 @@ const styles = StyleSheet.create({
         alignItems: "flex-start",
     },
     titleBox: {
-        alignSelf: "flex-start",
-        marginLeft: 20,
-        marginBottom: 10,
+        alignSelf: "center",
+        //Si l'écran est grand, on centre le texte
+        alignItems:
+            Dimensions.get("window").width > 600 ? "center" : "flex-start",
+        width: "100%",
+        paddingHorizontal: 20,
     },
     title: {
         fontSize: 45,
@@ -285,6 +296,13 @@ const styles = StyleSheet.create({
         fontSize: 60,
         marginBottom: 10,
         color: Colors.primaryColor,
+    },
+    //Les champs
+    fieldsView: {
+        justifyContent: "center",
+        alignItems: "center",
+        width: "80%",
+        maxWidth: 600,
     },
     inputIcon: {
         marginLeft: 5,
@@ -298,6 +316,7 @@ const styles = StyleSheet.create({
     },
     loginBtn: {
         width: "80%",
+        maxWidth: 600,
     },
     helpLink: {
         fontWeight: 600,

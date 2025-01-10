@@ -12,13 +12,12 @@ import {
 } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-
 interface StyledButtonProps {
     textStyle?: object;
     style?: object;
     JSX?: JSX.Element;
     isLoading?: boolean;
+    bgColor?: string;
 }
 
 export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
@@ -28,16 +27,18 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
     JSX,
     title,
     isLoading,
+    bgColor,
 }) => {
     const [pressed, setPressed] = useState(false);
 
     return (
         <Pressable
-            style={
+            style={[
                 pressed
                     ? { ...styles.button, ...styles.pressedButton, ...style }
-                    : { ...styles.button, ...style }
-            }
+                    : { ...styles.button, ...style },
+                bgColor && { backgroundColor: bgColor },
+            ]}
             onPress={onPress}
             onPressOut={() => setPressed(false)}
             onPressIn={() => setPressed(true)}
@@ -67,6 +68,7 @@ interface AnimatedPressableProps {
     children: React.ReactNode;
     scale?: number;
 }
+const AnimatedPressableComp = Animated.createAnimatedComponent(Pressable);
 // Pressable animé (scale)
 export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
     onPress,
@@ -91,17 +93,14 @@ export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
     };
 
     return (
-        <Pressable
+        <AnimatedPressableComp
             onPress={onPress}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
+            style={[style, { transform: [{ scale: scaleAnim }] }]}
         >
-            <Animated.View
-                style={[style, { transform: [{ scale: scaleAnim }] }]}
-            >
-                {children}
-            </Animated.View>
-        </Pressable>
+            {children}
+        </AnimatedPressableComp>
     );
 };
 

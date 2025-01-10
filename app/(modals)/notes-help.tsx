@@ -1,12 +1,13 @@
 import { View, StyleSheet } from "react-native";
 import { Text } from "@/components/Texts";
 import { Link, useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 //Informations sur le calcul de la moyenne
 export default function NotesHelpModal() {
     const router = useRouter();
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={styles.title}>
                 Comment est calculée votre moyenne ?
             </Text>
@@ -34,7 +35,7 @@ export default function NotesHelpModal() {
             >
                 J'ai compris
             </Link>
-        </View>
+        </SafeAreaView>
     );
 }
 

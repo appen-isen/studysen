@@ -1,27 +1,18 @@
 import { useEffect, useRef } from "react";
-import { Animated, Easing, StyleSheet, View } from "react-native";
+import {
+    ActivityIndicator,
+    Animated,
+    Easing,
+    StyleSheet,
+    View,
+} from "react-native";
 import { Text } from "./Texts";
 import { FontAwesome5 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 // Message de synchronisation
 export function SyncMessage({ isVisible }: { isVisible: boolean }) {
-    // Animation pour la rotation de l'icône
-    const spinValue = useRef(new Animated.Value(0)).current;
     // Animation pour la hauteur
     const heightValue = useRef(new Animated.Value(0)).current;
-    useEffect(() => {
-        // Démarrer l'animation de rotation en boucle
-        const spinAnimation = Animated.loop(
-            Animated.timing(spinValue, {
-                toValue: 1,
-                duration: 1000,
-                easing: Easing.linear,
-                useNativeDriver: true,
-            })
-        );
-        spinAnimation.start();
-        return () => spinAnimation.stop(); // Nettoyage lors du démontage
-    }, [spinValue]);
     useEffect(() => {
         // Animation d'apparition ou de rétractation en fonction de `isVisible`
         Animated.timing(heightValue, {
@@ -31,20 +22,9 @@ export function SyncMessage({ isVisible }: { isVisible: boolean }) {
             useNativeDriver: false, // `height` n'est pas pris en charge par useNativeDriver
         }).start();
     }, [isVisible, heightValue]);
-    // Mapper l'animation à une rotation
-    const spin = spinValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: ["0deg", "360deg"],
-    });
     return (
         <Animated.View style={[styles.syncView, { height: heightValue }]}>
-            <Animated.View
-                style={{
-                    transform: [{ rotate: spin }],
-                }}
-            >
-                <FontAwesome5 name="sync-alt" style={styles.syncIcon} />
-            </Animated.View>
+            <ActivityIndicator color={"white"} size={15}></ActivityIndicator>
             <Text style={styles.syncText}>Synchronisation</Text>
         </Animated.View>
     );

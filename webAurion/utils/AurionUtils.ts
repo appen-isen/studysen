@@ -32,3 +32,16 @@ export function getJSFFormParams(
     params.append("javax.faces.ViewState", viewState);
     return params;
 }
+
+// Récupération du prénom / nom de l'utilisateur lors de la connexion
+export function getName(html: string): string {
+    const parser = load(html);
+    //On recherche de l'élément qui contient le prénom et le nom
+    const usernameElement = parser("li.ui-widget-header > h3");
+    if (usernameElement.length > 0) {
+        //On récupère le texte contenu dans l'élément
+        const username = usernameElement.text();
+        return username;
+    }
+    return "";
+}

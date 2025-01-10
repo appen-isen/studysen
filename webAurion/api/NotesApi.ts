@@ -1,4 +1,5 @@
 import { getViewState } from "../utils/AurionUtils";
+import { generateDemoNotes } from "../utils/demo";
 import { getNotesFromResponse } from "../utils/NoteUtils";
 import { NotesList } from "../utils/types";
 import Session from "./Session";
@@ -12,6 +13,10 @@ class NotesApi {
     // Récupération des notes
     public fetchNotes(): Promise<NotesList[]> {
         return new Promise<NotesList[]>(async (resolve, reject) => {
+            //Mode démo
+            if (this.session.isDemo()) {
+                return resolve(generateDemoNotes());
+            }
             try {
                 // On initialise le ViewState (obligatoire pour avoir une réponse correcteur du backend)
                 // Ici 1_1 correspond au sous-menu 'Mes notes' dans la sidebar

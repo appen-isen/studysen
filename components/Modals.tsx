@@ -25,8 +25,9 @@ type ModalProps = {
 type BottomModalProps = ModalProps & {
     flexSize?: number;
 };
-type ErrorModalProps = ModalProps & {
+type PopupModalProps = ModalProps & {
     message: string;
+    onConfirm?: () => void;
 };
 
 type DropdownProps = ModalProps & {
@@ -133,7 +134,7 @@ export function BottomModal(props: BottomModalProps) {
 }
 
 // Modal d'erreur
-export function ErrorModal(props: ErrorModalProps) {
+export function ErrorModal(props: PopupModalProps) {
     return (
         <ModalBase setVisible={props.setVisible} visible={props.visible}>
             <Image
@@ -149,6 +150,40 @@ export function ErrorModal(props: ErrorModalProps) {
                 textStyle={styles.modalButtonText}
                 title={"OK"}
             />
+        </ModalBase>
+    );
+}
+
+// Modal de confirmation
+export function ConfirmModal(props: PopupModalProps) {
+    return (
+        <ModalBase setVisible={props.setVisible} visible={props.visible}>
+            <Image
+                style={styles.modalImg}
+                source={require("@/assets/images/question.png")}
+            />
+            <Text style={styles.modalTitle}>Confirmation</Text>
+            <Text style={styles.modalText}>{props.message}</Text>
+
+            <View style={styles.buttonView}>
+                <Button
+                    onPress={() => {
+                        props.setVisible(false);
+                        // Appel de la fonction de confirmation
+                        props.onConfirm && props.onConfirm();
+                    }}
+                    style={styles.modalButton}
+                    textStyle={styles.modalButtonText}
+                    title={"Confirmer"}
+                />
+                <Button
+                    onPress={() => props.setVisible(false)}
+                    style={styles.modalButton}
+                    bgColor="grey"
+                    textStyle={styles.modalButtonText}
+                    title={"Annuler"}
+                />
+            </View>
         </ModalBase>
     );
 }
@@ -206,6 +241,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         width: "90%",
+        maxWidth: 600,
         backgroundColor: "white",
         borderRadius: 10,
         elevation: 10,
@@ -223,10 +259,6 @@ const styles = StyleSheet.create({
         width: "90%",
     },
     modalButton: {
-        paddingLeft: 20,
-        paddingRight: 20,
-        paddingTop: 6,
-        paddingBottom: 6,
         marginTop: 20,
     },
     modalButtonText: { fontSize: 23 },
@@ -234,6 +266,13 @@ const styles = StyleSheet.create({
         width: 75,
         height: 75,
         marginBottom: 15,
+    },
+    buttonView: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-around",
+        width: "100%",
     },
     // Dropdown
     dropdownItem: {

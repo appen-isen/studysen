@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Colors from "@/constants/Colors";
@@ -23,6 +23,7 @@ import {
     useSyncedPlanningStore,
 } from "@/store/webaurionStore";
 import { SyncMessage } from "@/components/Sync";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PlanningScreen() {
     const { session } = useSessionStore();
@@ -142,8 +143,7 @@ export default function PlanningScreen() {
         //On change la date de début de la semaine
         setCurrentStartDate((prevStart) => {
             const closerMonday = getCloserMonday(new Date());
-            closerMonday.setHours(0, 0, 0, 0); // Date de début de journée
-
+            closerMonday.setHours(8, 0, 0, 0); // Date de début de journée
             const newDate = new Date(prevStart);
             const offset = previous ? -7 : 7; // On avance ou recule d'une semaine
             newDate.setDate(newDate.getDate() + offset);
@@ -170,7 +170,7 @@ export default function PlanningScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {/* Message de synchronisation */}
             <SyncMessage isVisible={isSyncing} />
             {/* Titre de la page */}
@@ -267,7 +267,7 @@ export default function PlanningScreen() {
                     setVisible={setEventModalInfoVisible}
                 ></EventModal>
             )}
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -286,9 +286,10 @@ const styles = StyleSheet.create({
     },
     // Style du sélecteur de l'affichage de l'emploi du temps
     planningViewSelector: {
-        alignSelf: "flex-end",
+        //Responsif (alignement)
+        alignSelf: Dimensions.get("window").width > 600 ? "center" : "flex-end",
         marginTop: 20,
-        marginRight: 20,
+        marginRight: Dimensions.get("window").width > 600 ? 0 : 20,
         marginBottom: 20,
     },
     selectorIcon: {
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-around",
+        justifyContent: "center",
         width: "90%",
         marginBottom: 10,
     },
@@ -308,6 +309,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         color: Colors.primaryColor,
         paddingHorizontal: 10,
+        marginHorizontal: 20,
     },
     weekText: {
         fontSize: 18,

@@ -22,6 +22,7 @@ import { ListEvent } from "@/components/planning/PlanningList";
 import EventModal from "@/components/modals/EventModal";
 import { calculateAverage } from "@/utils/notes";
 import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -148,7 +149,7 @@ export default function HomeScreen() {
         }
     };
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Accueil</Text>
             {/* événement en cours */}
             <View style={sectionStyles.section}>
@@ -274,7 +275,7 @@ export default function HomeScreen() {
                     setVisible={setEventModalInfoVisible}
                 ></EventModal>
             )}
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -315,6 +316,7 @@ const sectionStyles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         width: "90%",
+        maxWidth: 600,
         marginTop: 35,
     },
     titleBox: {
