@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View, ScrollView } from "react-native";
 import { Text } from "@/components/Texts";
 import { Button } from "@/components/Buttons";
 import Colors from "@/constants/Colors";
@@ -86,7 +86,7 @@ export default function HomeScreen() {
             const isWeekInPlanning = planning.some(
                 (event) =>
                     new Date(event.start).getTime() >= startTimestamp &&
-                    new Date(event.end).getTime() <= endTimestamp
+                    new Date(event.end).getTime() <= endTimestamp,
             );
             // Pas besoin de retélécharger les événements si la semaine est déjà chargée
             if (isWeekInPlanning) {
@@ -103,8 +103,8 @@ export default function HomeScreen() {
                         ...planning.filter(
                             (event) =>
                                 !currentWeekPlanning.some(
-                                    (newEvent) => newEvent.id === event.id
-                                )
+                                    (newEvent) => newEvent.id === event.id,
+                                ),
                         ),
                         ...currentWeekPlanning,
                     ]);
@@ -150,131 +150,147 @@ export default function HomeScreen() {
     };
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={styles.title}>Accueil</Text>
-            {/* événement en cours */}
-            <View style={sectionStyles.section}>
-                {/* Titre de la section */}
-                <View style={sectionStyles.titleBox}>
-                    <MaterialCommunityIcons
-                        name="calendar-check"
-                        style={sectionStyles.icon}
-                    />
-                    <Text style={sectionStyles.titleText}>ACTUELLEMENT</Text>
-                </View>
-                {/* Contenu de la section */}
-                <View style={sectionStyles.content}>
-                    {/* Si le planning est chargé, on affiche l'événement */}
-                    {isPlanningLoaded ? (
-                        getCurrentEvent(formattedPlanning) !== null ? (
-                            <ListEvent
-                                event={getCurrentEvent(formattedPlanning)!}
-                                //Affiche les informations d'un cours dans une modal
-                                onPress={(planningEvent) => {
-                                    //Si c'est un congé, on affiche directement les informations
-                                    if (planningEvent.className === "CONGES") {
-                                        setSelectedEvent(planningEvent);
-                                    } else {
-                                        //Sinon on affiche les informations complètes de l'événement
-                                        setSelectedEvent(
-                                            findEvent(planning, planningEvent)
-                                        );
-                                    }
-                                    setEventModalInfoVisible(true);
-                                }}
-                            />
-                        ) : (
-                            <Text style={styles.noEventText}>
-                                Aucun événement en cours
-                            </Text>
-                        )
-                    ) : (
-                        //Sinon on affiche un loader
-                        <ActivityIndicator
-                            animating={true}
-                            color={Colors.primaryColor}
-                            size={50}
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <Text style={styles.title}>Accueil</Text>
+                {/* événement en cours */}
+                <View style={sectionStyles.section}>
+                    {/* Titre de la section */}
+                    <View style={sectionStyles.titleBox}>
+                        <MaterialCommunityIcons
+                            name="calendar-check"
+                            style={sectionStyles.icon}
                         />
-                    )}
-                </View>
-            </View>
-
-            {/* événement à venir */}
-            <View style={sectionStyles.section}>
-                {/* Titre de la section */}
-                <View style={sectionStyles.titleBox}>
-                    <MaterialCommunityIcons
-                        name="calendar-start"
-                        style={sectionStyles.icon}
-                    />
-                    <Text style={sectionStyles.titleText}>À VENIR</Text>
-                </View>
-                {/* Contenu de la section */}
-                <View style={sectionStyles.content}>
-                    {/* Si le planning est chargé, on affiche l'événement */}
-                    {isPlanningLoaded ? (
-                        getNextEventToday(formattedPlanning) !== null ? (
-                            <ListEvent
-                                event={getNextEventToday(formattedPlanning)!}
-                                //Affiche les informations d'un cours dans une modal
-                                onPress={(planningEvent) => {
-                                    //Si c'est un congé, on affiche directement les informations
-                                    if (planningEvent.className === "CONGES") {
-                                        setSelectedEvent(planningEvent);
-                                    } else {
-                                        //Sinon on affiche les informations complètes de l'événement
-                                        setSelectedEvent(
-                                            findEvent(planning, planningEvent)
-                                        );
-                                    }
-                                    setEventModalInfoVisible(true);
-                                }}
-                            />
+                        <Text style={sectionStyles.titleText}>
+                            ACTUELLEMENT
+                        </Text>
+                    </View>
+                    {/* Contenu de la section */}
+                    <View style={sectionStyles.content}>
+                        {/* Si le planning est chargé, on affiche l'événement */}
+                        {isPlanningLoaded ? (
+                            getCurrentEvent(formattedPlanning) !== null ? (
+                                <ListEvent
+                                    event={getCurrentEvent(formattedPlanning)!}
+                                    //Affiche les informations d'un cours dans une modal
+                                    onPress={(planningEvent) => {
+                                        //Si c'est un congé, on affiche directement les informations
+                                        if (
+                                            planningEvent.className === "CONGES"
+                                        ) {
+                                            setSelectedEvent(planningEvent);
+                                        } else {
+                                            //Sinon on affiche les informations complètes de l'événement
+                                            setSelectedEvent(
+                                                findEvent(
+                                                    planning,
+                                                    planningEvent,
+                                                ),
+                                            );
+                                        }
+                                        setEventModalInfoVisible(true);
+                                    }}
+                                />
+                            ) : (
+                                <Text style={styles.noEventText}>
+                                    Aucun événement en cours
+                                </Text>
+                            )
                         ) : (
-                            <Text style={styles.noEventText}>
-                                Aucun événement à venir aujourd'hui
-                            </Text>
-                        )
-                    ) : (
-                        //Sinon on affiche un loader
-                        <ActivityIndicator
-                            animating={true}
-                            color={Colors.primaryColor}
-                            size={50}
+                            //Sinon on affiche un loader
+                            <ActivityIndicator
+                                animating={true}
+                                color={Colors.primaryColor}
+                                size={50}
+                            />
+                        )}
+                    </View>
+                </View>
+
+                {/* événement à venir */}
+                <View style={sectionStyles.section}>
+                    {/* Titre de la section */}
+                    <View style={sectionStyles.titleBox}>
+                        <MaterialCommunityIcons
+                            name="calendar-start"
+                            style={sectionStyles.icon}
                         />
-                    )}
+                        <Text style={sectionStyles.titleText}>À VENIR</Text>
+                    </View>
+                    {/* Contenu de la section */}
+                    <View style={sectionStyles.content}>
+                        {/* Si le planning est chargé, on affiche l'événement */}
+                        {isPlanningLoaded ? (
+                            getNextEventToday(formattedPlanning) !== null ? (
+                                <ListEvent
+                                    event={
+                                        getNextEventToday(formattedPlanning)!
+                                    }
+                                    //Affiche les informations d'un cours dans une modal
+                                    onPress={(planningEvent) => {
+                                        //Si c'est un congé, on affiche directement les informations
+                                        if (
+                                            planningEvent.className === "CONGES"
+                                        ) {
+                                            setSelectedEvent(planningEvent);
+                                        } else {
+                                            //Sinon on affiche les informations complètes de l'événement
+                                            setSelectedEvent(
+                                                findEvent(
+                                                    planning,
+                                                    planningEvent,
+                                                ),
+                                            );
+                                        }
+                                        setEventModalInfoVisible(true);
+                                    }}
+                                />
+                            ) : (
+                                <Text style={styles.noEventText}>
+                                    Aucun événement à venir aujourd'hui
+                                </Text>
+                            )
+                        ) : (
+                            //Sinon on affiche un loader
+                            <ActivityIndicator
+                                animating={true}
+                                color={Colors.primaryColor}
+                                size={50}
+                            />
+                        )}
+                    </View>
                 </View>
-            </View>
 
-            {/* Notes */}
-            <View style={sectionStyles.section}>
-                {/* Titre de la section */}
-                <View style={sectionStyles.titleBox}>
-                    <MaterialCommunityIcons
-                        name="school-outline"
-                        style={sectionStyles.icon}
-                    />
-                    <Text style={sectionStyles.titleText}>MES NOTES</Text>
+                {/* Notes */}
+                <View style={sectionStyles.section}>
+                    {/* Titre de la section */}
+                    <View style={sectionStyles.titleBox}>
+                        <MaterialCommunityIcons
+                            name="school-outline"
+                            style={sectionStyles.icon}
+                        />
+                        <Text style={sectionStyles.titleText}>MES NOTES</Text>
+                    </View>
+                    {/* Contenu de la section */}
+                    <View style={sectionStyles.content}>
+                        <Text style={styles.noteTitle}> Moyenne générale</Text>
+                        <Text style={styles.noteValue}>{noteAverageValue}</Text>
+                        <Button
+                            title="Voir mes notes"
+                            //On redirige vers l'onglet notes
+                            onPress={handleViewNotes}
+                        ></Button>
+                    </View>
                 </View>
-                {/* Contenu de la section */}
-                <View style={sectionStyles.content}>
-                    <Text style={styles.noteTitle}> Moyenne générale</Text>
-                    <Text style={styles.noteValue}>{noteAverageValue}</Text>
-                    <Button
-                        title="Voir mes notes"
-                        //On redirige vers l'onglet notes
-                        onPress={handleViewNotes}
-                    ></Button>
-                </View>
-            </View>
 
-            {/* Modal pour afficher les informations d'un cours */}
-            {selectedEvent && (
-                <EventModal
-                    event={selectedEvent}
-                    visible={eventModalInfoVisible}
-                    setVisible={setEventModalInfoVisible}
-                ></EventModal>
-            )}
+                {/* Modal pour afficher les informations d'un cours */}
+                {selectedEvent && (
+                    <EventModal
+                        event={selectedEvent}
+                        visible={eventModalInfoVisible}
+                        setVisible={setEventModalInfoVisible}
+                    ></EventModal>
+                )}
+            </ScrollView>
         </SafeAreaView>
     );
 }
@@ -285,6 +301,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "flex-start",
         backgroundColor: "white",
+    },
+    scrollContainer: {
+        alignItems: "center",
+        justifyContent: "flex-start",
+        paddingBottom: 20,
     },
     title: {
         fontSize: 25,
