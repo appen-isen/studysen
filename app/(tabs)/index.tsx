@@ -77,6 +77,7 @@ export default function HomeScreen() {
     // Fonction pour mettre à jour l'emploi du temps
     const updatePlanning = (weekOffset: number = 0) => {
         if (session) {
+            console.log("Planning from cache: ", planning);
             setPlanningLoaded(false);
             // Calcul de la plage de dates pour la semaine
             const { startTimestamp, endTimestamp } =
@@ -92,6 +93,7 @@ export default function HomeScreen() {
             if (isWeekInPlanning) {
                 setPlanningLoaded(true);
             }
+            console.log("Week in planning: ", isWeekInPlanning);
 
             // Requête pour charger les événements de la semaine
             session

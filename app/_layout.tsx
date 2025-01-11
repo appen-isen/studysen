@@ -43,7 +43,14 @@ export default function RootLayout() {
 //Il s'agit de la navigation principale de l'application
 function RootLayoutNav() {
     return (
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack
+            screenOptions={{
+                headerShown: false,
+                //Barre de status
+                statusBarBackgroundColor: "#fff",
+                statusBarStyle: "dark",
+            }}
+        >
             <Stack.Screen name="login" />
             {/* Les parenthèrese permettent de faire comme si les routes étaient directement à la racine de /app 
             Par exemple, <Link href="login-help" /> est possible au lieu de <Link href="(modals)/login-help" /> 

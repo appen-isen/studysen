@@ -7,6 +7,7 @@ export const CAMPUS = ["Nantes", "Rennes", "Brest", "Caen"] as const;
 
 type Settings = {
     campus: (typeof CAMPUS)[number];
+    username: string;
 };
 
 type SettingsState = {
@@ -19,6 +20,7 @@ type SettingsState = {
 function getDefaultSettings(): Settings {
     return {
         campus: "Nantes",
+        username: "",
     };
 }
 
