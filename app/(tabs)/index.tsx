@@ -47,12 +47,15 @@ export default function HomeScreen() {
 
     //Lorsque la page est chargée
     useEffect(() => {
-        updateNotes();
-        autoUpdatePlanningIfNeeded();
+        //Test de délai du cache
+        setTimeout(() => {
+            updateNotes();
+            autoUpdatePlanningIfNeeded();
+        }, 500);
 
         const interval = setInterval(() => {
             autoUpdatePlanningIfNeeded(); // On regarde si on doit mettre à jour le planning toute les 30 secondes
-        }, 15 * 1000);
+        }, 30 * 1000);
 
         return () => clearInterval(interval); // Cleanup interval on unmount
     }, [lastUpdateTime]);
