@@ -29,7 +29,7 @@ export default function HomeScreen() {
     const { session } = useSessionStore();
     const { notes, setNotes } = useNotesStore();
     const [noteAverageValue, setNoteAverageValue] = useState<string>(
-        calculateAverage(notes),
+        calculateAverage(notes)
     );
     // Gestion du planning
     const { planning, setPlanning } = usePlanningStore();
