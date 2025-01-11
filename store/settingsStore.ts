@@ -34,7 +34,7 @@ const useSettingsStore = create<SettingsState>()(
             clearSettings: () => set({ settings: getDefaultSettings() }), // Réinitialise les réglages
         }),
         {
-            name: "settings-storage", // Nom de la clé dans AsyncStorage
+            name: "settings", // Nom de la clé dans AsyncStorage
             storage: createJSONStorage(() => AsyncStorage), // Utilisation d'AsyncStorage pour la persistance
         }
     )

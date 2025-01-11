@@ -1,6 +1,6 @@
 import { NotesList, PlanningEvent } from "@/webAurion/utils/types";
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type PlanningState = {
@@ -19,6 +19,39 @@ type NotesState = {
     clearNotes: () => void;
 };
 
+const customStorage = {
+    getItem: async (key: string) => {
+        try {
+            const value = await AsyncStorage.getItem(key);
+            console.log(
+                `Getting item with key ${key}, val: ${JSON.stringify(value)}`
+            );
+            return value ? JSON.parse(value) : null; // Deserialize the data
+        } catch (error) {
+            console.error(`Error getting item with key ${key}:`, error);
+            return null;
+        }
+    },
+    setItem: async (key: string, value: any) => {
+        try {
+            console.log(
+                `Setting item with key ${key}, val: ${JSON.stringify(value)}`
+            );
+            await AsyncStorage.setItem(key, JSON.stringify(value)); // Serialize the data
+        } catch (error) {
+            console.error(`Error setting item with key ${key}:`, error);
+        }
+    },
+    removeItem: async (key: string) => {
+        try {
+            console.log(`Removing item with key ${key}`);
+            await AsyncStorage.removeItem(key);
+        } catch (error) {
+            console.error(`Error removing item with key ${key}:`, error);
+        }
+    },
+};
+
 // Planning de l'utilisateur
 export const usePlanningStore = create<PlanningState>()(
     persist(
@@ -29,8 +62,8 @@ export const usePlanningStore = create<PlanningState>()(
         }),
         //Permet de sauvagarder le planning même lorsque l'appli est redémarrée
         {
-            name: "planning-storage", // Nom de la clé dans AsyncStorage
-            storage: createJSONStorage(() => AsyncStorage), // Utilisation d'AsyncStorage pour la persistance
+            name: "planning", // Nom de la clé dans AsyncStorage
+            storage: customStorage, // Utilisation d'AsyncStorage pour la persistance
         }
     )
 );
@@ -52,8 +85,8 @@ export const useNotesStore = create<NotesState>()(
         }),
         //Permet de sauvagarder les notes même lorsque l'appli est redémarrée
         {
-            name: "notes-storage", // Nom de la clé dans AsyncStorage
-            storage: createJSONStorage(() => AsyncStorage), // Utilisation d'AsyncStorage pour la persistance
+            name: "notes", // Nom de la clé dans AsyncStorage
+            storage: customStorage, // Utilisation d'AsyncStorage pour la persistance
         }
     )
 );
