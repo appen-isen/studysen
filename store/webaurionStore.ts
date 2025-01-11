@@ -1,7 +1,10 @@
 import { NotesList, PlanningEvent } from "@/webAurion/utils/types";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+    clearStateFromStorage,
+    loadStateFromStorage,
+    saveStateToStorage,
+} from "./storage";
 
 type PlanningState = {
     planning: PlanningEvent[];
@@ -20,20 +23,17 @@ type NotesState = {
 };
 
 // Planning de l'utilisateur
-export const usePlanningStore = create<PlanningState>()(
-    persist(
-        (set) => ({
-            planning: [], // Etat initial
-            setPlanning: (planning) => set({ planning }), // Modifie le planning
-            clearPlanning: () => set({ planning: [] }), // Supprime le planning
-        }),
-        //Permet de sauvagarder le planning même lorsque l'appli est redémarrée
-        {
-            name: "planning", // Nom de la clé dans AsyncStorage
-            storage: createJSONStorage(() => AsyncStorage), // Utilisation d'AsyncStorage pour la persistance
-        }
-    )
-);
+export const usePlanningStore = create<PlanningState>()((set) => ({
+    planning: [], // Etat initial
+    setPlanning: (planning) => {
+        set({ planning });
+        saveStateToStorage("planning", planning);
+    }, // Modifie le planning
+    clearPlanning: () => {
+        set({ planning: [] });
+        clearStateFromStorage("planning");
+    }, // Supprime le planning
+}));
 
 // Planning synchronisé avec Internet (pas de persistance pour celui ci)
 export const useSyncedPlanningStore = create<SyncedPlanningState>((set) => ({
@@ -43,17 +43,28 @@ export const useSyncedPlanningStore = create<SyncedPlanningState>((set) => ({
 }));
 
 // Notes de l'utilisateur
-export const useNotesStore = create<NotesState>()(
-    persist(
-        (set) => ({
-            notes: [], // Etat initial
-            setNotes: (notes) => set({ notes }), // Modifie les notes
-            clearNotes: () => set({ notes: [] }), // Supprime les notes
-        }),
-        //Permet de sauvagarder les notes même lorsque l'appli est redémarrée
-        {
-            name: "notes", // Nom de la clé dans AsyncStorage
-            storage: createJSONStorage(() => AsyncStorage), // Utilisation d'AsyncStorage pour la persistance
-        }
-    )
-);
+export const useNotesStore = create<NotesState>()((set) => ({
+    notes: [], // Etat initial
+    setNotes: (notes) => {
+        set({ notes });
+        saveStateToStorage("notes", notes);
+    }, // Modifie les notes
+    clearNotes: () => {
+        set({ notes: [] });
+        clearStateFromStorage("notes");
+    }, // Supprime les notes
+}));
+
+// On charge les stores depuis le stockage
+export async function initializeWebaurionStores() {
+    const initialPlanningState = await loadStateFromStorage("planning");
+    const initialNotesState = await loadStateFromStorage("notes");
+
+    if (initialPlanningState) {
+        usePlanningStore.setState({ planning: initialPlanningState });
+    }
+
+    if (initialNotesState) {
+        useNotesStore.setState({ notes: initialNotesState });
+    }
+}

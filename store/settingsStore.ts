@@ -1,6 +1,9 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import {
+    clearStateFromStorage,
+    loadStateFromStorage,
+    saveStateToStorage,
+} from "./storage";
 
 // Liste des campus
 export const CAMPUS = ["Nantes", "Rennes", "Brest", "Caen"] as const;
@@ -25,21 +28,28 @@ function getDefaultSettings(): Settings {
 }
 
 // Gestion des réglages de l'application
-const useSettingsStore = create<SettingsState>()(
-    persist(
-        (set) => ({
-            settings: getDefaultSettings(), // Paramètres par défaut de l'application
-            setSettings: (key, value) =>
-                set((state) => ({
-                    settings: { ...state.settings, [key]: value },
-                })), // Modifie les réglages
-            clearSettings: () => set({ settings: getDefaultSettings() }), // Réinitialise les réglages
-        }),
-        {
-            name: "settings", // Nom de la clé dans AsyncStorage
-            storage: createJSONStorage(() => AsyncStorage), // Utilisation d'AsyncStorage pour la persistance
-        }
-    )
-);
+const useSettingsStore = create<SettingsState>()((set) => ({
+    settings: getDefaultSettings(), // Paramètres par défaut de l'application
+    setSettings: (key, value) => {
+        set((state) => {
+            const updatedSettings = { ...state.settings, [key]: value };
+            saveStateToStorage("settings", updatedSettings); // On sauvegarde les réglages dans le stockage
+            return { settings: updatedSettings };
+        });
+    }, // Modifie les réglages
+    clearSettings: () => {
+        set({ settings: getDefaultSettings() });
+        clearStateFromStorage("settings");
+    }, // Réinitialise les réglages
+}));
+
+// On charge les stores depuis le stockage
+export async function initializeSettingsStore() {
+    const initialSettingsState = await loadStateFromStorage("settings");
+
+    if (initialSettingsState) {
+        useSettingsStore.setState({ settings: initialSettingsState });
+    }
+}
 
 export default useSettingsStore;

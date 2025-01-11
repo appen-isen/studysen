@@ -1,8 +1,10 @@
+import { initializeSettingsStore } from "@/store/settingsStore";
+import { initializeWebaurionStores } from "@/store/webaurionStore";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 //Layout par défaut de l'application
@@ -22,6 +24,9 @@ export default function RootLayout() {
         ...FontAwesome.font,
     });
 
+    //Etat de chargement des stores
+    const [storeLoaded, setStoreLoaded] = useState(false);
+
     // Expo Router uses Error Boundaries to catch errors in the navigation tree.
     useEffect(() => {
         if (error) throw error;
@@ -33,7 +38,16 @@ export default function RootLayout() {
         }
     }, [loaded]);
 
-    if (!loaded) {
+    useEffect(() => {
+        const initStores = async () => {
+            await initializeWebaurionStores();
+            await initializeSettingsStore();
+        };
+        //On initialise les stores
+        initStores().then(() => setStoreLoaded(true));
+    }, []);
+
+    if (!loaded || !storeLoaded) {
         return null;
     }
 
