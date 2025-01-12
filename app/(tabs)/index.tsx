@@ -102,8 +102,8 @@ export default function HomeScreen() {
                         ...planning.filter(
                             (event) =>
                                 !currentWeekPlanning.some(
-                                    (newEvent) => newEvent.id === event.id,
-                                ),
+                                    (newEvent) => newEvent.id === event.id
+                                )
                         ),
                         ...currentWeekPlanning,
                     ]);
@@ -149,7 +149,10 @@ export default function HomeScreen() {
     };
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <ScrollView
+                contentContainerStyle={styles.scrollContainer}
+                style={styles.scrollView}
+            >
                 <Text style={styles.title}>Accueil</Text>
                 {/* événement en cours */}
                 <View style={sectionStyles.section}>
@@ -182,8 +185,8 @@ export default function HomeScreen() {
                                             setSelectedEvent(
                                                 findEvent(
                                                     planning,
-                                                    planningEvent,
-                                                ),
+                                                    planningEvent
+                                                )
                                             );
                                         }
                                         setEventModalInfoVisible(true);
@@ -236,8 +239,8 @@ export default function HomeScreen() {
                                             setSelectedEvent(
                                                 findEvent(
                                                     planning,
-                                                    planningEvent,
-                                                ),
+                                                    planningEvent
+                                                )
                                             );
                                         }
                                         setEventModalInfoVisible(true);
@@ -300,6 +303,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "flex-start",
         backgroundColor: "white",
+    },
+    scrollView: {
+        width: "100%",
     },
     scrollContainer: {
         alignItems: "center",
