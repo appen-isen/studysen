@@ -9,6 +9,7 @@ ISEN-Orbit est un projet d'application mobile développée en React Native avec 
 -   Notes WebAurion - Page Notes
 -   Affichage du cours actuel et à venir, ainsi que la moyenne de l'étudiant - Page Accueil
 -   Affichage des informations du compte et des réglages de l'application - Page Paramètres (Mon compte)
+-   Sauvegarde du planning et des notes en local - Mode hors ligne
 
 ## 🌱 Branches en développement
 
