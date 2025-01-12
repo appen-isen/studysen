@@ -44,6 +44,7 @@ export default function SettingsScreen() {
             );
         }
     }, [session]);
+
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Mon compte</Text>

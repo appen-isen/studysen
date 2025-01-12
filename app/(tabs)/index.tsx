@@ -23,6 +23,8 @@ import EventModal from "@/components/modals/EventModal";
 import { calculateAverage } from "@/utils/notes";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import '@utils/notificationConfig.ts';
+
 
 export default function HomeScreen() {
     const router = useRouter();
