@@ -47,6 +47,10 @@ export default function LoginScreen() {
                     await session.login(storedUsername, storedPassword, 6000);
                     //On sauvegarde la session dans le store
                     setSession(session);
+                    //On sauvegarde le nom d'utilisateur dans les paramètres
+                    setSettings("username", session.getUsername());
+
+                    //On redirige l'utilisateur vers la page principale
                     router.replace("/(tabs)");
                 } catch (err) {
                     //Probablement un timeout, donc on considère que l'utilisateur est hors ligne

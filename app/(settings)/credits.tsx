@@ -25,15 +25,15 @@ export default function Credits() {
                 </Text>
                 {/* Sections */}
                 <View style={styles.section}>
+                    <Bold style={styles.sectionTitle}>Développement</Bold>
+                    {/* Vous pouvez ajouter votre nom ici */}
+                    <Text style={styles.contributors}>Dorian DESMARS</Text>
+                </View>
+                <View style={styles.section}>
                     <Bold style={styles.sectionTitle}>Design</Bold>
                     <Text style={styles.contributors}>
                         Dorian DESMARS / Titouan BRANGER
                     </Text>
-                </View>
-                <View style={styles.section}>
-                    <Bold style={styles.sectionTitle}>Développement</Bold>
-                    {/* Vous pouvez ajouter votre nom ici */}
-                    <Text style={styles.contributors}>Dorian DESMARS</Text>
                 </View>
             </View>
         </SafeAreaView>

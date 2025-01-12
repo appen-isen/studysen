@@ -7,13 +7,13 @@ import Colors from "@/constants/Colors";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { AnimatedPressable } from "@/components/Buttons";
 import { ConfirmModal, Dropdown } from "@/components/Modals";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
     const router = useRouter();
-    const { clearSession, session } = useSessionStore();
+    const { clearSession } = useSessionStore();
     const { settings, setSettings } = useSettingsStore();
 
     // Message de confirmation pour la déconnexion
@@ -27,8 +27,8 @@ export default function SettingsScreen() {
     const [email, setEmail] = useState("");
     const [firstLetters, setFirstLetters] = useState("");
     useEffect(() => {
-        if (session) {
-            const username = session.getUsername();
+        if (settings.username) {
+            const username = settings.username;
             setUsername(username);
             //Initiales du prénom et du nom
             const firstLetters = username.split(" ");
@@ -43,7 +43,7 @@ export default function SettingsScreen() {
                 normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
             );
         }
-    }, [session]);
+    }, [settings]);
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Mon compte</Text>
