@@ -75,37 +75,35 @@ export default function PlanningScreen() {
 
     // Fonction pour mettre à jour l'emploi du temps
     const updatePlanning = (weekOffset: number = 0) => {
-        if (session) {
-            setPlanningLoaded(false);
-            // Calcul de la plage de dates pour la semaine
-            const { startTimestamp, endTimestamp } =
-                getScheduleDates(weekOffset);
+        setPlanningLoaded(false);
+        // Calcul de la plage de dates pour la semaine
+        const { startTimestamp, endTimestamp } = getScheduleDates(weekOffset);
 
-            // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
-            const isWeekInPlanning = planning.some(
+        // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
+        const isWeekInPlanning = planning.some(
+            (event) =>
+                new Date(event.start).getTime() >= startTimestamp &&
+                new Date(event.end).getTime() <= endTimestamp
+        );
+        // On vérifie si les événements sont déjà synchronisés avec Internet
+        // On récupère le store directement de cette manière pour éviter les problèmes d'attentes de rendu
+        const isWeekInSyncedPlanning = useSyncedPlanningStore
+            .getState()
+            .syncedPlanning.some(
                 (event) =>
                     new Date(event.start).getTime() >= startTimestamp &&
                     new Date(event.end).getTime() <= endTimestamp
             );
-            // On vérifie si les événements sont déjà synchronisés avec Internet
-            // On récupère le store directement de cette manière pour éviter les problèmes d'attentes de rendu
-            const isWeekInSyncedPlanning = useSyncedPlanningStore
-                .getState()
-                .syncedPlanning.some(
-                    (event) =>
-                        new Date(event.start).getTime() >= startTimestamp &&
-                        new Date(event.end).getTime() <= endTimestamp
-                );
 
-            // Pas besoin de retélécharger les événements si la semaine est déjà chargée
-            if (isWeekInPlanning) {
-                setPlanningLoaded(true);
-            }
-            // Si la semaine n'est pas à jour avec Internet, on lance la synchronisation
-            if (!isWeekInSyncedPlanning) {
-                setSyncing(true);
-            }
-
+        // Pas besoin de retélécharger les événements si la semaine est déjà chargée
+        if (isWeekInPlanning) {
+            setPlanningLoaded(true);
+        }
+        // Si la semaine n'est pas à jour avec Internet, on lance la synchronisation
+        if (!isWeekInSyncedPlanning) {
+            setSyncing(true);
+        }
+        if (session) {
             // Requête pour charger les événements de la semaine
             session
                 .getPlanningApi()
