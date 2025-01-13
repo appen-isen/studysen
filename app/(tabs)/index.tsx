@@ -23,7 +23,7 @@ import EventModal from "@/components/modals/EventModal";
 import { calculateAverage } from "@/utils/notes";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import '../../utils/notificationConfig';
+import { requestPermissions } from '../../utils/notificationConfig';
 
 
 export default function HomeScreen() {
@@ -150,6 +150,10 @@ export default function HomeScreen() {
             router.push("/notes");
         }
     };
+
+    // Demande de permission pour les notifications
+    requestPermissions();
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
