@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
+import { SchedulableTriggerInputTypes } from "expo-notifications";
 
 // Demande de permission pour les notifications
 export const requestPermissions = async () => {
@@ -43,7 +44,7 @@ export const sendLocalNotification = async () => {
 
 // Fonction pour planifier une notification
 export const scheduleCourseNotification = async (courseName: string, courseTime: Date) => {
-    const notificationTime = new Date(courseTime.getTime() - 15 * 60 * 1000); // 15 minutes avant le cours
+    const notificationTime: Date = new Date(courseTime.getTime() - 15 * 60 * 1000); // 15 minutes avant le cours
 
     try {
         await Notifications.scheduleNotificationAsync({
@@ -51,7 +52,10 @@ export const scheduleCourseNotification = async (courseName: string, courseTime:
                 title: "Rappel de cours",
                 body: `Votre cours de ${courseName} commence dans 15 minutes.`,
             },
-            trigger: notificationTime,
+            trigger: {
+                type: SchedulableTriggerInputTypes.DATE,
+                date: notificationTime,
+            },
         });
         console.log(`Notification planifiée pour ${courseName} à ${notificationTime}`);
     } catch (error) {

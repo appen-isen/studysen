@@ -36,10 +36,6 @@ export default function NotifSettings() {
             </AnimatedPressable>
             {/* Texte d'information */}
             <View style={styles.contentView}>
-                <Bold style={styles.infoText}>
-                    Les notifications ne sont pas encore implémentées dans
-                    l'application.
-                </Bold>
                 {/* Switch pour activer/désactiver les notifications */}
                 <View style={styles.switchContainer}>
                     <Bold style={styles.switchLabel}>Activer les notifications</Bold>
@@ -53,6 +49,9 @@ export default function NotifSettings() {
                     title="Envoyer une notification de test"
                     onPress={sendLocalNotification}
                 />
+                <Bold style={styles.infoText}>
+                    Les notifications ne sont encore en beta et peuvent ne pas fonctionner correctement.
+                </Bold>
             </View>
         </SafeAreaView>
     );
