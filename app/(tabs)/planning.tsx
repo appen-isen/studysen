@@ -17,7 +17,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { AnimatedPressable, DoubleSelector } from "@/components/Buttons";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import EventModal from "@/components/modals/EventModal";
-import { findEvent } from "@/utils/planning";
+import { findEvent, mergePlanning } from "@/utils/planning";
 import {
     usePlanningStore,
     useSyncedPlanningStore,
@@ -110,21 +110,22 @@ export default function PlanningScreen() {
                 .fetchPlanning(weekOffset)
                 .then((currentWeekPlanning: PlanningEvent[]) => {
                     // Concaténer le nouveau planning avec l'existant sans doublons
-                    setPlanning([
-                        ...planning.filter(
-                            (event) =>
-                                !currentWeekPlanning.some(
-                                    (newEvent) => newEvent.id === event.id
-                                )
-                        ),
-                        ...currentWeekPlanning,
-                    ]);
+                    setPlanning(
+                        // On met à jour le planning en fusionnant les événements
+                        mergePlanning(
+                            usePlanningStore.getState().planning,
+                            currentWeekPlanning
+                        )
+                    );
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé
-                    setSyncedPlanning([
-                        ...useSyncedPlanningStore.getState().syncedPlanning,
-                        ...currentWeekPlanning,
-                    ]);
+                    setSyncedPlanning(
+                        // On met à jour le planning synchronisé en fusionnant les événements
+                        mergePlanning(
+                            useSyncedPlanningStore.getState().syncedPlanning,
+                            currentWeekPlanning
+                        )
+                    );
                     setSyncing(false);
                     // On met à jour la date de la dernière mise à jour
                     setLastUpdateTime(new Date());

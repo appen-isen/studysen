@@ -1,5 +1,6 @@
 import { getSemesterFromCode } from "@/utils/notes";
 import { NotesList, PlanningEvent } from "./types";
+import { mergePlanning } from "@/utils/planning";
 
 export function generateDemoNotes(): NotesList[] {
     let notes = [
@@ -135,6 +136,34 @@ export function generateDemoNotes(): NotesList[] {
                     code: "24_CIR1N_A1_S2_MATH",
                     subject: "Mathématiques DS3 S2",
                     note: "14.00",
+                    absence: "",
+                    description: "",
+                    instructor: "Mr TEST",
+                },
+            ],
+        },
+        {
+            code: "24_CIR1N_A1_S3_MATH",
+            notes: [
+                {
+                    date: "10/01/2025",
+                    code: "24_CIR1N_A1_S3_MATH",
+                    subject: "Mathématiques TEST",
+                    note: "16.99",
+                    absence: "",
+                    description: "",
+                    instructor: "Mr TEST",
+                },
+            ],
+        },
+        {
+            code: "24_CIR1N_A1_S4_MATH",
+            notes: [
+                {
+                    date: "10/01/2025",
+                    code: "24_CIR1N_A1_S4_MATH",
+                    subject: "Mathématiques TEST",
+                    note: "13.99",
                     absence: "",
                     description: "",
                     instructor: "Mr TEST",
@@ -328,6 +357,41 @@ export function generateDemoPlanning(
             end: "2025-01-10T17:45:00+0100",
             className: "TP",
         },
+        {
+            id: "15062584",
+            title: "Sciences de l'Ingénieur S1",
+            subject: "Sciences de l'Ingénieur",
+            room: "A2_TEST ISEN",
+            instructors: "Mr TEST",
+            learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
+            start: "2025-01-10T15:45:00+0100",
+            end: "2025-01-10T17:45:00+0100",
+            className: "TP",
+        },
+    ];
+    let newPlanning = [
+        {
+            id: "15062584",
+            title: "AAAAAA",
+            subject: "AAAAAAAAAAAA",
+            room: "A2 ISEN",
+            instructors: "Mr TEST",
+            learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
+            start: "2025-01-10T13:30:00+0100",
+            end: "2025-01-10T15:30:00+0100",
+            className: "TP",
+        },
+        {
+            id: "15062584",
+            title: "Sciences de l'Ingénieur S1",
+            subject: "Sciences de l'Ingénieur",
+            room: "A2_TEST2 ISEN",
+            instructors: "Mr TEST",
+            learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
+            start: "2025-01-10T15:45:00+0100",
+            end: "2025-01-10T17:45:00+0100",
+            className: "TP",
+        },
     ];
 
     // Fonction pour ajuster la date
@@ -339,11 +403,13 @@ export function generateDemoPlanning(
     };
 
     // On ajuste les dates de début et de fin
-    const updatedPlanning = planning.map((event) => ({
-        ...event,
-        start: adjustDate(event.start, weeksFromNow),
-        end: adjustDate(event.end, weeksFromNow),
-    }));
+    const updatedPlanning = mergePlanning(planning, newPlanning).map(
+        (event) => ({
+            ...event,
+            start: adjustDate(event.start, weeksFromNow),
+            end: adjustDate(event.end, weeksFromNow),
+        })
+    );
 
     return updatedPlanning;
 }

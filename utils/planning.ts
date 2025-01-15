@@ -208,3 +208,23 @@ export function getNextEventToday(
     // Retourne le premier événement du tableau trié, ou null s'il n'y en a pas
     return upcomingEvents.length > 0 ? upcomingEvents[0] : null;
 }
+
+// Fonction pour mettre à jour le planning en fusionnant les événements
+export function mergePlanning(
+    currentPlanning: PlanningEvent[],
+    newPlanning: PlanningEvent[]
+): PlanningEvent[] {
+    return [
+        ...currentPlanning.filter(
+            (event) =>
+                !newPlanning.some(
+                    (newEvent) =>
+                        new Date(event.start).toISOString() ===
+                            new Date(newEvent.start).toISOString() &&
+                        new Date(event.end).toISOString() ===
+                            new Date(newEvent.end).toISOString()
+                )
+        ),
+        ...newPlanning,
+    ];
+}

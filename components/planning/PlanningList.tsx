@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         justifyContent: "flex-start",
         alignItems: "center",
-        paddingBottom: 200,
+        paddingBottom: 350,
         marginTop: 30,
     },
 });
