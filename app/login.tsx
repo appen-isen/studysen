@@ -128,6 +128,9 @@ export default function LoginScreen() {
                         await setSecureStoreItem("username", username);
                         await setSecureStoreItem("password", password);
                     }
+                    //On sauvegarde le nom d'utilisateur dans les paramètres
+                    setSettings("username", session.getUsername());
+
                     router.replace("/(tabs)");
                 } else {
                     setErrorMessage(
