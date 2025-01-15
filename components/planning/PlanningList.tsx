@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         width: "100%",
     },
 
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         justifyContent: "flex-start",
         alignItems: "center",
-        paddingBottom: 200,
+        paddingBottom: 350,
         marginTop: 30,
     },
 });

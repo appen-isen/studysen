@@ -54,7 +54,7 @@ export default function HomeScreen() {
 
         const interval = setInterval(() => {
             autoUpdatePlanningIfNeeded(); // On regarde si on doit mettre à jour le planning toute les 30 secondes
-        }, 15 * 1000);
+        }, 30 * 1000);
 
         return () => clearInterval(interval); // Cleanup interval on unmount
     }, [lastUpdateTime]);
@@ -86,22 +86,22 @@ export default function HomeScreen() {
 
     // Fonction pour mettre à jour l'emploi du temps
     const updatePlanning = (weekOffset: number = 0) => {
+        setPlanningLoaded(false);
+        // Calcul de la plage de dates pour la semaine
+        const { startTimestamp, endTimestamp } = getScheduleDates(weekOffset);
+
+        // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
+        const isWeekInPlanning = planning.some(
+            (event) =>
+                new Date(event.start).getTime() >= startTimestamp &&
+                new Date(event.end).getTime() <= endTimestamp
+        );
+        // Pas besoin de retélécharger les événements si la semaine est déjà chargée
+        if (isWeekInPlanning) {
+            setPlanningLoaded(true);
+        }
+
         if (session) {
-            setPlanningLoaded(false);
-            // Calcul de la plage de dates pour la semaine
-            const { startTimestamp, endTimestamp } = getScheduleDates(weekOffset);
-
-            // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
-            const isWeekInPlanning = planning.some(
-                (event) =>
-                    new Date(event.start).getTime() >= startTimestamp &&
-                    new Date(event.end).getTime() <= endTimestamp,
-            );
-            // Pas besoin de retélécharger les événements si la semaine est déjà chargée
-            if (isWeekInPlanning) {
-                setPlanningLoaded(true);
-            }
-
             // Requête pour charger les événements de la semaine
             session
                 .getPlanningApi()
@@ -112,8 +112,8 @@ export default function HomeScreen() {
                         ...planning.filter(
                             (event) =>
                                 !currentWeekPlanning.some(
-                                    (newEvent) => newEvent.id === event.id,
-                                ),
+                                    (newEvent) => newEvent.id === event.id
+                                )
                         ),
                         ...currentWeekPlanning,
                     ]);
@@ -163,7 +163,10 @@ export default function HomeScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <ScrollView
+                contentContainerStyle={styles.scrollContainer}
+                style={styles.scrollView}
+            >
                 <Text style={styles.title}>Accueil</Text>
                 {/* événement en cours */}
                 <View style={sectionStyles.section}>
@@ -196,8 +199,8 @@ export default function HomeScreen() {
                                             setSelectedEvent(
                                                 findEvent(
                                                     planning,
-                                                    planningEvent,
-                                                ),
+                                                    planningEvent
+                                                )
                                             );
                                         }
                                         setEventModalInfoVisible(true);
@@ -250,8 +253,8 @@ export default function HomeScreen() {
                                             setSelectedEvent(
                                                 findEvent(
                                                     planning,
-                                                    planningEvent,
-                                                ),
+                                                    planningEvent
+                                                )
                                             );
                                         }
                                         setEventModalInfoVisible(true);
@@ -314,6 +317,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "flex-start",
         backgroundColor: "white",
+    },
+    scrollView: {
+        width: "100%",
     },
     scrollContainer: {
         alignItems: "center",
