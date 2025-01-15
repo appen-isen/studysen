@@ -20,6 +20,7 @@ export function getRealSubjectName(subject: string): string {
     // On retire l'indication du semestre et le numéro de DS
     subject = subject.replaceAll(/S\d$/g, "");
     subject = subject.replaceAll(/ DS\d? /g, "");
+    subject = subject.replaceAll(/ - Semestre \d$/g, "");
     return subject.trim();
 }
 
@@ -31,7 +32,7 @@ export function getDSNumber(subject: string): number {
 
 // Fonction pour récupérer le semestre à partir du code de la note
 export function getSemesterFromCode(code: string): number {
-    const match = code.match(/_S(\d)_/);
+    const match = code.match(/_S(\d+)/);
     return match ? parseInt(match[1]) : 1;
 }
 
@@ -41,7 +42,7 @@ export function filterNotesBySemester(
     semester: 0 | 1
 ): NotesList[] {
     return notes.filter((note) => {
-        const match = note.code.match(/_S(\d)_/);
+        const match = note.code.match(/_S(\d+)/);
         if (match) {
             // On vérifie si le semestre de la matière correspond au semestre sélectionné
             return (parseInt(match[1]) - 1) % 2 === semester;

@@ -143,12 +143,12 @@ export function generateDemoNotes(): NotesList[] {
             ],
         },
         {
-            code: "24_CIR1N_A1_S3_MATH",
+            code: "24_CIPA3N_CARTO_S5",
             notes: [
                 {
                     date: "10/01/2025",
-                    code: "24_CIR1N_A1_S3_MATH",
-                    subject: "Mathématiques TEST",
+                    code: "24_CIPA3N_CARTO_S5",
+                    subject: "Test semestre",
                     note: "16.99",
                     absence: "",
                     description: "",
@@ -157,13 +157,13 @@ export function generateDemoNotes(): NotesList[] {
             ],
         },
         {
-            code: "24_CIR1N_A1_S4_MATH",
+            code: "24_CIPA3N_ENTREPRENEURIAT_S6",
             notes: [
                 {
                     date: "10/01/2025",
-                    code: "24_CIR1N_A1_S4_MATH",
-                    subject: "Mathématiques TEST",
-                    note: "13.99",
+                    code: "24_CIPA3N_ENTREPRENEURIAT_S6",
+                    subject: "Entrepreneuriat S6",
+                    note: "15.99",
                     absence: "",
                     description: "",
                     instructor: "Mr TEST",
