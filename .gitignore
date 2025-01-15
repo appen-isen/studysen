@@ -34,3 +34,9 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# WebStorm
+.idea/
+*.iml
+.idea
+.idea/*

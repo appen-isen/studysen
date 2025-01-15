@@ -1,14 +1,33 @@
-import { View, StyleSheet } from "react-native";
+import { useEffect } from "react";
+import { View, StyleSheet, Switch, Button } from "react-native";
 import { useRouter } from "expo-router";
 import { AnimatedPressable } from "@/components/Buttons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold } from "@/components/Texts";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useState } from "react";
+import * as Notifications from 'expo-notifications';
+import { requestPermissions, sendLocalNotification } from "@/utils/notificationConfig";
 
-//Paramètres des notifications
+// Paramètres des notifications
 export default function NotifSettings() {
     const router = useRouter();
+    const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+    useEffect(() => {
+        requestPermissions();
+    }, []);
+
+    const toggleNotifications = () => {
+        setNotificationsEnabled(previousState => !previousState);
+        if (notificationsEnabled) {
+            Notifications.cancelAllScheduledNotificationsAsync();
+        } else {
+            requestPermissions();
+        }
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             {/* Bouton de retour */}
@@ -17,9 +36,21 @@ export default function NotifSettings() {
             </AnimatedPressable>
             {/* Texte d'information */}
             <View style={styles.contentView}>
+                {/* Switch pour activer/désactiver les notifications */}
+                <View style={styles.switchContainer}>
+                    <Bold style={styles.switchLabel}>Activer les notifications</Bold>
+                    <Switch
+                        onValueChange={toggleNotifications}
+                        value={notificationsEnabled}
+                    />
+                </View>
+                {/* Bouton pour envoyer une notification de test */}
+                <Button
+                    title="Envoyer une notification de test"
+                    onPress={sendLocalNotification}
+                />
                 <Bold style={styles.infoText}>
-                    Les notifications ne sont pas encore implémentées dans
-                    l'application.
+                    Les notifications ne sont encore en beta et peuvent ne pas fonctionner correctement.
                 </Bold>
             </View>
         </SafeAreaView>
@@ -47,5 +78,14 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         textAlign: "center",
         fontSize: 20,
+    },
+    switchContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 20,
+    },
+    switchLabel: {
+        fontSize: 18,
+        marginRight: 10,
     },
 });

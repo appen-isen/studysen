@@ -1,9 +1,9 @@
+import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View, ScrollView } from "react-native";
 import { Text } from "@/components/Texts";
 import { Button } from "@/components/Buttons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
 import {
     useNotesStore,
     usePlanningStore,
@@ -23,6 +23,7 @@ import EventModal from "@/components/modals/EventModal";
 import { calculateAverage } from "@/utils/notes";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { requestPermissions, scheduleCourseNotification } from "@/utils/notificationConfig";
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -47,6 +48,7 @@ export default function HomeScreen() {
 
     //Lorsque la page est chargée
     useEffect(() => {
+        requestPermissions();
         updateNotes();
         autoUpdatePlanningIfNeeded();
 
@@ -56,6 +58,14 @@ export default function HomeScreen() {
 
         return () => clearInterval(interval); // Cleanup interval on unmount
     }, [lastUpdateTime]);
+
+    useEffect(() => {
+        if (isPlanningLoaded) {
+            planning.forEach(event => {
+                scheduleCourseNotification(event.title, new Date(event.start));
+            });
+        }
+    }, [isPlanningLoaded, planning]);
 
     // Mettre à jour le planning toutes les 10 minutes
     const autoUpdatePlanningIfNeeded = () => {
@@ -147,6 +157,10 @@ export default function HomeScreen() {
             router.push("/notes");
         }
     };
+
+    // Demande de permission pour les notifications
+    requestPermissions();
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView

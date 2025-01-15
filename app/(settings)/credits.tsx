@@ -35,6 +35,11 @@ export default function Credits() {
                         Dorian DESMARS / Titouan BRANGER
                     </Text>
                 </View>
+                <View style={styles.section}>
+                    <Bold style={styles.sectionTitle}>Développement</Bold>
+                    {/* Vous pouvez ajouter votre nom ici */}
+                    <Text style={styles.contributors}>Dorian DESMARS / Félix MARQUET</Text>
+                </View>
             </View>
         </SafeAreaView>
     );

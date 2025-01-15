@@ -43,7 +43,8 @@ export default function SettingsScreen() {
                 normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
             );
         }
-    }, [settings]);
+    }, [session]);
+
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Mon compte</Text>
