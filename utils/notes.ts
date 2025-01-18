@@ -17,10 +17,12 @@ export function calculateAverage(notes: NotesList[]): string {
 
 // Fonction pour obtenir le nom de la matière à partir du titre de la note
 export function getRealSubjectName(subject: string): string {
-    // On retire l'indication du semestre et le numéro de DS
+    // On retire l'indication du semestre
     subject = subject.replaceAll(/S\d$/g, "");
-    subject = subject.replaceAll(/ DS\d? /g, "");
+    subject = subject.replaceAll(/- S\d$/g, "");
     subject = subject.replaceAll(/ - Semestre \d$/g, "");
+    // On retire l'indication du DS
+    subject = subject.replaceAll(/ DS\d?/g, "");
     return subject.trim();
 }
 
