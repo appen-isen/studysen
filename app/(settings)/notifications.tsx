@@ -1,46 +1,45 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { View, StyleSheet, Switch, Pressable } from "react-native";
+import RNPickerSelect from "react-native-picker-select";
 import { useRouter } from "expo-router";
 import { AnimatedPressable, Button } from "@/components/Buttons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
 import {
     cancelAllScheduledNotifications,
     requestPermissions,
     sendLocalNotification,
 } from "@/utils/notificationConfig";
-import useSettingsStore from "@/store/settingsStore";
+import useNotificationStore from "@/store/notificationStore";
 
 // Paramètres des notifications
 export default function NotifSettings() {
     const router = useRouter();
-    const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-    const { setSettings, settings } = useSettingsStore();
+    const { settings, setSettings } = useNotificationStore();
+    const [notificationsEnabled, setNotificationsEnabled] = useState(settings.enabled);
+    const [notificationDelay, setNotificationDelay] = useState(settings.delay);
 
     useEffect(() => {
         requestPermissions();
     }, []);
 
-    useEffect(() => {
-        // On charge les paramètres de l'application
-        if (settings.notificationsEnabled !== undefined) {
-            setNotificationsEnabled(settings.notificationsEnabled);
-        }
-    }, [settings]);
-
     const toggleNotifications = () => {
         const nextNotifState = !notificationsEnabled;
         setNotificationsEnabled(nextNotifState);
-        setSettings("notificationsEnabled", nextNotifState);
+        setSettings({ ...settings, enabled: nextNotifState });
 
         if (nextNotifState) {
             requestPermissions();
         } else {
             cancelAllScheduledNotifications();
         }
+    };
+
+    const handleDelayChange = (value: string) => {
+        setNotificationDelay(value);
+        setSettings({ ...settings, delay: value });
     };
 
     return (
@@ -80,6 +79,21 @@ export default function NotifSettings() {
                         value={notificationsEnabled}
                     />
                 </Pressable>
+
+                {/* Sélecteur pour le délai de notification */}
+                    <Text style={styles.infoText}>Délai de notification</Text>
+                    <RNPickerSelect
+                        onValueChange={handleDelayChange}
+                        items={[
+                            { label: "5 minutes avant", value: "5min" },
+                            { label: "15 minutes avant", value: "15min" },
+                            { label: "30 minutes avant", value: "30min" },
+                            { label: "1 heure avant", value: "1h" },
+                        ]}
+                        value={notificationDelay}
+                        style={pickerSelectStyles}
+                    />
+
                 {/* Bouton pour envoyer une notification de test */}
                 <Button
                     title="Envoyer une notification"
@@ -117,7 +131,6 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginBottom: 20,
     },
-
     switchContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -129,10 +142,41 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginRight: 10,
     },
+    pickerContainer: {
+        marginVertical: 20,
+        width: "80%",
+    },
+    pickerLabel: {
+        fontSize: 18,
+        marginBottom: 10,
+    },
     infoText: {
         width: "90%",
         alignSelf: "center",
         textAlign: "center",
         fontSize: 15,
+    },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        fontSize: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 4,
+        color: 'black',
+        paddingRight: 30, // to ensure the text is never behind the icon
+    },
+    inputAndroid: {
+        fontSize: 16,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderWidth: 0.5,
+        borderColor: 'purple',
+        borderRadius: 8,
+        color: 'black',
+        paddingRight: 30, // to ensure the text is never behind the icon
     },
 });
