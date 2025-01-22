@@ -5,8 +5,8 @@ import Colors from "@/constants/Colors";
 import { BottomModal } from "../Modals";
 import {
     getDSNumber,
-    getRealSubjectName,
     getSemesterFromCode,
+    getSubjectName,
 } from "@/utils/notes";
 
 type NoteModalProps = {
@@ -24,13 +24,10 @@ export default function NoteModal(props: NoteModalProps) {
             flexSize={0.5}
         >
             {/* Info sur la matière */}
-            <Text style={styles.title}>{getRealSubjectName(note.subject)}</Text>
+            <Text style={styles.title}>{getSubjectName(note.subject)}</Text>
             {/* Nom du DS */}
             <Text style={styles.noteName}>
-                {note.code.endsWith("_CC")
-                    ? "CC "
-                    : `DS${getDSNumber(note.code)} `}
-                S{getSemesterFromCode(noteCode)}
+                {getDSNumber(note.code)} S{getSemesterFromCode(noteCode)}
             </Text>
             {/* Info sur la note */}
             <View style={styles.infoContainer}>

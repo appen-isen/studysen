@@ -8,7 +8,8 @@ import {
     calculateAverage,
     filterNotesBySemester,
     getDSNumber,
-    getRealSubjectName,
+    getSubjectNameFromGroup,
+    groupNotesBySubject,
 } from "@/utils/notes";
 import { noteAverage } from "@/webAurion/utils/NoteUtils";
 import { Note, NotesList } from "@/webAurion/utils/types";
@@ -25,8 +26,12 @@ export default function NotesScreen() {
     );
     // Récupération des notes
     const { notes } = useNotesStore();
+
     // Tableau des notes du semestre sélectionné
-    const selectedNotes = filterNotesBySemester(notes, selectedSemester)
+
+    const selectedNotes = groupNotesBySubject(
+        filterNotesBySemester(notes, selectedSemester)
+    )
         // Tri des matières par nombre de notes
         .sort((a, b) => b.notes.length - a.notes.length);
     const noteAverageValue = calculateAverage(selectedNotes);
@@ -141,7 +146,7 @@ function NotesGroup(props: {
                 {/* Matière */}
                 <View style={notesGroupStyles.headerSubject}>
                     <Text style={notesGroupStyles.headerSubjectText}>
-                        {getRealSubjectName(notes[0].subject)}
+                        {getSubjectNameFromGroup(notes)}
                     </Text>
                 </View>
                 {/* Moyenne */}
@@ -161,9 +166,7 @@ function NotesGroup(props: {
                         key={`note-${note.code}-${index}`}
                     >
                         <Text style={notesGroupStyles.noteNumber}>
-                            {note.code.endsWith("_CC")
-                                ? "CC"
-                                : `DS${getDSNumber(note.code)}`}
+                            {getDSNumber(note.code)}
                         </Text>
                         <Text style={notesGroupStyles.noteValue}>
                             {note.note}
@@ -300,7 +303,8 @@ const notesGroupStyles = StyleSheet.create({
     // Contenu du groupe de notes
     content: {
         flexDirection: "row",
-        justifyContent: "space-around",
+        justifyContent: "center",
+        flexWrap: "wrap",
         alignItems: "center",
         padding: 10,
     },
@@ -312,7 +316,7 @@ const notesGroupStyles = StyleSheet.create({
         paddingVertical: 5,
         backgroundColor: Colors.primaryColor,
         borderRadius: 20,
-        marginVertical: 10,
+        margin: "3.66%", // Adds spacing between items
     },
     noteNumber: {
         color: "white",

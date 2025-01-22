@@ -1,12 +1,15 @@
-import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
+import * as Notifications from "expo-notifications";
 import { SchedulableTriggerInputTypes } from "expo-notifications";
 
 // Demande de permission pour les notifications
 export const requestPermissions = async () => {
-    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    if (status !== 'granted') {
-        alert('Permission for notifications was denied');
+    const status = await Notifications.getPermissionsAsync();
+    if (status.status !== "granted") {
+        const { status: newStatus } =
+            await Notifications.requestPermissionsAsync();
+        if (newStatus !== "granted") {
+            alert("Permission for notifications was denied");
+        }
     }
 };
 
@@ -20,17 +23,17 @@ Notifications.setNotificationHandler({
 });
 
 // Configuration du canal de notification pour Android
-Notifications.setNotificationChannelAsync('default', {
-    name: 'default',
+Notifications.setNotificationChannelAsync("default", {
+    name: "default",
     importance: Notifications.AndroidImportance.MAX,
     vibrationPattern: [0, 250, 250, 250],
-    lightColor: '#FF231F7C',
+    lightColor: "#FF231F7C",
 });
 
 // Envoi d'une notification locale
 export const sendLocalNotification = async () => {
     try {
-        await Notifications.scheduleNotificationAsync({
+        const showIdentifier = await Notifications.scheduleNotificationAsync({
             content: {
                 title: "ISEN Orbit",
                 body: "Notification de test",
@@ -42,23 +45,42 @@ export const sendLocalNotification = async () => {
     }
 };
 
-// Fonction pour planifier une notification
-export const scheduleCourseNotification = async (courseName: string, courseTime: Date) => {
-    const notificationTime: Date = new Date(courseTime.getTime() - 15 * 60 * 1000); // 15 minutes avant le cours
+export const cancelAllScheduledNotifications = async () => {
+    try {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        console.log("Toutes les notifications planifiées ont été annulées");
+    } catch (error) {
+        console.error(error);
+    }
+};
 
+// Fonction pour planifier une notification
+export const scheduleCourseNotification = async (
+    courseName: string,
+    courseTime: Date
+) => {
+    const notificationTime: Date = new Date(
+        courseTime.getTime() - 15 * 60 * 1000
+    ); // 15 minutes avant le cours
     try {
         await Notifications.scheduleNotificationAsync({
             content: {
                 title: "Rappel de cours",
                 body: `Votre cours de ${courseName} commence dans 15 minutes.`,
+                sound: false,
             },
             trigger: {
                 type: SchedulableTriggerInputTypes.DATE,
                 date: notificationTime,
             },
         });
-        console.log(`Notification planifiée pour ${courseName} à ${notificationTime}`);
+        console.log(
+            `Notification planifiée pour ${courseName} à ${notificationTime}`
+        );
     } catch (error) {
-        console.error("Erreur lors de la planification de la notification:", error);
+        console.error(
+            "Erreur lors de la planification de la notification:",
+            error
+        );
     }
 };

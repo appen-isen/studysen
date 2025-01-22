@@ -29,11 +29,6 @@ export function getNotesFromResponse(htmlReponse: string): NotesList[] {
         // On construit l'objet note avec les informations de la ligne
         load(element)("td").each((index, element) => {
             let value = load(element).text().trim();
-            // S'il s'agit du code de la note, on le formate
-            if (index === 1) {
-                // On supprime le dernier _DS+Numéro afin de créer un code commun avec les notes d'une même matière
-                value = value.replace(/_DS\d$/, "");
-            }
             note[fields[index]] = value;
         });
         notes.push(note);

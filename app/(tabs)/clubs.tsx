@@ -8,7 +8,7 @@ export default function ClubsScreen() {
         <SafeAreaView style={styles.container}>
             <FontAwesome6 name="hammer" size={24} color="black" />
             <Text style={styles.title}>
-                La page des clubs est encore en développement.
+                La page de la vie associative est encore en développement.
             </Text>
         </SafeAreaView>
     );

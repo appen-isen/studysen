@@ -23,12 +23,18 @@ import EventModal from "@/components/modals/EventModal";
 import { calculateAverage } from "@/utils/notes";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { requestPermissions, scheduleCourseNotification } from "@/utils/notificationConfig";
+import {
+    cancelAllScheduledNotifications,
+    requestPermissions,
+    scheduleCourseNotification,
+} from "@/utils/notificationConfig";
+import useSettingsStore from "@/store/settingsStore";
 
 export default function HomeScreen() {
     const router = useRouter();
     const { session } = useSessionStore();
     const { notes, setNotes } = useNotesStore();
+    const { settings } = useSettingsStore();
     const [noteAverageValue, setNoteAverageValue] = useState<string>(
         calculateAverage(notes)
     );
@@ -58,14 +64,6 @@ export default function HomeScreen() {
 
         return () => clearInterval(interval); // Cleanup interval on unmount
     }, [lastUpdateTime]);
-
-    useEffect(() => {
-        if (isPlanningLoaded) {
-            planning.forEach(event => {
-                scheduleCourseNotification(event.title, new Date(event.start));
-            });
-        }
-    }, [isPlanningLoaded, planning]);
 
     // Mettre à jour le planning toutes les 10 minutes
     const autoUpdatePlanningIfNeeded = () => {
@@ -108,7 +106,8 @@ export default function HomeScreen() {
                 .fetchPlanning(weekOffset)
                 .then((currentWeekPlanning: PlanningEvent[]) => {
                     // Concaténer le nouveau planning avec l'existant sans doublons
-                    setPlanning([
+
+                    const newPlanning = [
                         ...planning.filter(
                             (event) =>
                                 !currentWeekPlanning.some(
@@ -116,7 +115,8 @@ export default function HomeScreen() {
                                 )
                         ),
                         ...currentWeekPlanning,
-                    ]);
+                    ];
+                    setPlanning(newPlanning);
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé
                     setSyncedPlanning([
@@ -125,6 +125,25 @@ export default function HomeScreen() {
                     ]);
                     // On met à jour la date de la dernière mise à jour
                     setLastUpdateTime(new Date());
+                    //On planifie les notifications pour les cours
+                    //On les supprime d'abord puis on les recrée avec le planning
+                    cancelAllScheduledNotifications().then(() => {
+                        if (settings.notificationsEnabled) {
+                            const date = new Date();
+                            currentWeekPlanning.forEach((event) => {
+                                //Si l'événement n'est pas un congé et qu'il n'est pas déjà passé, on planifie une notification silencieuse
+                                if (
+                                    event.className !== "CONGES" &&
+                                    new Date(event.start) > date
+                                ) {
+                                    scheduleCourseNotification(
+                                        event.title || event.subject,
+                                        new Date(event.start)
+                                    );
+                                }
+                            });
+                        }
+                    });
                 })
                 .catch((error) => {
                     console.error(error);

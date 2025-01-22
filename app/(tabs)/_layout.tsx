@@ -98,7 +98,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="clubs"
                 options={{
-                    title: "Clubs",
+                    title: "Vie Associative",
                     tabBarIcon: ({ color }) => (
                         <TabBarIcon name="party-popper" color={color} />
                     ),

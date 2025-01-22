@@ -163,7 +163,7 @@ export default function PlanningWeek(props: {
         </View>
     );
 }
-const PIXEL_PER_HOUR = 38;
+const PIXEL_PER_HOUR = 45;
 export function WeekEvent(props: {
     event: PlanningEvent;
     onPress?: (event: PlanningEvent) => void;
@@ -176,6 +176,7 @@ export function WeekEvent(props: {
             new Date(props.event.start).getTime()) /
         (1000 * 60 * 60);
     const eventHeight = durationInHours * PIXEL_PER_HOUR;
+
     //Si l'événement est vide alors on affiche une case vide
     if (props.event.id === "blank") {
         return (
@@ -194,24 +195,26 @@ export function WeekEvent(props: {
             scale={0.95}
             onPress={() => props.onPress && props.onPress(props.event)}
         >
-            <View style={eventStyles.timeView}>
-                <Text style={eventStyles.hour}>
-                    {startHour} - {endHour}
-                </Text>
-                <View
-                    style={[
-                        eventStyles.separator,
-                        {
-                            backgroundColor: getSubjectColor(
-                                props.event.subject
-                            ),
-                        },
-                    ]}
-                ></View>
-            </View>
-            <View>
-                <Text style={eventStyles.subject}>{props.event.subject}</Text>
-            </View>
+            {/* Si la hauteur de l'événement est suffisante alors on affiche l'heure de début et de fin */}
+            {eventHeight > PIXEL_PER_HOUR * 0.99 && (
+                <View style={eventStyles.timeView}>
+                    <Text style={eventStyles.hour}>
+                        {startHour} - {endHour}
+                    </Text>
+                    <View
+                        style={[
+                            eventStyles.separator,
+                            {
+                                backgroundColor: getSubjectColor(
+                                    props.event.subject
+                                ),
+                            },
+                        ]}
+                    ></View>
+                </View>
+            )}
+            <Text style={eventStyles.subject}>{props.event.subject}</Text>
+
             {/* Si la hauteur de l'événement est suffisante alors on affiche la salle */}
             {eventHeight > PIXEL_PER_HOUR * 1.5 && (
                 <View style={eventStyles.room}>
@@ -265,7 +268,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         marginTop: 20,
         width: "100%",
-        height: PIXEL_PER_HOUR * 2 * 6,
+        height: PIXEL_PER_HOUR * 2 * 5.8,
     },
     //Partie des heures
     hoursView: {
@@ -323,7 +326,6 @@ const eventStyles = StyleSheet.create({
         fontSize: Dimensions.get("window").width < 500 ? 8 : 12,
         fontWeight: "bold",
         textAlign: "center",
-        padding: 1,
     },
     separator: {
         width: "90%",

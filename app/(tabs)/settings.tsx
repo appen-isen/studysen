@@ -10,10 +10,18 @@ import { ConfirmModal, Dropdown } from "@/components/Modals";
 import { useEffect, useState } from "react";
 import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+    useNotesStore,
+    usePlanningStore,
+    useSyncedPlanningStore,
+} from "@/store/webaurionStore";
 
 export default function SettingsScreen() {
     const router = useRouter();
     const { clearSession } = useSessionStore();
+    const { clearPlanning } = usePlanningStore();
+    const { clearSyncedPlanning } = useSyncedPlanningStore();
+    const { clearNotes } = useNotesStore();
     const { settings, setSettings } = useSettingsStore();
 
     // Message de confirmation pour la déconnexion
@@ -130,6 +138,9 @@ export default function SettingsScreen() {
                 setVisible={(visible) => setConfirmVisible(visible)}
                 onConfirm={() => {
                     clearSession();
+                    clearPlanning();
+                    clearSyncedPlanning();
+                    clearNotes();
                     removeSecureStoreItem("username");
                     removeSecureStoreItem("password");
                     router.replace("/login");
