@@ -11,6 +11,7 @@ export const CAMPUS = ["Nantes", "Rennes", "Brest", "Caen"] as const;
 type Settings = {
     campus: (typeof CAMPUS)[number];
     username: string;
+    notificationsEnabled?: boolean;
 };
 
 type SettingsState = {
@@ -24,6 +25,7 @@ function getDefaultSettings(): Settings {
     return {
         campus: "Nantes",
         username: "",
+        notificationsEnabled: true,
     };
 }
 

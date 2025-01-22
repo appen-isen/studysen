@@ -1,30 +1,45 @@
 import { useEffect } from "react";
-import { View, StyleSheet, Switch, Button } from "react-native";
+import { View, StyleSheet, Switch, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { AnimatedPressable } from "@/components/Buttons";
+import { AnimatedPressable, Button } from "@/components/Buttons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
-import { Bold } from "@/components/Texts";
+import { Bold, Text } from "@/components/Texts";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
-import * as Notifications from 'expo-notifications';
-import { requestPermissions, sendLocalNotification } from "@/utils/notificationConfig";
+import {
+    cancelAllScheduledNotifications,
+    requestPermissions,
+    sendLocalNotification,
+} from "@/utils/notificationConfig";
+import useSettingsStore from "@/store/settingsStore";
 
 // Paramètres des notifications
 export default function NotifSettings() {
     const router = useRouter();
     const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+    const { setSettings, settings } = useSettingsStore();
 
     useEffect(() => {
         requestPermissions();
     }, []);
 
+    useEffect(() => {
+        // On charge les paramètres de l'application
+        if (settings.notificationsEnabled !== undefined) {
+            setNotificationsEnabled(settings.notificationsEnabled);
+        }
+    }, [settings]);
+
     const toggleNotifications = () => {
-        setNotificationsEnabled(previousState => !previousState);
-        if (notificationsEnabled) {
-            Notifications.cancelAllScheduledNotificationsAsync();
-        } else {
+        const nextNotifState = !notificationsEnabled;
+        setNotificationsEnabled(nextNotifState);
+        setSettings("notificationsEnabled", nextNotifState);
+
+        if (nextNotifState) {
             requestPermissions();
+        } else {
+            cancelAllScheduledNotifications();
         }
     };
 
@@ -36,22 +51,45 @@ export default function NotifSettings() {
             </AnimatedPressable>
             {/* Texte d'information */}
             <View style={styles.contentView}>
+                <Bold style={styles.title}>Notifications</Bold>
+
                 {/* Switch pour activer/désactiver les notifications */}
-                <View style={styles.switchContainer}>
-                    <Bold style={styles.switchLabel}>Activer les notifications</Bold>
+                <Pressable
+                    style={styles.switchContainer}
+                    onPress={toggleNotifications}
+                >
+                    <Bold style={styles.switchLabel}>
+                        Activer les notifications
+                    </Bold>
                     <Switch
+                        trackColor={{
+                            false: "#767577",
+                            true: Colors.hexWithOpacity(
+                                Colors.primaryColor,
+                                0.8
+                            ),
+                        }}
+                        thumbColor={
+                            notificationsEnabled
+                                ? Colors.primaryColor
+                                : "#f4f3f4"
+                        }
+                        ios_backgroundColor="#3e3e3e"
+                        style={{ transform: [{ scale: 1.2 }] }}
                         onValueChange={toggleNotifications}
                         value={notificationsEnabled}
                     />
-                </View>
+                </Pressable>
                 {/* Bouton pour envoyer une notification de test */}
                 <Button
-                    title="Envoyer une notification de test"
+                    title="Envoyer une notification"
+                    textStyle={styles.buttonText}
                     onPress={sendLocalNotification}
                 />
-                <Bold style={styles.infoText}>
-                    Les notifications ne sont encore en beta et peuvent ne pas fonctionner correctement.
-                </Bold>
+                <Text style={styles.infoText}>
+                    Les notifications sont encore en beta et peuvent ne pas
+                    fonctionner correctement.
+                </Text>
             </View>
         </SafeAreaView>
     );
@@ -73,19 +111,28 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-    infoText: {
-        width: "90%",
-        alignSelf: "center",
+    title: {
+        color: Colors.primaryColor,
+        fontSize: 25,
         textAlign: "center",
-        fontSize: 20,
+        marginBottom: 20,
     },
+
     switchContainer: {
         flexDirection: "row",
         alignItems: "center",
-        marginTop: 20,
+    },
+    buttonText: {
+        fontSize: 18,
     },
     switchLabel: {
         fontSize: 18,
         marginRight: 10,
+    },
+    infoText: {
+        width: "90%",
+        alignSelf: "center",
+        textAlign: "center",
+        fontSize: 15,
     },
 });

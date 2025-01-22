@@ -173,7 +173,7 @@ export default function PlanningScreen() {
             {/* Message de synchronisation */}
             <SyncMessage isVisible={isSyncing} />
             {/* Titre de la page */}
-            <Text style={styles.title}>Empoi du temps</Text>
+            <Text style={styles.title}>Planning</Text>
 
             {/* Sélecteur pour l'affichage de l'emploi du temps */}
             <DoubleSelector
