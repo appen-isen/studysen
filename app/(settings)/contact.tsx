@@ -1,6 +1,6 @@
 import { View, StyleSheet } from "react-native";
 import { Link, useRouter } from "expo-router";
-import { AnimatedPressable } from "@/components/Buttons";
+import { AnimatedPressable, Button } from "@/components/Buttons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
@@ -19,9 +19,9 @@ export default function Contact() {
                 <Bold style={styles.title}>Nous contacter</Bold>
                 <Text style={styles.text}>
                     Si vous avez une suggestion ou si vous souhaitez rapporter
-                    un bug, n'hésitez pas à demander à un membre du club
-                    Appen'ISEN de Nantes.
+                    un bug, n'hésitez pas à demander à faire une issue sur le github du projet.
                 </Text>
+                <Button title={"Github"} onPress={() => router.navigate("https://github.com/appen-isen/isen-orbit/issues")} />
             </View>
         </SafeAreaView>
     );
