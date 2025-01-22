@@ -98,8 +98,6 @@ export const scheduleCourseNotification = async (
 // Fonction pour convertir le délai en millisecondes
 const getDelayInMilliseconds = (delay: string): number => {
     switch (delay) {
-        case "none":
-            return 0;
         case "5min":
             return 5 * 60 * 1000;
         case "15min":
@@ -108,14 +106,6 @@ const getDelayInMilliseconds = (delay: string): number => {
             return 30 * 60 * 1000;
         case "1h":
             return 60 * 60 * 1000;
-        case "2h":
-            return 2 * 60 * 60 * 1000;
-        case "4h":
-            return 4 * 60 * 60 * 1000;
-        case "8h":
-            return 8 * 60 * 60 * 1000;
-        case "1d":
-            return 24 * 60 * 60 * 1000;
         default:
             return 15 * 60 * 1000; // Default to 15 minutes
     }
