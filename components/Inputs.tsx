@@ -16,6 +16,7 @@ export type InputProps = {
     icon?: React.ReactNode;
     password?: boolean;
     smallInput?: boolean;
+    autoComplete?: string;
 };
 
 export function Input(props: TextInputProps & InputProps) {
@@ -24,7 +25,7 @@ export function Input(props: TextInputProps & InputProps) {
     const [textVisible, setTextVisible] = useState(
         props.password === undefined
     );
-    const { icon, password, smallInput } = props;
+    const { icon, password, smallInput, autoComplete } = props;
 
     //On gère les styles en fonction des props
     let inputStyle = password
@@ -45,6 +46,7 @@ export function Input(props: TextInputProps & InputProps) {
                 onEndEditing={() => setFocused(false)}
                 secureTextEntry={password && !textVisible}
                 placeholder={focused ? "" : props.placeholder}
+                autoComplete={autoComplete}
             />
             {/* Le bouton pour cacher/afficher le mot de passe */}
             {password && (

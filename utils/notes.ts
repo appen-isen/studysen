@@ -73,8 +73,8 @@ export function getSubjectName(subject: string) {
     subject = subject.replaceAll(/ - Semestre \d$/g, "");
 
     // On retire l'indication du DS
-    subject = subject.replaceAll(/ DS \d?/g, "");
-    subject = subject.replaceAll(/ DS\d?/g, "");
+    subject = subject.replaceAll(/DS \d?/g, "");
+    subject = subject.replaceAll(/DS\d?/g, "");
     return subject.trim();
 }
 
