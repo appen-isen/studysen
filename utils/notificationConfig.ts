@@ -1,12 +1,14 @@
 import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
 import { SchedulableTriggerInputTypes } from "expo-notifications";
 
 // Demande de permission pour les notifications
 export const requestPermissions = async () => {
-    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    if (status !== 'granted') {
-        alert('Permission for notifications was denied');
+    const status = await Notifications.getPermissionsAsync();
+    if (status.status !== 'granted') {
+        const { status: newStatus } = await Notifications.requestPermissionsAsync();
+        if (newStatus !== 'granted') {
+            alert('Permission for notifications was denied');
+        }
     }
 };
 
