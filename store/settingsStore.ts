@@ -8,10 +8,13 @@ import {
 // Liste des campus
 export const CAMPUS = ["Nantes", "Rennes", "Brest", "Caen"] as const;
 
+export type NotificationDelay = "5min" | "15min" | "30min" | "1h";
+
 type Settings = {
     campus: (typeof CAMPUS)[number];
     username: string;
-    notificationsEnabled?: boolean;
+    notificationsEnabled: boolean;
+    notificationsDelay: NotificationDelay;
 };
 
 type SettingsState = {
@@ -26,6 +29,7 @@ function getDefaultSettings(): Settings {
         campus: "Nantes",
         username: "",
         notificationsEnabled: true,
+        notificationsDelay: "15min",
     };
 }
 
@@ -50,7 +54,9 @@ export async function initializeSettingsStore() {
     const initialSettingsState = await loadStateFromStorage("settings");
 
     if (initialSettingsState) {
-        useSettingsStore.setState({ settings: initialSettingsState });
+        //On ajoute la valeur par défaut pour les paramètres non enregistrés
+        const settings = { ...getDefaultSettings(), ...initialSettingsState };
+        useSettingsStore.setState({ settings: settings });
     }
 }
 
