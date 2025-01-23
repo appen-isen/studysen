@@ -29,6 +29,11 @@ export function planningResponseToEvents(response: string): PlanningEvent[] {
             subject = eventInfo[eventInfo.length - 4].trim();
             title = eventInfo[eventInfo.length - 3].trim();
         }
+        //On force la majuscule pour la première lettre du titre
+
+        if (title) {
+            title = title.charAt(0).toUpperCase() + title.slice(1);
+        }
 
         let instructors = eventInfo[eventInfo.length - 2].trim();
         let learners = eventInfo[eventInfo.length - 1].trim();

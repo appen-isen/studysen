@@ -63,6 +63,9 @@ export function getSubjectNameFromGroup(notes: Note[]): string {
     subject = getSubjectName(subject);
     subject = subject.replaceAll(/Contrôle continu/g, "");
     subject = subject.replaceAll(/Synthèse/g, "");
+    //Pour les fautes d'orthographe à cause des profs...
+    subject = subject.replaceAll(/Contôle continu/g, "");
+
     return subject.trim();
 }
 
