@@ -1,5 +1,6 @@
 import * as Notifications from "expo-notifications";
 import { SchedulableTriggerInputTypes } from "expo-notifications";
+import useNotificationStore from "../store/notificationStore";
 
 // Demande de permission pour les notifications
 export const requestPermissions = async () => {
@@ -59,15 +60,24 @@ export const scheduleCourseNotification = async (
     courseName: string,
     courseTime: Date
 ) => {
+    const { settings } = useNotificationStore.getState();
+
+    // Vérifiez si les notifications sont activées
+    if (!settings.enabled) {
+        console.log("Les notifications sont désactivées.");
+        return;
+    }
+
     const notificationTime: Date = new Date(
-        courseTime.getTime() - 15 * 60 * 1000
-    ); // 15 minutes avant le cours
+        courseTime.getTime() - getDelayInMilliseconds(settings.delay)
+    );
+
     try {
         await Notifications.scheduleNotificationAsync({
             content: {
                 title: "Rappel de cours",
-                body: `Votre cours de ${courseName} commence dans 15 minutes.`,
-                sound: false,
+                body: `Votre cours de ${courseName} commence dans ${settings.delay}.`,
+                sound: settings.enabled,
             },
             trigger: {
                 type: SchedulableTriggerInputTypes.DATE,
@@ -82,5 +92,21 @@ export const scheduleCourseNotification = async (
             "Erreur lors de la planification de la notification:",
             error
         );
+    }
+};
+
+// Fonction pour convertir le délai en millisecondes
+const getDelayInMilliseconds = (delay: string): number => {
+    switch (delay) {
+        case "5min":
+            return 5 * 60 * 1000;
+        case "15min":
+            return 15 * 60 * 1000;
+        case "30min":
+            return 30 * 60 * 1000;
+        case "1h":
+            return 60 * 60 * 1000;
+        default:
+            return 15 * 60 * 1000; // Default to 15 minutes
     }
 };
