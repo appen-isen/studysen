@@ -214,7 +214,7 @@ export function Dropdown(props: DropdownProps) {
                     >
                         <View style={styles.dropdownItemView}>
                             <Text style={styles.dropdownText}>{item}</Text>
-                            {props.selectedItem === item && (
+                            {props.selectedItem == item && (
                                 <Ionicons
                                     name="checkmark"
                                     style={styles.dropdownSelectedIcon}

@@ -1,6 +1,6 @@
+import useSettingsStore from "@/store/settingsStore";
 import * as Notifications from "expo-notifications";
 import { SchedulableTriggerInputTypes } from "expo-notifications";
-import useNotificationStore from "../store/notificationStore";
 
 // Demande de permission pour les notifications
 export const requestPermissions = async () => {
@@ -60,24 +60,18 @@ export const scheduleCourseNotification = async (
     courseName: string,
     courseTime: Date
 ) => {
-    const { settings } = useNotificationStore.getState();
-
-    // Vérifiez si les notifications sont activées
-    if (!settings.enabled) {
-        console.log("Les notifications sont désactivées.");
-        return;
-    }
+    const { settings } = useSettingsStore.getState();
 
     const notificationTime: Date = new Date(
-        courseTime.getTime() - getDelayInMilliseconds(settings.delay)
+        courseTime.getTime() -
+            getDelayInMilliseconds(settings.notificationsDelay)
     );
 
     try {
         await Notifications.scheduleNotificationAsync({
             content: {
                 title: "Rappel de cours",
-                body: `Votre cours de ${courseName} commence dans ${settings.delay}.`,
-                sound: settings.enabled,
+                body: `Votre cours de ${courseName} commence dans ${settings.notificationsDelay}.`,
             },
             trigger: {
                 type: SchedulableTriggerInputTypes.DATE,
