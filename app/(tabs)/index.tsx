@@ -138,6 +138,7 @@ export default function HomeScreen() {
                                 ) {
                                     scheduleCourseNotification(
                                         event.title || event.subject,
+                                        event.room,
                                         new Date(event.start)
                                     );
                                 }

@@ -58,6 +58,7 @@ export const cancelAllScheduledNotifications = async () => {
 // Fonction pour planifier une notification
 export const scheduleCourseNotification = async (
     courseName: string,
+    courseRoom: string,
     courseTime: Date
 ) => {
     const { settings } = useSettingsStore.getState();
@@ -71,7 +72,9 @@ export const scheduleCourseNotification = async (
         await Notifications.scheduleNotificationAsync({
             content: {
                 title: "Rappel de cours",
-                body: `Votre cours de ${courseName} commence dans ${settings.notificationsDelay}.`,
+                body: `Votre cours de ${courseName} ${
+                    courseRoom ? "en " + courseRoom : ""
+                } commence dans ${settings.notificationsDelay}.`,
             },
             trigger: {
                 type: SchedulableTriggerInputTypes.DATE,
