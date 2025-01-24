@@ -216,7 +216,7 @@ export function WeekEvent(props: {
             <Text style={eventStyles.subject}>{props.event.subject}</Text>
 
             {/* Si la hauteur de l'événement est suffisante alors on affiche la salle */}
-            {eventHeight > PIXEL_PER_HOUR * 1.5 && (
+            {eventHeight >= PIXEL_PER_HOUR * 1.5 && (
                 <View style={eventStyles.room}>
                     <Text style={eventStyles.roomText}>{props.event.room}</Text>
                 </View>

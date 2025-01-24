@@ -1,3 +1,5 @@
+import { end } from "cheerio/lib/api/traversing";
+
 // On récupère la date de début de semaine (lundi)
 export function getCloserMonday(date: Date): Date {
     const d = new Date(date);
@@ -83,4 +85,26 @@ export function getSemester(date: Date = new Date()): 0 | 1 {
     }
 
     return semester;
+}
+
+// Fonction pour vérifier si une date est dans la semaine de travail
+export function isSameWorkWeek(date: Date) {
+    const now = new Date();
+    // On récupère le jour actuel
+    const currentDay = now.getDay();
+
+    // On cherche la date du lundi
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(
+        now.getDate() - (currentDay === 0 ? 6 : currentDay - 1)
+    );
+    startOfWeek.setHours(1, 0, 0); // Début de la journée
+
+    // On cherche la fin de semaine
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 4); // 4 jours pour aller à Vendredi
+    endOfWeek.setHours(23, 59, 59); // Fin de la journée
+
+    // On regarde si la date est comprise entre le lundi et le vendredi
+    return date >= startOfWeek && date <= endOfWeek;
 }

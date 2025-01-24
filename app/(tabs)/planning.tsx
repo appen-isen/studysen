@@ -147,6 +147,9 @@ export default function PlanningScreen() {
             const offset = previous ? -7 : 7; // On avance ou recule d'une semaine
             newDate.setDate(newDate.getDate() + offset);
 
+            // On reset le jour actuel dans le PlanningList
+            setResetDayFlag((prevFlag) => !prevFlag);
+
             // Si on recule et que la date est antérieure au lundi le plus proche, on reste sur le lundi le plus proche
             if (previous && newDate < closerMonday) {
                 return closerMonday;

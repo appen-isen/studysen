@@ -72,8 +72,8 @@ export const scheduleCourseNotification = async (
         await Notifications.scheduleNotificationAsync({
             content: {
                 title: "Rappel de cours",
-                body: `Votre cours de ${courseName} ${
-                    courseRoom ? "en " + courseRoom : ""
+                body: `Votre cours de ${courseName}${
+                    courseRoom ? " en " + courseRoom : ""
                 } commence dans ${settings.notificationsDelay}.`,
             },
             trigger: {

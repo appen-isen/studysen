@@ -14,6 +14,7 @@ import {
     formatDateToLocalTime,
     getDayNumberInWeek,
     getWorkdayFromOffset,
+    isSameWorkWeek,
 } from "@/utils/date";
 
 export default function PlanningList(props: {
@@ -38,7 +39,12 @@ export default function PlanningList(props: {
     const selectedDateISO = getWorkdayFromOffset(props.startDate, selectedDay);
 
     useEffect(() => {
-        setSelectedDay(getDayNumberInWeek(new Date()));
+        if (isSameWorkWeek(props.startDate)) {
+            setSelectedDay(getDayNumberInWeek(new Date()));
+        } else {
+            // S'il y a un changement de semaine, on revient au lundi
+            setSelectedDay(0);
+        }
     }, [props.resetDayFlag]);
 
     return (
