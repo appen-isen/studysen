@@ -1,14 +1,19 @@
+import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { AnimatedPressable, Button } from "@/components/Buttons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
 import { SafeAreaView } from "react-native-safe-area-context";
+import IssueModal from "@/components/modals/IssueModal";
+import ContactModal from "@/components/modals/ContactModal";
 
-//Nous contacter
 export default function Contact() {
     const router = useRouter();
+    const [modalIssueVisible, setIssueModalVisible] = useState(false);
+    const [modalContactVisible, setContactModalVisible] = useState(false);
+
     return (
         <SafeAreaView style={styles.container}>
             <AnimatedPressable onPress={() => router.back()}>
@@ -18,11 +23,17 @@ export default function Contact() {
             <View style={styles.contentView}>
                 <Bold style={styles.title}>Nous contacter</Bold>
                 <Text style={styles.text}>
-                    Si vous avez une suggestion ou si vous souhaitez rapporter
-                    un bug, n'hésitez pas à demander à faire une issue sur le github du projet.
+                    Si vous souhaitez rapporter un bug, n'hésitez pas à signaler le problème.
                 </Text>
-                <Button title={"Github"} onPress={() => router.navigate("https://github.com/appen-isen/isen-orbit/issues")} />
+                <Button title={"Signaler un bug"} onPress={() => setIssueModalVisible(true)} />
+                <Text style={styles.text}>
+                    Si vous souhaitez faire une suggestion ou nous contacter pour une autre raison n'hesiter pas via le bouton ci-dessous.
+                </Text>
+                <Button title={"Nous contacter"} onPress={() => setContactModalVisible(true)} />
             </View>
+
+            <IssueModal visible={modalIssueVisible} onClose={() => setIssueModalVisible(false)} />
+            <ContactModal visible={modalContactVisible} onClose={() => setContactModalVisible(false)} />
         </SafeAreaView>
     );
 }
@@ -38,7 +49,6 @@ const styles = StyleSheet.create({
         margin: 20,
         color: Colors.primaryColor,
     },
-    //Contenu
     contentView: {
         flex: 1,
         justifyContent: "center",
