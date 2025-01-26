@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, View, StyleSheet } from "react-native";
-import { Button } from "@/components/Buttons";
-import { Input } from "@/components/Inputs";
+import { Button, ButtonIssue } from "@/components/Buttons";
+import { IssueInput } from "@/components/Inputs";
 import axios from "axios";
 import useSettingsStore from "@/store/settingsStore";
 
@@ -65,20 +65,20 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
     return (
         <Modal visible={visible} animationType="slide">
             <View style={styles.modalView}>
-                <Input
+                <IssueInput
                     style={styles.input}
                     placeholder="Titre"
                     value={title}
                     onChangeText={setTitle}
                 />
-                <Input
+                <IssueInput
                     style={styles.input}
                     placeholder="Votre suggestion ou message ici"
                     value={problemDescription}
                     onChangeText={setProblemDescription}
                     multiline
                 />
-                <Button title="Envoyer la suggestion ou le message." onPress={createIssue} />
+                <ButtonIssue title="Envoyer la suggestion ou le message." onPress={createIssue} />
                 <Button title="Fermer" onPress={onClose} />
             </View>
         </Modal>

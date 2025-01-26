@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal, View, StyleSheet } from "react-native";
 import axios from "axios";
 import { Button } from "@/components/Buttons";
-import { Input } from "@/components/Inputs";
+import { IssueInput } from "@/components/Inputs";
 import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
 
 type IssueModalProps = {
@@ -79,34 +79,34 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
     return (
         <Modal visible={visible} animationType="slide">
             <View style={styles.modalView}>
-                <Input
+                <IssueInput
                     style={styles.input}
                     placeholder="Titre"
                     value={title}
                     onChangeText={setTitle}
                 />
-                <Input
+                <IssueInput
                     style={styles.input}
                     placeholder="Description claire et concise du problème rencontré"
                     value={problemDescription}
                     onChangeText={setProblemDescription}
                     multiline
                 />
-                <Input
+                <IssueInput
                     style={styles.input}
                     placeholder="Étapes pour reproduire le comportement"
                     value={reproductionSteps}
                     onChangeText={setReproductionSteps}
                     multiline
                 />
-                <Input
+                <IssueInput
                     style={styles.input}
                     placeholder="Description claire et concise de ce qui était censé se produire"
                     value={expectedBehavior}
                     onChangeText={setExpectedBehavior}
                     multiline
                 />
-                <Input
+                <IssueInput
                     style={styles.input}
                     placeholder="Type d'appareil utilisé"
                     value={deviceInfo}
