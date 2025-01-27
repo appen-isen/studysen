@@ -34,6 +34,8 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
             const body = `
                 **Vos suggestions ou messages :**
                 ${problemDescription}
+                **Nom de l'utilisateur :**
+                ${usernameNormalized}
             `;
 
             // Créer l'issue sur GitHub
