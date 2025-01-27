@@ -34,9 +34,6 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
                 setUsernameNormalized("Anonyme");
             }
             // Récupérer le token depuis l'API
-            const tokenResponse = await axios.get("https://api.isen-orbit.fr/v1/github");
-            const githubToken = tokenResponse.data.token;
-
             const body = `
                 **Description du problème :**
                 ${problemDescription}
@@ -56,18 +53,16 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
 
             // Créer l'issue sur GitHub
             const response = await axios.post(
-                "https://api.github.com/repos/appen-isen/isen-orbit/issues",
+                "https://api.isen-orbit.fr/v1/github",
                 {
                     title,
                     body,
                     labels: ["bug"],
+                    assignees: [
+                        'dd060606',
+                        'BreizhHardware'
+                    ],
                 },
-                {
-                    headers: {
-                        "X-GitHub-Api-Version": "2022-11-28",
-                        Authorization: `Bearer ${githubToken}`,
-                    },
-                }
             );
             console.log("Issue created:", response.data);
             onClose();
