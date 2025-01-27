@@ -13,8 +13,7 @@ type IssueModalProps = {
 export default function IssueModal({ visible, onClose }: IssueModalProps) {
     const [title, setTitle] = useState("");
     const [problemDescription, setProblemDescription] = useState("");
-    const [usernameNormalized, setUsernameNormalized] = useState("");
-    const { settings, setSettings } = useSettingsStore();
+    const { settings } = useSettingsStore();
 
     const createIssue = async () => {
         try {
@@ -28,7 +27,7 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
 ${problemDescription}
 
 **Nom de l'utilisateur :**
-${usernameNormalized}
+${username}
         `;
 
             // Créer l'issue sur GitHub

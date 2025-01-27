@@ -36,11 +36,11 @@ ${reproductionSteps}
 **Comportement attendu :**
 ${expectedBehavior}
 
-                **Informations sur l'appareil :**
-                ${deviceInfo}
+**Informations sur l'appareil :**
+${deviceInfo}
                 
-                **Nom de l'utilisateur :**
-                ${username}
+**Nom de l'utilisateur :**
+${username}
             `;
 
             // Créer l'issue sur GitHub
