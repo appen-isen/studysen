@@ -18,19 +18,11 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
 
     const createIssue = async () => {
         try {
+            //On récupère le nom de l'utilisateur
+            let username = "Anonyme";
             if (settings.username) {
-                const username = settings.username;
-
-                //On convertit le Prénom Nom en email valide
-                const normalizedName = username
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "")
-                    .toLowerCase();
-                setUsernameNormalized(normalizedName.replace(" ", " "));
-            } else {
-                setUsernameNormalized("Anonyme");
+                username = settings.username;
             }
-
             const body = `
 **Vos suggestions ou messages :**
 ${problemDescription}
@@ -46,11 +38,8 @@ ${usernameNormalized}
                     title,
                     body,
                     labels: ["suggestion"],
-                    assignees: [
-                        'dd060606',
-                        'BreizhHardware'
-                    ],
-                },
+                    assignees: ["dd060606", "BreizhHardware"],
+                }
             );
             console.log("Issue created:", response.data);
             onClose();
@@ -75,7 +64,10 @@ ${usernameNormalized}
                     onChangeText={setProblemDescription}
                     multiline
                 />
-                <ButtonIssue title="Envoyer la suggestion ou le message." onPress={createIssue} />
+                <ButtonIssue
+                    title="Envoyer la suggestion ou le message."
+                    onPress={createIssue}
+                />
                 <Button title="Fermer" onPress={onClose} />
             </View>
         </Modal>

@@ -10,6 +10,7 @@ export function groupNotesBySubject(notes: NotesList[]): NotesList[] {
         // On retire les informations de DS pour regrouper les notes
         code = code.replace(/_DSS/, "");
         code = code.replace(/_DS\d?/, "");
+        code = code.replace(/_EPC\d?/, "");
         code = code.replace(/_CC/, "");
         code = code.replace(/_TP/, "");
 

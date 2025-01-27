@@ -16,22 +16,14 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
     const [reproductionSteps, setReproductionSteps] = useState("");
     const [expectedBehavior, setExpectedBehavior] = useState("");
     const [deviceInfo, setDeviceInfo] = useState("");
-    const [usernameNormalized, setUsernameNormalized] = useState("");
     const { settings, setSettings } = useSettingsStore();
 
     const createIssue = async () => {
         try {
+            //On récupère le nom de l'utilisateur
+            let username = "Anonyme";
             if (settings.username) {
-                const username = settings.username;
-
-                //On convertit le Prénom Nom en email valide
-                const normalizedName = username
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "")
-                    .toLowerCase();
-                setUsernameNormalized(normalizedName.replace(" ", " "));
-            } else {
-                setUsernameNormalized("Anonyme");
+                username = settings.username;
             }
             // Récupérer le token depuis l'API
             const body = `
@@ -44,12 +36,12 @@ ${reproductionSteps}
 **Comportement attendu :**
 ${expectedBehavior}
 
-**Informations sur l'appareil :**
-${deviceInfo}
-
-**Nom de l'utilisateur :**
-${usernameNormalized}
-`;
+                **Informations sur l'appareil :**
+                ${deviceInfo}
+                
+                **Nom de l'utilisateur :**
+                ${username}
+            `;
 
             // Créer l'issue sur GitHub
             const response = await axios.post(
@@ -58,11 +50,8 @@ ${usernameNormalized}
                     title,
                     body,
                     labels: ["bug"],
-                    assignees: [
-                        'dd060606',
-                        'BreizhHardware'
-                    ],
-                },
+                    assignees: ["dd060606", "BreizhHardware"],
+                }
             );
             console.log("Issue created:", response.data);
             onClose();
