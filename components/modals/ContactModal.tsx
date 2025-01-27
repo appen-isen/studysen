@@ -32,11 +32,12 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
             }
 
             const body = `
-                **Vos suggestions ou messages :**
-                ${problemDescription}
-                **Nom de l'utilisateur :**
-                ${usernameNormalized}
-            `;
+**Vos suggestions ou messages :**
+${problemDescription}
+
+**Nom de l'utilisateur :**
+${usernameNormalized}
+        `;
 
             // Créer l'issue sur GitHub
             const response = await axios.post(
@@ -44,7 +45,7 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
                 {
                     title,
                     body,
-                    labels: ["bug"],
+                    labels: ["suggestion"],
                     assignees: [
                         'dd060606',
                         'BreizhHardware'

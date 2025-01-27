@@ -35,21 +35,21 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
             }
             // Récupérer le token depuis l'API
             const body = `
-                **Description du problème :**
-                ${problemDescription}
+**Description du problème :**
+${problemDescription}
 
-                **Étapes pour reproduire le comportement :**
-                ${reproductionSteps}
+**Étapes pour reproduire le comportement :**
+${reproductionSteps}
 
-                **Comportement attendu :**
-                ${expectedBehavior}
+**Comportement attendu :**
+${expectedBehavior}
 
-                **Informations sur l'appareil :**
-                ${deviceInfo}
-                
-                **Nom de l'utilisateur :**
-                ${usernameNormalized}
-            `;
+**Informations sur l'appareil :**
+${deviceInfo}
+
+**Nom de l'utilisateur :**
+${usernameNormalized}
+`;
 
             // Créer l'issue sur GitHub
             const response = await axios.post(
