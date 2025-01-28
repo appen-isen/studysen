@@ -55,6 +55,7 @@ ISEN-Orbit est un projet d'application mobile développée en React Native avec 
 -   **React Native** : Framework pour le développement d'applications mobiles (Android et iOS).
 -   **Expo** : Outils et services pour développer et déployer l'application.
 -   **Typescript** : Typage statique pour JavaScript.
+-   **Express**: Framwork pour le backend (repo non publique car contient des inforations sensibles)
 
 ## 📚 Bibliothèques utilisées
 
