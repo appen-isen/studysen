@@ -18,6 +18,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 export default function NotesScreen() {
     const router = useRouter();
@@ -42,93 +43,100 @@ export default function NotesScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={styles.title}>Mes notes</Text>
-            {/* Sélecteur de semestre */}
-            <DoubleSelector
-                selected={selectedSemester}
-                setSelected={setSelectedSemester}
-                firstSelector={
-                    <Text
-                        style={[
-                            styles.selectorText,
-                            selectedSemester === 0 && { color: "white" },
-                        ]}
-                    >
-                        Semestre 1
-                    </Text>
-                }
-                secondSelector={
-                    <Text
-                        style={[
-                            styles.selectorText,
-                            selectedSemester === 1 && { color: "white" },
-                        ]}
-                    >
-                        Semestre 2
-                    </Text>
-                }
-                containerStyle={styles.semesterSelector}
-            ></DoubleSelector>
-
-            {selectedNotes.length > 0 && (
-                // Moyenne générale s'il y a des notes
-                <View style={styles.noteAverageView}>
-                    <Text style={styles.noteAverageTitle}>
-                        Moyenne générale
-                    </Text>
-                    <View style={styles.noteAverageValContainer}>
-                        {/* Valeur de la moyenne */}
-                        <Text style={styles.noteAverageValue}>
-                            {noteAverageValue}
-                        </Text>
-                        {/* Bouton d'information */}
-                        <AnimatedPressable
-                            onPress={() => router.push("/notes-help")}
+            <View style={styles.topbar}>
+                <AnimatedPressable onPress={() => router.back()}>
+                    <FontAwesome6 name="arrow-left" style={styles.backIcon} />
+                </AnimatedPressable>
+                <Text style={styles.title}>Mes notes</Text>
+            </View>
+            <View style={styles.contentView}>
+                {/* Sélecteur de semestre */}
+                <DoubleSelector
+                    selected={selectedSemester}
+                    setSelected={setSelectedSemester}
+                    firstSelector={
+                        <Text
+                            style={[
+                                styles.selectorText,
+                                selectedSemester === 0 && { color: "white" },
+                            ]}
                         >
-                            <Octicons
-                                name="info"
-                                style={styles.noteAverageInfo}
-                            />
-                        </AnimatedPressable>
+                            Semestre 1
+                        </Text>
+                    }
+                    secondSelector={
+                        <Text
+                            style={[
+                                styles.selectorText,
+                                selectedSemester === 1 && { color: "white" },
+                            ]}
+                        >
+                            Semestre 2
+                        </Text>
+                    }
+                    containerStyle={styles.semesterSelector}
+                ></DoubleSelector>
+
+                {selectedNotes.length > 0 && (
+                    // Moyenne générale s'il y a des notes
+                    <View style={styles.noteAverageView}>
+                        <Text style={styles.noteAverageTitle}>
+                            Moyenne générale
+                        </Text>
+                        <View style={styles.noteAverageValContainer}>
+                            {/* Valeur de la moyenne */}
+                            <Text style={styles.noteAverageValue}>
+                                {noteAverageValue}
+                            </Text>
+                            {/* Bouton d'information */}
+                            <AnimatedPressable
+                                onPress={() => router.push("/notes-help")}
+                            >
+                                <Octicons
+                                    name="info"
+                                    style={styles.noteAverageInfo}
+                                />
+                            </AnimatedPressable>
+                        </View>
                     </View>
-                </View>
-            )}
+                )}
 
-            {/* Message si aucune note n'est disponible */}
-            {selectedNotes.length === 0 && (
-                <View style={styles.noNoteContainer}>
-                    <Text style={styles.noNoteText}>
-                        Il n'y a pas encore de notes pour ce semestre
-                    </Text>
-                </View>
-            )}
+                {/* Message si aucune note n'est disponible */}
+                {selectedNotes.length === 0 && (
+                    <View style={styles.noNoteContainer}>
+                        <Text style={styles.noNoteText}>
+                            Il n'y a pas encore de notes pour ce semestre
+                        </Text>
+                    </View>
+                )}
 
-            {/* Notes par matière */}
-            <ScrollView
-                contentContainerStyle={styles.scrollContainer}
-                style={styles.scrollView}
-            >
-                {selectedNotes.map((notesList, index) => (
-                    <NotesGroup
-                        notesList={notesList}
-                        setCurrentNote={(note) => {
-                            //On sélectionne la note pour l'affichage de la modal
-                            setCurrentNote(note);
-                            setNoteModalInfoVisible(true);
-                        }}
-                        key={`group-${notesList.code}-${index}`}
-                    ></NotesGroup>
-                ))}
-            </ScrollView>
-            {/* Modal pour afficher les informations d'une note */}
-            {currentNote && (
-                <NoteModal
-                    note={currentNote}
-                    noteCode={currentNote.code}
-                    visible={noteModalInfoVisible}
-                    setVisible={setNoteModalInfoVisible}
-                ></NoteModal>
-            )}
+                {/* Notes par matière */}
+                <ScrollView
+                    contentContainerStyle={styles.scrollContainer}
+                    style={styles.scrollView}
+                >
+                    {selectedNotes.map((notesList, index) => (
+                        <NotesGroup
+                            notesList={notesList}
+                            setCurrentNote={(note) => {
+                                //On sélectionne la note pour l'affichage de la modal
+                                setCurrentNote(note);
+                                setNoteModalInfoVisible(true);
+                            }}
+                            key={`group-${notesList.code}-${index}`}
+                        ></NotesGroup>
+                    ))}
+                </ScrollView>
+                {/* Modal pour afficher les informations d'une note */}
+                {currentNote && (
+                    <NoteModal
+                        note={currentNote}
+                        noteCode={currentNote.code}
+                        visible={noteModalInfoVisible}
+                        setVisible={setNoteModalInfoVisible}
+                    ></NoteModal>
+                )}
+            </View>
         </SafeAreaView>
     );
 }
@@ -180,19 +188,31 @@ function NotesGroup(props: {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        width: "100%",
+        backgroundColor: Colors.white,
+    },
+    topbar: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    backIcon: {
+        fontSize: 40,
+        margin: 20,
+        color: Colors.primaryColor,
+    },
+    contentView: {
+        flex: 1,
         justifyContent: "flex-start",
         alignItems: "center",
-        backgroundColor: "white",
     },
     title: {
         fontSize: 25,
         fontWeight: "bold",
         color: Colors.primaryColor,
-        marginTop: 20,
     },
     // Sélecteur de semestre
     semesterSelector: {
-        marginTop: 20,
+        marginTop: 40,
     },
     selectorText: {
         fontSize: 18,

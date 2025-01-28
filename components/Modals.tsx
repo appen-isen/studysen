@@ -121,7 +121,7 @@ export function BottomModal(props: BottomModalProps) {
                         style={bottomModalStyles.closeIconPressable}
                     >
                         <FontAwesome6
-                            name="arrow-left"
+                            name="xmark"
                             style={bottomModalStyles.closeIcon}
                         />
                     </AnimatedPressable>
