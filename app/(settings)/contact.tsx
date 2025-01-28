@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { AnimatedPressable, Button } from "@/components/Buttons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
@@ -22,18 +22,47 @@ export default function Contact() {
 
             <View style={styles.contentView}>
                 <Bold style={styles.title}>Nous contacter</Bold>
+                {/* Les issues */}
                 <Text style={styles.text}>
-                    Si vous souhaitez rapporter un bug, n'hésitez pas à signaler le problème.
+                    Si vous souhaitez rapporter un bug, n'hésitez pas à signaler
+                    le problème.
                 </Text>
-                <Button title={"Signaler un bug"} onPress={() => setIssueModalVisible(true)} />
+                <Button
+                    title={"Signaler un bug"}
+                    onPress={() => setIssueModalVisible(true)}
+                />
                 <Text style={styles.text}>
-                    Si vous souhaitez faire une suggestion ou nous contacter pour une autre raison n'hesiter pas via le bouton ci-dessous.
+                    Si vous souhaitez faire une suggestion ou nous contacter
+                    pour une autre raison n'hésitez pas via le bouton
+                    ci-dessous.
                 </Text>
-                <Button title={"Nous contacter"} onPress={() => setContactModalVisible(true)} />
+                <Button
+                    title={"Nous contacter"}
+                    onPress={() => setContactModalVisible(true)}
+                />
+                {/* GitHub */}
+                <Text style={styles.text}>
+                    Notre projet est open-source, vous pouvez également y
+                    contribuer grâce à GitHub.
+                </Text>
+                <Link
+                    href={"https://github.com/appen-isen/isen-orbit"}
+                    style={styles.link}
+                >
+                    Accéder au projet GitHub
+                </Link>
             </View>
 
-            <IssueModal visible={modalIssueVisible} onClose={() => setIssueModalVisible(false)} />
-            <ContactModal visible={modalContactVisible} onClose={() => setContactModalVisible(false)} />
+            {/* Modals pour les problèmes / suggestions*/}
+
+            <IssueModal
+                visible={modalIssueVisible}
+                onClose={() => setIssueModalVisible(false)}
+            />
+            <ContactModal
+                visible={modalContactVisible}
+                onClose={() => setContactModalVisible(false)}
+            />
         </SafeAreaView>
     );
 }
@@ -65,5 +94,10 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         textAlign: "center",
         fontSize: 18,
+    },
+    link: {
+        color: Colors.primaryColor,
+        fontSize: 18,
+        fontWeight: "bold",
     },
 });
