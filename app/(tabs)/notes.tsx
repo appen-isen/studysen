@@ -58,7 +58,7 @@ export default function NotesScreen() {
                         <Text
                             style={[
                                 styles.selectorText,
-                                selectedSemester === 0 && { color: "white" },
+                                selectedSemester === 0 && { color: Colors.white },
                             ]}
                         >
                             Semestre 1
@@ -68,7 +68,7 @@ export default function NotesScreen() {
                         <Text
                             style={[
                                 styles.selectorText,
-                                selectedSemester === 1 && { color: "white" },
+                                selectedSemester === 1 && { color: Colors.white },
                             ]}
                         >
                             Semestre 2
@@ -212,10 +212,11 @@ const styles = StyleSheet.create({
     },
     // Sélecteur de semestre
     semesterSelector: {
-        marginTop: 40,
+        marginTop: 10,
     },
     selectorText: {
         fontSize: 18,
+        color: Colors.primaryColor,
         fontWeight: "bold",
         marginVertical: 5,
     },
@@ -276,7 +277,7 @@ const notesGroupStyles = StyleSheet.create({
     container: {
         width: "90%",
         maxWidth: 500,
-        backgroundColor: "white",
+        backgroundColor: Colors.primaryColor,
         borderRadius: 10,
         boxShadow: "0px 0px 8px 2px rgba(0,0,0,0.1)",
         marginTop: 30,
@@ -290,8 +291,7 @@ const notesGroupStyles = StyleSheet.create({
         borderTopRightRadius: 10,
         borderTopLeftRadius: 10,
         height: 60,
-        padding: 3,
-        backgroundColor: Colors.hexWithOpacity(Colors.primaryColor, 0.1),
+        padding: 8,
     },
     headerSubject: {
         width: "79%",
@@ -299,7 +299,6 @@ const notesGroupStyles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "white",
         borderRadius: 5,
     },
     headerAverage: {
@@ -308,12 +307,15 @@ const notesGroupStyles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "white",
+        backgroundColor: Colors.hexWithOpacity(Colors.white, 0.9),
+        boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)",
         borderRadius: 5,
     },
     // Textes de l'en-tête
     headerSubjectText: {
-        fontSize: 16,
+        fontSize: 20,
+        fontWeight: "bold",
+        color: Colors.white,
     },
     headerAverageText: {
         fontSize: 18,
@@ -322,27 +324,33 @@ const notesGroupStyles = StyleSheet.create({
     },
     // Contenu du groupe de notes
     content: {
+        marginHorizontal: 10,
+        marginBottom: 10,
         flexDirection: "row",
         justifyContent: "center",
         flexWrap: "wrap",
         alignItems: "center",
-        padding: 10,
+        padding: 8,
+        backgroundColor: Colors.white,
+        borderRadius: 5,
+        boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)",
     },
     noteContainer: {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        paddingHorizontal: 15,
-        paddingVertical: 5,
-        backgroundColor: Colors.primaryColor,
-        borderRadius: 20,
-        margin: "3.66%", // Adds spacing between items
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        backgroundColor: Colors.secondaryColor,
+        borderRadius: 10,
+        margin: "4%", // Adds spacing between items
+        boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)",
     },
     noteNumber: {
-        color: "white",
+        color: Colors.primaryColor,
     },
     noteValue: {
-        color: "white",
+        color: Colors.primaryColor,
         fontSize: 16,
         fontWeight: "bold",
     },
