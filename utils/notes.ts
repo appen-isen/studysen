@@ -54,7 +54,7 @@ export function calculateAverage(notes: NotesList[]): string {
 
 // Fonction pour obtenir le nom de la matière à partir d'un groupe de note
 export function getSubjectNameFromGroup(notes: Note[]): string {
-    // On recherche le titre le plus pertinent
+    // On recherche le titre le plus pertinent (souvent le titre du DS)
     let subject = notes[0].subject;
     notes.forEach((note) => {
         if (/_DS\d?$/.test(note.subject)) {
@@ -87,9 +87,13 @@ export function getDSNumber(code: string): string {
     if (code.endsWith("_CC")) return "CC";
     if (code.endsWith("_TP")) return "TP";
     if (code.endsWith("_DSS")) return "Syn";
-    let match = code.match(/_DS(\d)/);
-    if (match) {
-        return "DS" + match[1];
+    let matchDS = code.match(/_DS(\d)/);
+    if (matchDS) {
+        return "DS" + matchDS[1];
+    }
+    let matchEPC = code.match(/_EPC(\d)/);
+    if (matchEPC) {
+        return "EPC" + matchEPC[1];
     }
 
     return "DS";
