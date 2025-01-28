@@ -64,48 +64,6 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
     );
 };
 
-export const ButtonIssue: React.FC<ButtonProps & StyledButtonProps> = ({
-    onPress,
-    style,
-    textStyle,
-    JSX,
-    title,
-    isLoading,
-    bgColor,
-}) => {
-    const [pressed, setPressed] = useState(false);
-
-    return (
-        <Pressable
-            style={[
-                pressed
-                    ? { ...styles.button, ...styles.pressedButton, ...style }
-                    : { ...styles.button, ...style },
-                bgColor && { backgroundColor: bgColor },
-            ]}
-            onPress={onPress}
-            onPressOut={() => setPressed(false)}
-            onPressIn={() => setPressed(true)}
-        >
-            {/* Contenu JSX ou texte */}
-            {JSX && JSX}
-            {!JSX && isLoading && (
-                <ActivityIndicator
-                    animating={true}
-                    color="white"
-                    size={"large"}
-                />
-            )}
-            {/* Si le bouton n'a pas de composant custom et ne charge pas alors on affiche le texte*/}
-            {!JSX && !isLoading && (
-                <Text style={{ ...styles.buttonIssueText, ...textStyle }}>
-                    {title}
-                </Text>
-            )}
-        </Pressable>
-    );
-};
-
 interface AnimatedPressableProps {
     onPress?: (event: GestureResponderEvent) => void;
     style?: StyleProp<ViewStyle>;

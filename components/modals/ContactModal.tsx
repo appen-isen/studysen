@@ -1,7 +1,12 @@
 import React, { useState } from "react";
-import { Modal, View, StyleSheet } from "react-native";
-import { Button, ButtonIssue } from "@/components/Buttons";
-import { IssueInput } from "@/components/Inputs";
+import {
+    Modal,
+    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
+} from "react-native";
+import { Button } from "@/components/Buttons";
+import { Input } from "@/components/Inputs";
 import axios from "axios";
 import useSettingsStore from "@/store/settingsStore";
 
@@ -17,6 +22,10 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
 
     const createIssue = async () => {
         try {
+            if (title === "" || problemDescription === "") {
+                console.log("Title or problem description is empty");
+                return;
+            }
             //On récupère le nom de l'utilisateur
             let username = "Anonyme";
             if (settings.username) {
@@ -41,6 +50,9 @@ ${username}
                 }
             );
             console.log("Issue created:", response.data);
+            // Fermer la modal et supprimer les champs
+            setTitle("");
+            setProblemDescription("");
             onClose();
         } catch (error) {
             console.error("Failed to create issue:", error);
@@ -48,27 +60,28 @@ ${username}
     };
 
     return (
-        <Modal visible={visible} animationType="slide">
-            <View style={styles.modalView}>
-                <IssueInput
-                    style={styles.input}
+        <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={styles.modalView}
+            >
+                <Input
+                    textInputStyle={styles.input}
                     placeholder="Titre"
                     value={title}
                     onChangeText={setTitle}
                 />
-                <IssueInput
-                    style={styles.input}
+                <Input
+                    containerStyle={styles.textArea}
+                    textInputStyle={styles.input}
                     placeholder="Votre suggestion ou message ici"
                     value={problemDescription}
                     onChangeText={setProblemDescription}
                     multiline
                 />
-                <ButtonIssue
-                    title="Envoyer la suggestion ou le message."
-                    onPress={createIssue}
-                />
+                <Button title="Envoyer la suggestion" onPress={createIssue} />
                 <Button title="Fermer" onPress={onClose} />
-            </View>
+            </KeyboardAvoidingView>
         </Modal>
     );
 }
@@ -81,11 +94,9 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     input: {
-        flex: 1,
-        textAlign: "center",
-        fontSize: 12,
-        backgroundColor: "transparent",
-        width: "100%",
-        height: "95%",
+        fontSize: 13,
+    },
+    textArea: {
+        height: 100,
     },
 });
