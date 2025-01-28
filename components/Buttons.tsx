@@ -9,9 +9,11 @@ import {
     StyleProp,
     ViewStyle,
     View,
+    Platform,
 } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
+import { Switch, SwitchProps } from "react-native-paper";
 interface StyledButtonProps {
     textStyle?: object;
     style?: object;
@@ -63,14 +65,14 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
 };
 
 export const ButtonIssue: React.FC<ButtonProps & StyledButtonProps> = ({
-                                                                      onPress,
-                                                                      style,
-                                                                      textStyle,
-                                                                      JSX,
-                                                                      title,
-                                                                      isLoading,
-                                                                      bgColor,
-                                                                  }) => {
+    onPress,
+    style,
+    textStyle,
+    JSX,
+    title,
+    isLoading,
+    bgColor,
+}) => {
     const [pressed, setPressed] = useState(false);
 
     return (
@@ -189,6 +191,18 @@ export const DoubleSelector: React.FC<DoubleSelectorProps> = ({
                 {secondSelector}
             </AnimatedPressable>
         </View>
+    );
+};
+
+// Switch avec les couleurs de l'application
+export const ISENSwitch: React.FC<SwitchProps> = (props) => {
+    return (
+        <Switch
+            color={Colors.primaryColor}
+            style={Platform.OS !== "ios" ? { transform: [{ scale: 1.2 }] } : {}}
+            onValueChange={props.onValueChange}
+            value={props.value}
+        />
     );
 };
 
