@@ -9,9 +9,11 @@ import {
     StyleProp,
     ViewStyle,
     View,
+    Platform,
 } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
+import { Switch, SwitchProps } from "react-native-paper";
 interface StyledButtonProps {
     textStyle?: object;
     style?: object;
@@ -55,48 +57,6 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
             {/* Si le bouton n'a pas de composant custom et ne charge pas alors on affiche le texte*/}
             {!JSX && !isLoading && (
                 <Text style={{ ...styles.buttonText, ...textStyle }}>
-                    {title}
-                </Text>
-            )}
-        </Pressable>
-    );
-};
-
-export const ButtonIssue: React.FC<ButtonProps & StyledButtonProps> = ({
-                                                                      onPress,
-                                                                      style,
-                                                                      textStyle,
-                                                                      JSX,
-                                                                      title,
-                                                                      isLoading,
-                                                                      bgColor,
-                                                                  }) => {
-    const [pressed, setPressed] = useState(false);
-
-    return (
-        <Pressable
-            style={[
-                pressed
-                    ? { ...styles.button, ...styles.pressedButton, ...style }
-                    : { ...styles.button, ...style },
-                bgColor && { backgroundColor: bgColor },
-            ]}
-            onPress={onPress}
-            onPressOut={() => setPressed(false)}
-            onPressIn={() => setPressed(true)}
-        >
-            {/* Contenu JSX ou texte */}
-            {JSX && JSX}
-            {!JSX && isLoading && (
-                <ActivityIndicator
-                    animating={true}
-                    color="white"
-                    size={"large"}
-                />
-            )}
-            {/* Si le bouton n'a pas de composant custom et ne charge pas alors on affiche le texte*/}
-            {!JSX && !isLoading && (
-                <Text style={{ ...styles.buttonIssueText, ...textStyle }}>
                     {title}
                 </Text>
             )}
@@ -189,6 +149,18 @@ export const DoubleSelector: React.FC<DoubleSelectorProps> = ({
                 {secondSelector}
             </AnimatedPressable>
         </View>
+    );
+};
+
+// Switch avec les couleurs de l'application
+export const ISENSwitch: React.FC<SwitchProps> = (props) => {
+    return (
+        <Switch
+            color={Colors.primaryColor}
+            style={Platform.OS !== "ios" ? { transform: [{ scale: 1.2 }] } : {}}
+            onValueChange={props.onValueChange}
+            value={props.value}
+        />
     );
 };
 

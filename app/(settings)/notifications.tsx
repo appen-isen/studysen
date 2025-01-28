@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Switch, Pressable } from "react-native";
+import { View, StyleSheet, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { AnimatedPressable, Button } from "@/components/Buttons";
+import { AnimatedPressable, Button, ISENSwitch } from "@/components/Buttons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
@@ -58,21 +58,7 @@ export default function NotifSettings() {
                     <Bold style={styles.switchLabel}>
                         Activer les notifications
                     </Bold>
-                    <Switch
-                        trackColor={{
-                            false: "#767577",
-                            true: Colors.hexWithOpacity(
-                                Colors.primaryColor,
-                                0.8
-                            ),
-                        }}
-                        thumbColor={
-                            settings.notificationsEnabled
-                                ? Colors.primaryColor
-                                : "#f4f3f4"
-                        }
-                        ios_backgroundColor="#3e3e3e"
-                        style={{ transform: [{ scale: 1.2 }] }}
+                    <ISENSwitch
                         onValueChange={toggleNotifications}
                         value={settings.notificationsEnabled}
                     />

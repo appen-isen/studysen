@@ -1,7 +1,7 @@
 import {
     ActivityIndicator,
     Dimensions,
-    Keyboard,
+    KeyboardAvoidingView,
     Platform,
     StyleSheet,
     View,
@@ -28,9 +28,6 @@ export default function LoginScreen() {
     const { setSession } = useSessionStore();
 
     const { settings, setSettings } = useSettingsStore();
-
-    //Hauteur du clavier pour iOS (Permet d'éviter le bug du clavier qui cache les inputs)
-    const [iosKeyboardEnabled, setIOSKeyboardEnabled] = useState(false);
 
     //Connexion automatique
     const [autoLogin, setAutoLogin] = useState(false);
@@ -64,31 +61,6 @@ export default function LoginScreen() {
             }
         };
         fetchStoredCredentials();
-
-        //Gestion du clavier pour iOS
-        if (Platform.OS === "ios") {
-            // Écoute de l'événement keyboardDidShow
-            const showSubscription = Keyboard.addListener(
-                "keyboardDidShow",
-                () => {
-                    setIOSKeyboardEnabled(true);
-                }
-            );
-
-            // Écoute de l'événement keyboardDidHide
-            const hideSubscription = Keyboard.addListener(
-                "keyboardDidHide",
-                () => {
-                    setIOSKeyboardEnabled(false);
-                }
-            );
-
-            // Nettoyage
-            return () => {
-                showSubscription.remove();
-                hideSubscription.remove();
-            };
-        }
     }, []);
 
     //Menu déroulant pour choisir le campus
@@ -163,99 +135,102 @@ export default function LoginScreen() {
         );
     }
     return (
-        <SafeAreaView
-            style={[
-                styles.container,
-                iosKeyboardEnabled ? { justifyContent: "flex-start" } : {},
-            ]}
-        >
-            {/* Bouton pour choisir le campus */}
-            <AnimatedPressable
-                style={styles.campusSelect}
-                onPress={() => setCampusMenuVisible(true)}
-                scale={0.95}
+        <SafeAreaView style={styles.container}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={styles.containerView}
             >
-                <Text style={styles.campusSelectText}>
-                    Campus de <Bold>{settings.campus}</Bold>
-                </Text>
-                <FontAwesome6
-                    style={styles.campusSelectText}
-                    name="chevron-down"
-                    size={24}
-                />
-            </AnimatedPressable>
-            <Dropdown
-                visible={campusMenuVisible}
-                setVisible={setCampusMenuVisible}
-                options={[...CAMPUS]}
-                selectedItem={settings.campus}
-                setSelectedItem={(newCampus) =>
-                    setSettings("campus", newCampus as (typeof CAMPUS)[number])
-                }
-                modalBoxStyle={styles.dropdownBoxStyle}
-            ></Dropdown>
-
-            {/* Haut de la page */}
-            <View style={styles.titleBox}>
-                <MaterialIcons name="login" style={styles.loginIcon} />
-                <Text style={styles.title}>Connexion</Text>
-                <Text>Utilisez les identifiants de l'ENT</Text>
-            </View>
-            {/* Champs */}
-            <View style={styles.fieldsView}>
-                <Input
-                    placeholder="Nom d'utilisateur"
-                    icon={
-                        <FontAwesome6
-                            style={styles.inputIcon}
-                            name="user-circle"
-                        />
+                {/* Bouton pour choisir le campus */}
+                <AnimatedPressable
+                    style={styles.campusSelect}
+                    onPress={() => setCampusMenuVisible(true)}
+                    scale={0.95}
+                >
+                    <Text style={styles.campusSelectText}>
+                        Campus de <Bold>{settings.campus}</Bold>
+                    </Text>
+                    <FontAwesome6
+                        style={styles.campusSelectText}
+                        name="chevron-down"
+                        size={24}
+                    />
+                </AnimatedPressable>
+                <Dropdown
+                    visible={campusMenuVisible}
+                    setVisible={setCampusMenuVisible}
+                    options={[...CAMPUS]}
+                    selectedItem={settings.campus}
+                    setSelectedItem={(newCampus) =>
+                        setSettings(
+                            "campus",
+                            newCampus as (typeof CAMPUS)[number]
+                        )
                     }
-                    onChangeText={(text) => setUsername(text)}
-                    value={username}
-                    autoComplete="username"
-                ></Input>
-                <Input
-                    placeholder="Mot de passe"
-                    icon={
-                        <MaterialCommunityIcons
-                            name="key-outline"
-                            style={styles.inputIcon}
-                        />
-                    }
-                    onChangeText={(text) => setPassword(text)}
-                    value={password}
-                    autoComplete="password"
-                    password
-                ></Input>
-                <Checkbox
-                    status={rememberMe ? "checked" : "unchecked"}
-                    onPress={() => {
-                        setRememberMe(!rememberMe);
-                    }}
-                    color={Colors.primaryColor}
-                    text="Se souvenir de moi"
-                />
-            </View>
-            {/* Boutons du bas */}
-            <View style={styles.bottomContainer}>
-                <Button
-                    title="Se connecter"
-                    onPress={handleLogin}
-                    style={styles.loginBtn}
-                    isLoading={authenticating}
-                ></Button>
-                <Link href={"/login-help"} style={styles.helpLink}>
-                    J'ai besoin d'aide
-                </Link>
-            </View>
+                    modalBoxStyle={styles.dropdownBoxStyle}
+                ></Dropdown>
 
-            {/* Modal d'erreur */}
-            <ErrorModal
-                visible={errorVisible}
-                message={errorMessage}
-                setVisible={(visible) => setErrorVisible(visible)}
-            />
+                {/* Haut de la page */}
+                <View style={styles.titleBox}>
+                    <MaterialIcons name="login" style={styles.loginIcon} />
+                    <Text style={styles.title}>Connexion</Text>
+                    <Text>Utilisez les identifiants de l'ENT</Text>
+                </View>
+                {/* Champs */}
+                <View style={styles.fieldsView}>
+                    <Input
+                        placeholder="Nom d'utilisateur"
+                        icon={
+                            <FontAwesome6
+                                style={styles.inputIcon}
+                                name="user-circle"
+                            />
+                        }
+                        onChangeText={(text) => setUsername(text)}
+                        value={username}
+                        autoComplete="username"
+                    ></Input>
+                    <Input
+                        placeholder="Mot de passe"
+                        icon={
+                            <MaterialCommunityIcons
+                                name="key-outline"
+                                style={styles.inputIcon}
+                            />
+                        }
+                        onChangeText={(text) => setPassword(text)}
+                        value={password}
+                        autoComplete="password"
+                        password
+                    ></Input>
+                    <Checkbox
+                        status={rememberMe ? "checked" : "unchecked"}
+                        onPress={() => {
+                            setRememberMe(!rememberMe);
+                        }}
+                        color={Colors.primaryColor}
+                        text="Se souvenir de moi"
+                    />
+                </View>
+                {/* Boutons du bas */}
+                <View style={styles.bottomContainer}>
+                    <Button
+                        title="Se connecter"
+                        onPress={handleLogin}
+                        style={styles.loginBtn}
+                        isLoading={authenticating}
+                    ></Button>
+                    <Link href={"/login-help"} style={styles.helpLink}>
+                        J'ai besoin d'aide
+                    </Link>
+                </View>
+
+                {/* Modal d'erreur */}
+                <ErrorModal
+                    visible={errorVisible}
+                    message={errorMessage}
+                    setVisible={(visible) => setErrorVisible(visible)}
+                />
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
@@ -266,6 +241,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-around",
         backgroundColor: "white",
+    },
+    containerView: {
+        flex: 1,
+        justifyContent: "space-around",
+        alignItems: "center",
+        width: "100%",
     },
     campusSelect: {
         display: "flex",

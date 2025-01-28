@@ -1,10 +1,14 @@
 import React, { useState } from "react";
-import { Modal, View, StyleSheet } from "react-native";
+import {
+    Modal,
+    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
+} from "react-native";
 import axios from "axios";
 import { Button } from "@/components/Buttons";
-import { IssueInput } from "@/components/Inputs";
-import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
-
+import { Input } from "@/components/Inputs";
+import useSettingsStore from "@/store/settingsStore";
 type IssueModalProps = {
     visible: boolean;
     onClose: () => void;
@@ -20,6 +24,10 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
 
     const createIssue = async () => {
         try {
+            if (title === "" || problemDescription === "") {
+                console.log("Title or problem description is empty");
+                return;
+            }
             //On récupère le nom de l'utilisateur
             let username = "Anonyme";
             if (settings.username) {
@@ -54,6 +62,12 @@ ${username}
                 }
             );
             console.log("Issue created:", response.data);
+            // Fermer la modal et supprimer les champs
+            setTitle("");
+            setProblemDescription("");
+            setReproductionSteps("");
+            setExpectedBehavior("");
+            setDeviceInfo("");
             onClose();
         } catch (error) {
             console.error("Failed to create issue:", error);
@@ -61,44 +75,49 @@ ${username}
     };
 
     return (
-        <Modal visible={visible} animationType="slide">
-            <View style={styles.modalView}>
-                <IssueInput
-                    style={styles.input}
+        <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={styles.modalView}
+            >
+                <Input
+                    textInputStyle={styles.input}
                     placeholder="Titre"
                     value={title}
                     onChangeText={setTitle}
                 />
-                <IssueInput
-                    style={styles.input}
+                <Input
+                    textInputStyle={styles.input}
                     placeholder="Description claire et concise du problème rencontré"
                     value={problemDescription}
                     onChangeText={setProblemDescription}
                     multiline
                 />
-                <IssueInput
-                    style={styles.input}
+                <Input
+                    textInputStyle={styles.input}
                     placeholder="Étapes pour reproduire le comportement"
                     value={reproductionSteps}
                     onChangeText={setReproductionSteps}
                     multiline
                 />
-                <IssueInput
-                    style={styles.input}
+                <Input
+                    textInputStyle={styles.input}
+                    placeholder="Type d'appareil utilisé"
+                    value={deviceInfo}
+                    onChangeText={setDeviceInfo}
+                />
+                <Input
+                    containerStyle={styles.textArea}
+                    textInputStyle={styles.input}
                     placeholder="Description claire et concise de ce qui était censé se produire"
                     value={expectedBehavior}
                     onChangeText={setExpectedBehavior}
                     multiline
                 />
-                <IssueInput
-                    style={styles.input}
-                    placeholder="Type d'appareil utilisé"
-                    value={deviceInfo}
-                    onChangeText={setDeviceInfo}
-                />
+
                 <Button title="Créer une Issue" onPress={createIssue} />
                 <Button title="Fermer" onPress={onClose} />
-            </View>
+            </KeyboardAvoidingView>
         </Modal>
     );
 }
@@ -111,11 +130,9 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     input: {
-        flex: 1,
-        textAlign: "center",
-        fontSize: 12,
-        backgroundColor: "transparent",
-        width: "100%",
-        height: "95%",
+        fontSize: 13,
+    },
+    textArea: {
+        height: 100,
     },
 });
