@@ -27,12 +27,12 @@ export default function Credits() {
                 <View style={styles.section}>
                     <Bold style={styles.sectionTitle}>Développement</Bold>
                     {/* Vous pouvez ajouter votre nom ici */}
-                    <Text style={styles.contributors}>Dorian DESMARS / Félix MARQUET</Text>
+                    <Text style={styles.contributors}>Dorian DESMARS / Félix MARQUET / Léonard SAVARY</Text>
                 </View>
                 <View style={styles.section}>
                     <Bold style={styles.sectionTitle}>Design</Bold>
                     <Text style={styles.contributors}>
-                        Dorian DESMARS / Titouan BRANGER
+                        Dorian DESMARS / Titouan BRANGER / Léonard SAVARY
                     </Text>
                 </View>
             </View>
