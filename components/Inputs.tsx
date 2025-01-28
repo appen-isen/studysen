@@ -60,6 +60,7 @@ export function Input(props: TextInputProps & InputProps) {
                 onEndEditing={() => setFocused(false)}
                 secureTextEntry={password && !textVisible}
                 placeholder={focused ? "" : props.placeholder}
+                placeholderTextColor={Colors.gray}
                 style={[inputStyle, textInputStyle]}
                 autoComplete={autoComplete}
             />
