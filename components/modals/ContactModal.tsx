@@ -4,11 +4,14 @@ import {
     StyleSheet,
     KeyboardAvoidingView,
     Platform,
+    ScrollView,
 } from "react-native";
 import { Button } from "@/components/Buttons";
 import { Input } from "@/components/Inputs";
 import axios from "axios";
 import useSettingsStore from "@/store/settingsStore";
+import { Bold } from "../Texts";
+import Colors from "@/constants/Colors";
 
 type IssueModalProps = {
     visible: boolean;
@@ -65,22 +68,29 @@ ${username}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.modalView}
             >
-                <Input
-                    textInputStyle={styles.input}
-                    placeholder="Titre"
-                    value={title}
-                    onChangeText={setTitle}
-                />
-                <Input
-                    containerStyle={styles.textArea}
-                    textInputStyle={styles.input}
-                    placeholder="Votre suggestion ou message ici"
-                    value={problemDescription}
-                    onChangeText={setProblemDescription}
-                    multiline
-                />
-                <Button title="Envoyer la suggestion" onPress={createIssue} />
-                <Button title="Fermer" onPress={onClose} />
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <Bold style={styles.title}>Suggestions</Bold>
+
+                    <Input
+                        textInputStyle={styles.input}
+                        placeholder="Titre"
+                        value={title}
+                        onChangeText={setTitle}
+                    />
+                    <Input
+                        containerStyle={styles.textArea}
+                        textInputStyle={styles.input}
+                        placeholder="Votre suggestion ou message ici"
+                        value={problemDescription}
+                        onChangeText={setProblemDescription}
+                        multiline
+                    />
+                    <Button
+                        title="Envoyer la suggestion"
+                        onPress={createIssue}
+                    />
+                    <Button title="Fermer" onPress={onClose} />
+                </ScrollView>
             </KeyboardAvoidingView>
         </Modal>
     );
@@ -92,6 +102,16 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         padding: 20,
+        marginTop: 20,
+    },
+    title: {
+        alignSelf: "center",
+        fontSize: 25,
+        color: Colors.primaryColor,
+        marginBottom: 20,
+    },
+    scrollContainer: {
+        width: "100%",
     },
     input: {
         fontSize: 13,
