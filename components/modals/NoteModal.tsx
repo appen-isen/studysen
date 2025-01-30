@@ -41,9 +41,15 @@ export default function NoteModal(props: NoteModalProps) {
                 {/* Date de fin */}
                 <View style={styles.infoBox}>
                     <Bold style={styles.infoTitle}>Note</Bold>
-                    <Text style={styles.infoText}>{note.note}</Text>
+                    <Text style={styles.infoText}>
+                        {/* S'il n'y a pas de note, on affiche l'appréciation à la place */}
+                        {note.note === "-" && note.description
+                            ? note.description
+                            : note.note}
+                    </Text>
                 </View>
             </View>
+
             {/* Intervenants */}
             <Text style={styles.peopleInfoTitle}>Intervenants</Text>
             <ScrollView style={styles.infoScrollView}>

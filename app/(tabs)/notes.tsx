@@ -11,7 +11,6 @@ import {
     getSubjectNameFromGroup,
     groupNotesBySubject,
 } from "@/utils/notes";
-import { noteAverage } from "@/webAurion/utils/NoteUtils";
 import { Note, NotesList } from "@/webAurion/utils/types";
 import { Octicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -58,7 +57,9 @@ export default function NotesScreen() {
                         <Text
                             style={[
                                 styles.selectorText,
-                                selectedSemester === 0 && { color: Colors.white },
+                                selectedSemester === 0 && {
+                                    color: Colors.white,
+                                },
                             ]}
                         >
                             Semestre 1
@@ -68,7 +69,9 @@ export default function NotesScreen() {
                         <Text
                             style={[
                                 styles.selectorText,
-                                selectedSemester === 1 && { color: Colors.white },
+                                selectedSemester === 1 && {
+                                    color: Colors.white,
+                                },
                             ]}
                         >
                             Semestre 2
@@ -160,7 +163,7 @@ function NotesGroup(props: {
                 {/* Moyenne */}
                 <View style={notesGroupStyles.headerAverage}>
                     <Text style={notesGroupStyles.headerAverageText}>
-                        {noteAverage(notes).toFixed(2)}
+                        {calculateAverage([props.notesList])}
                     </Text>
                 </View>
             </View>

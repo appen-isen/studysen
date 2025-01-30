@@ -39,15 +39,20 @@ export function groupNotesBySubject(notes: NotesList[]): NotesList[] {
 
 // Fonction pour calculer la moyenne des notes
 export function calculateAverage(notes: NotesList[]): string {
-    if (notes.length === 0) return "";
     let total = 0;
     let count = 0;
     notes.forEach((noteList) => {
         noteList.notes.forEach((note) => {
-            total += parseFloat(note.note);
-            count++;
+            let noteValue = parseFloat(note.note);
+            //On vérifie si la note est un nombre valide
+            if (!isNaN(noteValue)) {
+                total += parseFloat(note.note);
+                count++;
+            }
         });
     });
+
+    if (count === 0) return "--,--";
 
     return (total / count).toFixed(2).replace(".", ",");
 }
@@ -87,6 +92,7 @@ export function getDSNumber(code: string): string {
     if (code.endsWith("_CC")) return "CC";
     if (code.endsWith("_TP")) return "TP";
     if (code.endsWith("_DSS")) return "Syn";
+    if (code.endsWith("_DEC_JUR")) return "JURY";
     let matchDS = code.match(/_DS(\d)/);
     if (matchDS) {
         return "DS" + matchDS[1];

@@ -50,16 +50,3 @@ export function getNotesFromResponse(htmlReponse: string): NotesList[] {
     });
     return notesByCode;
 }
-
-// On calcule la moyenne d'une liste de notes
-export function noteAverage(note: Note[]): number {
-    let sum = 0;
-    let count = 0;
-    note.forEach((n) => {
-        if (n.note !== "") {
-            sum += parseFloat(n.note);
-            count++;
-        }
-    });
-    return sum / count;
-}
