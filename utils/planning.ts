@@ -228,3 +228,8 @@ export function mergePlanning(
         ...newPlanning,
     ];
 }
+
+// Fonction pour tronquer les des chaînes de caractères trop longues
+export function truncateString(str: string, maxLength: number): string {
+    return str.length > maxLength ? str.slice(0, maxLength) + "-" : str;
+}

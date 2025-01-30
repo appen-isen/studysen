@@ -6,6 +6,7 @@ import {
     fillDayWithBlankEvents,
     getSubjectColor,
     groupEventsByDay,
+    truncateString,
     updatePlanningForListMode,
 } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
@@ -218,7 +219,9 @@ export function WeekEvent(props: {
             {/* Si la hauteur de l'événement est suffisante alors on affiche la salle */}
             {eventHeight >= PIXEL_PER_HOUR * 1.5 && (
                 <View style={eventStyles.room}>
-                    <Text style={eventStyles.roomText}>{props.event.room}</Text>
+                    <Text style={eventStyles.roomText}>
+                        {truncateString(props.event.room, 6)}
+                    </Text>
                 </View>
             )}
         </AnimatedPressable>

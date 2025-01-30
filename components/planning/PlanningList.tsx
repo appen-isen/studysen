@@ -8,6 +8,7 @@ import { AnimatedPressable } from "../Buttons";
 import {
     getSubjectColor,
     groupEventsByDay,
+    truncateString,
     updatePlanningForListMode,
 } from "@/utils/planning";
 import {
@@ -236,7 +237,7 @@ export function ListEvent(props: {
                     <View style={eventStyles.roomContainer}>
                         <View style={eventStyles.roomBox}>
                             <Text style={eventStyles.roomText}>
-                                {props.event.room}
+                                {truncateString(props.event.room, 6)}
                             </Text>
                         </View>
                         <Text style={eventStyles.timeTextInfo}>{timeText}</Text>
