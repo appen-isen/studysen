@@ -317,9 +317,7 @@ export function generateDemoNotes(): NotesList[] {
     return notes;
 }
 
-export function generateDemoPlanning(
-    weeksFromNow: number = 0
-): PlanningEvent[] {
+export function generateDemoPlanning(): PlanningEvent[] {
     let planning = [
         {
             id: "15446554",
@@ -525,21 +523,189 @@ export function generateDemoPlanning(
     ];
     let newPlanning = [
         {
-            id: "15062584",
-            title: "AAAAAA",
-            subject: "AAAAAAAAAAAA",
-            room: "A2 ISEN",
+            id: "15446554",
+            title: "Mathématiques S1",
+            subject: "Mathématiques N",
+            room: "A0_48 ISEN_EVENEMENTIELLE",
+            instructors: "Mr TEST",
+            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            start: "2025-01-06T08:00:00+0100",
+            end: "2025-01-06T10:00:00+0100",
+            className: "COURS",
+        },
+        {
+            id: "15716705",
+            title: "Physique S1",
+            subject: "Physique",
+            room: "A2_40 ISEN_ TD C3-01",
+            instructors: "Mr TEST",
+            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            start: "2025-01-06T10:15:00+0100",
+            end: "2025-01-06T12:15:00+0100",
+            className: "COURS",
+        },
+        {
+            id: "15689457",
+            title: "Culture numérique S1",
+            subject: "Informatique",
+            room: "A2_40 ISEN_ TD C3-01",
+            instructors: "Mr TEST",
+            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            start: "2025-01-06T13:30:00+0100",
+            end: "2025-01-06T15:30:00+0100",
+            className: "COURS",
+        },
+        {
+            id: "14676049",
+            title: "Sciences de l'ingénieur S1",
+            subject: "Sciences de l'Ingénieur",
+            room: "A0_48 ISEN_EVENEMENTIELLE",
+            instructors: "Mr TEST",
+            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            start: "2025-01-06T15:40:00+0100",
+            end: "2025-01-06T17:40:00+0100",
+            className: "COURS",
+        },
+        {
+            id: "15836659",
+            title: "Langage C Expert",
+            subject: "Informatique N",
+            room: "A2_50 ISEN",
+            instructors: "Mr TEST",
+            learners: "CIR1 Nantes 2024-2025",
+            start: "2025-01-07T08:00:00+0100",
+            end: "2025-01-07T10:00:00+0100",
+            className: "TP",
+        },
+        {
+            id: "15446586",
+            title: "Mathématiques S1",
+            subject: "Mathématiques",
+            room: "A0_48 ISEN_EVENEMENTIELLE",
+            instructors: "Mr TEST",
+            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            start: "2025-01-07T10:15:00+0100",
+            end: "2025-01-07T12:15:00+0100",
+            className: "COURS",
+        },
+        {
+            id: "15447135",
+            title: "Langage C Expert",
+            subject: "Informatique",
+            room: "A2_38 ISEN",
+            instructors: "Mr TEST",
+            learners: "CIR1 Nantes 2024-2025",
+            start: "2025-01-07T13:30:00+0100",
+            end: "2025-01-07T15:30:00+0100",
+            className: "TP",
+        },
+        {
+            id: "15780828",
+            title: "Langage C Expert",
+            subject: "Informatique",
+            room: "A3_34 ISEN_TD M1-02",
+            instructors: "Mr TEST",
+            learners: "CIR1 Nantes 2024-2025",
+            start: "2025-01-08T08:00:00+0100",
+            end: "2025-01-08T10:00:00+0100",
+            className: "TP",
+        },
+        {
+            id: "14997890",
+            title: "Physique S1",
+            subject: "Physique",
+            room: "A2_40 ISEN_ TD C3-01",
+            instructors: "Mr TEST",
+            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            start: "2025-01-08T10:15:00+0100",
+            end: "2025-01-08T12:15:00+0100",
+            className: "COURS",
+        },
+        {
+            id: "15062563",
+            title: "Sciences de l'Ingénieur S1",
+            subject: "Sciences de l'Ingénieur",
+            room: "A0_48 ISEN_EVENEMENTIELLE",
             instructors: "Mr TEST",
             learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
-            start: "2025-01-10T13:30:00+0100",
-            end: "2025-01-10T15:30:00+0100",
+            start: "2025-01-08T15:45:00+0100",
+            end: "2025-01-08T17:45:00+0100",
             className: "TP",
+        },
+        {
+            id: "15448889",
+            title: "Anglais S1",
+            subject: "Anglais",
+            room: "A2_50 ISEN",
+            instructors: "Mr TEST",
+            learners:
+                "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",
+            start: "2025-01-09T08:00:00+0100",
+            end: "2025-01-09T10:00:00+0100",
+            className: "COURS",
+        },
+        {
+            id: "15448937",
+            title: "Formation Humaine et Sociale S1",
+            subject: "FHS",
+            room: "A2_32 ISEN_CO-DESIGN",
+            instructors: "Mr TEST",
+            learners:
+                "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",
+            start: "2025-01-09T10:15:00+0100",
+            end: "2025-01-09T12:15:00+0100",
+            className: "COURS",
+        },
+        {
+            id: "15348524",
+            title: "Education Physique et Sportive S1",
+            subject: "Sport  N",
+            room: "",
+            instructors: "Mr TEST",
+            learners:
+                "CENT1 Nantes 2024-2025 Groupe Sport / CENT2 Nantes 2024-2025 Groupe Sport / CEST1 Nantes 2024-2025 Groupe Sport / CEST2 Nantes 2024-2025 Groupe Sport / CIR1 Nantes 2024-2025 Groupe Sport / CIR2 Nantes 2024-2025 Groupe Sport / CSI1 Nantes 2024-2025 Groupe Sport / CSI2 Nantes 2024-2025 Groupe Sport",
+            start: "2025-01-09T16:00:00+0100",
+            end: "2025-01-09T17:00:00+0100",
+            className: "COURS",
+        },
+        {
+            id: "15689502",
+            title: "Réunion",
+            subject: "Réunion",
+            room: "A3_40 ISEN_PROJET/DS",
+            instructors: "Mr TEST",
+            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            start: "2025-01-10T08:30:00+0100",
+            end: "2025-01-10T08:45:00+0100",
+            className: "COURS",
+        },
+        {
+            id: "15689502",
+            title: "Réunion 2",
+            subject: "Réunion 2",
+            room: "A3_40 ISEN_PROJET/DS",
+            instructors: "Mr TEST",
+            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            start: "2025-01-10T09:00:00+0100",
+            end: "2025-01-10T09:30:00+0100",
+            className: "COURS",
+        },
+        {
+            id: "15446630",
+            title: "Mathématiques S1",
+            subject: "Mathématiques",
+            room: "A0_48 ISEN_EVENEMENTIELLE",
+            instructors: "Mr TEST",
+            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            start: "2025-01-10T09:45:00+0100",
+            end: "2025-01-10T11:45:00+0100",
+            className: "COURS",
         },
         {
             id: "15062584",
             title: "Sciences de l'Ingénieur S1",
             subject: "Sciences de l'Ingénieur",
-            room: "A2_TEST2 ISEN",
+            room: "A2_42 ISEN",
             instructors: "Mr TEST",
             learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
             start: "2025-01-10T15:45:00+0100",
@@ -549,21 +715,32 @@ export function generateDemoPlanning(
     ];
 
     // Fonction pour ajuster la date
-    const adjustDate = (dateStr: string, weeks: number) => {
+    const adjustDate = (dateStr: string) => {
         const date = new Date(dateStr);
-        date.setDate(date.getDate() + weeks * 7);
-        date.setHours(date.getHours() + 1); // On ajoute une heure
-        return date.toISOString().replace("Z", "+0100"); // Timezone
+        const now = new Date();
+
+        // Création d'une nouvelle date en conservant le jour de la semaine mais avec l'année, le mois et le jour actuels
+        const adjustedDate = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate() + (date.getDay() - now.getDay())
+        );
+
+        // Copie des heures et minutes de la date originale
+        adjustedDate.setHours(date.getHours() + 1, date.getMinutes());
+        return adjustedDate.toISOString().replace("Z", "+0100");
     };
 
-    // On ajuste les dates de début et de fin
-    const updatedPlanning = mergePlanning(planning, newPlanning).map(
-        (event) => ({
-            ...event,
-            start: adjustDate(event.start, weeksFromNow),
-            end: adjustDate(event.end, weeksFromNow),
-        })
-    );
+    const adjustedPlanning = planning.map((event) => ({
+        ...event,
+        start: adjustDate(event.start),
+        end: adjustDate(event.end),
+    }));
+    const newAdjustedPlanning = newPlanning.map((event) => ({
+        ...event,
+        start: adjustDate(event.start),
+        end: adjustDate(event.end),
+    }));
 
-    return updatedPlanning;
+    return mergePlanning(adjustedPlanning, newAdjustedPlanning);
 }
