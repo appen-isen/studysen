@@ -16,6 +16,7 @@ import {
     findEvent,
     getCurrentEvent,
     getNextEventToday,
+    mergePlanning,
     updatePlanningForListMode,
 } from "@/utils/planning";
 import { ListEvent } from "@/components/planning/PlanningList";
@@ -106,23 +107,22 @@ export default function HomeScreen() {
                 .fetchPlanning(weekOffset)
                 .then((currentWeekPlanning: PlanningEvent[]) => {
                     // Concaténer le nouveau planning avec l'existant sans doublons
-
-                    const newPlanning = [
-                        ...planning.filter(
-                            (event) =>
-                                !currentWeekPlanning.some(
-                                    (newEvent) => newEvent.id === event.id
-                                )
-                        ),
-                        ...currentWeekPlanning,
-                    ];
-                    setPlanning(newPlanning);
+                    setPlanning(
+                        // On met à jour le planning en fusionnant les événements
+                        mergePlanning(
+                            usePlanningStore.getState().planning,
+                            currentWeekPlanning
+                        )
+                    );
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé
-                    setSyncedPlanning([
-                        ...useSyncedPlanningStore.getState().syncedPlanning,
-                        ...currentWeekPlanning,
-                    ]);
+                    setSyncedPlanning(
+                        // On met à jour le planning synchronisé en fusionnant les événements
+                        mergePlanning(
+                            useSyncedPlanningStore.getState().syncedPlanning,
+                            currentWeekPlanning
+                        )
+                    );
                     // On met à jour la date de la dernière mise à jour
                     setLastUpdateTime(new Date());
                     //On planifie les notifications pour les cours

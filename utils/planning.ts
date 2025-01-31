@@ -1,5 +1,6 @@
 import Colors from "@/constants/Colors";
 import { PlanningEvent } from "@/webAurion/utils/types";
+import { getCloserMonday } from "./date";
 
 export type DayEvents = {
     [date: string]: PlanningEvent[];
@@ -52,27 +53,29 @@ export function groupEventsByDay(events: PlanningEvent[]): DayEvents {
 export function updatePlanningForListMode(
     planning: PlanningEvent[]
 ): PlanningEvent[] {
-    return planning.map((event) => {
-        // Gestion des salles
-        let room = event.room;
-        if (event.room) {
-            if (event.room.startsWith("Salle")) {
-                // On garde le numéro de salle
-                room = event.room.split(" ").slice(1).join(" ");
+    return sortPlanningByDate(
+        planning.map((event) => {
+            // Gestion des salles
+            let room = event.room;
+            if (event.room) {
+                if (event.room.startsWith("Salle")) {
+                    // On garde le numéro de salle
+                    room = event.room.split(" ").slice(1).join(" ");
+                } else {
+                    // On garde le premier terme
+                    room = event.room.split(" ")[0];
+                }
             } else {
-                // On garde le premier terme
-                room = event.room.split(" ")[0];
+                // On remplace les salles vides par "?"
+                room = "?";
             }
-        } else {
-            // On remplace les salles vides par "?"
-            room = "?";
-        }
-        return {
-            ...event, // On garde tous les autres champs
-            room: room,
-            instructors: event.instructors.split("/")[0], // On remplace par le premier enseignant
-        };
-    });
+            return {
+                ...event, // On garde tous les autres champs
+                room: room,
+                instructors: event.instructors.split("/")[0], // On remplace par le premier enseignant
+            };
+        })
+    );
 }
 
 // Fonction pour créer un événement "blank" pour combler les trous dans l'emploi du temps
@@ -209,27 +212,38 @@ export function getNextEventToday(
     return upcomingEvents.length > 0 ? upcomingEvents[0] : null;
 }
 
-// Fonction pour mettre à jour le planning en fusionnant les événements
 export function mergePlanning(
     currentPlanning: PlanningEvent[],
     newPlanning: PlanningEvent[]
 ): PlanningEvent[] {
-    return [
-        ...currentPlanning.filter(
-            (event) =>
-                !newPlanning.some(
-                    (newEvent) =>
-                        new Date(event.start).toISOString() ===
-                            new Date(newEvent.start).toISOString() &&
-                        new Date(event.end).toISOString() ===
-                            new Date(newEvent.end).toISOString()
-                )
-        ),
-        ...newPlanning,
-    ];
+    // Si newPlanning est vide, retourner le planning actuel
+    if (newPlanning.length === 0) return currentPlanning;
+
+    //On trie le tableau par dates de début
+    const sortedPlanning = sortPlanningByDate(newPlanning);
+    const weekStart = getCloserMonday(new Date(sortedPlanning[0].start));
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 4); // Vendredi de la même semaine
+    weekEnd.setHours(23, 59, 59); // Fin de la journée
+
+    // Filtrer le planning actuel pour garder uniquement les événements hors de la semaine concernée
+    const filteredCurrentPlanning = currentPlanning.filter((event) => {
+        const eventDateStart = new Date(event.start);
+        return eventDateStart < weekStart || eventDateStart > weekEnd;
+    });
+
+    // Combiner les événements filtrés avec le nouveau planning
+    return sortPlanningByDate([...newPlanning, ...filteredCurrentPlanning]);
 }
 
 // Fonction pour tronquer les des chaînes de caractères trop longues
 export function truncateString(str: string, maxLength: number): string {
     return str.length > maxLength ? str.slice(0, maxLength) + "-" : str;
+}
+
+// Fonction pour trier les événements par date de début
+export function sortPlanningByDate(planning: PlanningEvent[]): PlanningEvent[] {
+    return planning.sort(
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+    );
 }

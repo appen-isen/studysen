@@ -1,5 +1,3 @@
-import { end } from "cheerio/lib/api/traversing";
-
 // On récupère la date de début de semaine (lundi)
 export function getCloserMonday(date: Date): Date {
     const d = new Date(date);

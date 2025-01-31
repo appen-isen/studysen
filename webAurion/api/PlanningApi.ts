@@ -18,7 +18,7 @@ class PlanningApi {
         return new Promise<PlanningEvent[]>(async (resolve, reject) => {
             //Mode démo
             if (this.session.isDemo()) {
-                return resolve(generateDemoPlanning(weeksFromNow));
+                return resolve(generateDemoPlanning());
             }
             try {
                 // On récupère le ViewState pour effectuer la requête
