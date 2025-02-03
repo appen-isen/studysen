@@ -21,7 +21,7 @@ import {
 } from "@/utils/planning";
 import { ListEvent } from "@/components/planning/PlanningList";
 import EventModal from "@/components/modals/EventModal";
-import { calculateAverage } from "@/utils/notes";
+import { calculateAverage, filterNotesBySemester } from "@/utils/notes";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -30,6 +30,7 @@ import {
     scheduleCourseNotification,
 } from "@/utils/notificationConfig";
 import useSettingsStore from "@/store/settingsStore";
+import { getSemester } from "@/utils/date";
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -162,7 +163,12 @@ export default function HomeScreen() {
                 .fetchNotes()
                 .then((fetchedNotes) => {
                     setNotes(fetchedNotes);
-                    setNoteAverageValue(calculateAverage(fetchedNotes));
+                    // On affiche la moyenne du semestre actuel
+                    const filteredNotes = filterNotesBySemester(
+                        fetchedNotes,
+                        getSemester()
+                    );
+                    setNoteAverageValue(calculateAverage(filteredNotes));
                 })
                 .catch((error) => {
                     console.error(error);
@@ -172,10 +178,7 @@ export default function HomeScreen() {
 
     // Action lors de l'appui sur le bouton pour afficher les notes
     const handleViewNotes = () => {
-        // Si l'utilisateur a des notes, on redirige vers l'onglet notes
-        if (notes.length > 0) {
-            router.push("/notes");
-        }
+        router.push("/notes");
     };
 
     // Demande de permission pour les notifications
@@ -308,7 +311,9 @@ export default function HomeScreen() {
                     </View>
                     {/* Contenu de la section */}
                     <View style={sectionStyles.content}>
-                        <Text style={styles.noteTitle}> Moyenne générale</Text>
+                        <Text style={styles.noteTitle}>
+                            Moyenne du semestre
+                        </Text>
                         <Text style={styles.noteValue}>{noteAverageValue}</Text>
                         <Button
                             title="Voir mes notes"
