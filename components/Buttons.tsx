@@ -166,30 +166,28 @@ export const ISENSwitch: React.FC<SwitchProps> = (props) => {
 
 const styles = StyleSheet.create({
     button: {
-        margin: 15,
         justifyContent: "center",
         alignItems: "center",
-        paddingLeft: 25,
-        paddingRight: 25,
-        height: 50,
-        borderRadius: 15,
+        paddingInline: 20,
+        paddingBlock: 10,
+        borderRadius: 10,
         backgroundColor: Colors.primary,
     },
     pressedButton: {
         backgroundColor: Colors.secondary,
     },
     buttonText: {
-        fontSize: 22,
+        fontSize: 18,
         fontWeight: "bold",
         letterSpacing: 0.25,
-        color: "white",
+        color: Colors.white,
         textAlign: "center",
     },
     buttonIssueText: {
         fontSize: 20,
         fontWeight: "bold",
         letterSpacing: 0.25,
-        color: "white",
+        color: Colors.white,
         textAlign: "center",
     },
 });
@@ -197,7 +195,6 @@ const styles = StyleSheet.create({
 const doubleSelectorStyles = StyleSheet.create({
     // Style du sélecteur double
     container: {
-        display: "flex",
         flexDirection: "row",
         backgroundColor: "white",
         borderRadius: 10,

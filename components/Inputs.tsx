@@ -1,75 +1,65 @@
-import {
-    TextInput,
-    StyleSheet,
-    TextInputProps,
-    View,
-    TouchableOpacity,
-    Pressable,
-} from "react-native";
-import { useState } from "react";
-import { FontAwesome } from "@expo/vector-icons";
+import { TextInput, StyleSheet, TextInputProps, View, TouchableOpacity, Pressable, Keyboard } from "react-native";
+import { useEffect, useState } from "react";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Colors from "@/constants/Colors";
 import { CheckboxProps, Checkbox as PaperCheckbox } from "react-native-paper";
 import { Text } from "@/components/Texts";
 
 export type InputProps = {
-    icon?: React.ReactNode;
+    icon?: keyof typeof MaterialIcons.glyphMap;
     password?: boolean;
-    smallInput?: boolean;
     autoComplete?: string;
     textInputStyle?: object;
     containerStyle?: object;
 };
 
 export function Input(props: TextInputProps & InputProps) {
-    const [focused, setFocused] = useState(false);
-    // Affichage du contenu de l'input
     const [textVisible, setTextVisible] = useState(
         props.password === undefined
     );
     const {
         icon,
         password,
-        smallInput,
         autoComplete,
         textInputStyle,
         containerStyle,
     } = props;
-
-    //On gère les styles en fonction des props
-    let inputStyle = password
-        ? withIconStyles.passwordInput
-        : icon
-        ? withIconStyles.input
-        : styles.input;
+    
+    useEffect(() => {
+      const keyboardHideListener = Keyboard.addListener("keyboardDidHide", () => {
+        Keyboard.dismiss();
+      });
+  
+      return () => {
+        keyboardHideListener.remove();
+      };
+    }, []);
 
     return (
         <View
             style={[
-                styles.container,
-                smallInput ? { width: "49%" } : {},
+                inputStyles.container,
                 containerStyle,
             ]}
         >
             {/* On affiche l'icone si c'est un Input avec icone */}
-            {icon && <TouchableOpacity>{icon}</TouchableOpacity>}
+            {icon && <MaterialIcons name={icon} size={30} style={inputStyles.icon} />}
             {/* Composant Input */}
             <TextInput
                 {...props}
-                onFocus={() => setFocused(true)}
-                onEndEditing={() => setFocused(false)}
                 secureTextEntry={password && !textVisible}
-                placeholder={focused ? "" : props.placeholder}
+                placeholder={props.placeholder}
                 placeholderTextColor={Colors.gray}
-                style={[inputStyle, textInputStyle]}
+                style={[inputStyles.input, textInputStyle]}
                 autoComplete={autoComplete}
+                numberOfLines={1}
             />
             {/* Le bouton pour cacher/afficher le mot de passe */}
             {password && (
                 <TouchableOpacity onPress={() => setTextVisible(!textVisible)}>
-                    <FontAwesome
-                        style={withIconStyles.icon}
-                        name={textVisible ? "eye" : "eye-slash"}
+                    <MaterialIcons
+                        style={inputStyles.icon}
+                        name={textVisible ? "visibility" : "visibility-off"}
                         size={30}
                     />
                 </TouchableOpacity>
@@ -80,83 +70,62 @@ export function Input(props: TextInputProps & InputProps) {
 
 export function Checkbox(props: CheckboxProps & { text: string }) {
     return (
-        <View style={styles.checkBoxContainer}>
+        <View style={checkboxStyles.container}>
             <PaperCheckbox {...props} />
             <Pressable onPress={props.onPress}>
-                <Text>{props.text}</Text>
+                <Text style={checkboxStyles.label}>{props.text}</Text>
             </Pressable>
         </View>
     );
 }
 
-const styles = StyleSheet.create({
+const inputStyles = StyleSheet.create({
+    //
+    // Container
+    //
     container: {
-        display: "flex",
         flexDirection: "row",
-        justifyContent: "center",
+        justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.1),
+        backgroundColor: Colors.light,
         borderRadius: 15,
+        paddingInline: 15,
+        paddingBlock: 5,
+        gap: 5,
         width: "100%",
-        height: 50,
-        marginBottom: 20,
     },
+    //
+    // Input
+    //
     input: {
         flex: 1,
-        textAlign: "center",
         fontSize: 18,
         backgroundColor: "transparent",
-        width: "100%",
-        height: "95%",
     },
-    inputFocused: {
-        borderColor: "#54c2f0",
-    },
-    checkBoxContainer: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        transform: [{ scale: 1.2 }],
+    //
+    // Icon
+    //
+    icon: {
+        fontSize: 24,
+        color: Colors.gray,
     },
 });
 
-const issueStyles = StyleSheet.create({
+const checkboxStyles = StyleSheet.create({
+    //
+    // Container
+    //
     container: {
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.1),
-        borderRadius: 15,
-        width: "100%",
-        height: 50,
-        marginBottom: 20,
     },
-    inputFocused: {
-        borderColor: "#54c2f0",
-    },
-    checkBoxContainer: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        transform: [{ scale: 1.2 }],
-    },
-});
-
-const withIconStyles = StyleSheet.create({
-    icon: {
-        fontSize: 30,
-        marginRight: 5,
-    },
-    input: {
-        ...styles.input,
-        marginRight: 15,
-        width: "85%",
-    },
-    passwordInput: {
-        ...styles.input,
-        width: "75%",
+    //
+    // Label
+    //
+    label: {
+        color: Colors.darkGray,
+        fontSize: 16,
     },
 });
