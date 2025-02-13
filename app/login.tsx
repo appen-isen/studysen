@@ -1,4 +1,4 @@
-import { ActivityIndicator, Dimensions, KeyboardAvoidingView, Platform, StyleSheet, View } from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from "react-native";
 import { AnimatedPressable, Button } from "@/components/Buttons";
 import { Input, Checkbox } from "@/components/Inputs";
 import { Bold, Text } from "@/components/Texts";
@@ -13,6 +13,7 @@ import Session from "@/webAurion/api/Session";
 import { getSecureStoreItem, setSecureStoreItem } from "@/store/secureStore";
 import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Sheet } from "@/components/Sheet";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -68,6 +69,8 @@ export default function LoginScreen() {
     //Message d'erreur
     const [errorVisible, setErrorVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+
+    const [helpVisible, setHelpVisible] = useState(false);
 
     //Gestion de la connexion
     const handleLogin = async () => {
@@ -197,10 +200,31 @@ export default function LoginScreen() {
                     style={styles.actionLogin}
                     isLoading={authenticating}
                 ></Button>
-                <Link href={"/login-help"} style={styles.actionHelp}>
+                <Pressable onPress={() => setHelpVisible(true)} style={styles.actionHelp}>
                     <Text>J'ai besoin d'aide</Text>
-                </Link>
+                </Pressable>
             </View>
+
+            {/* Modal d'aide */}
+            <Sheet visible={helpVisible} setVisible={setHelpVisible} sheetStyle={helpStyles.container}>
+                <Text style={helpStyles.subtitle}>Comment se connecter ?</Text>
+                <Text style={helpStyles.paragraph}>
+                    Utilisez votre <Text style={helpStyles.important}>identifiant d'ENT</Text> de l'<Bold>ISEN</Bold> qui vous permet l'accès à <Bold>WebAurion</Bold> et <Bold>Moodle</Bold>.
+                </Text>
+                <Text style={helpStyles.paragraph}>
+                    L'identifiant est de la forme <Text style={helpStyles.important}>p_nom</Text>. La première lettre de votre <Bold>prénom</Bold> suivie de votre <Bold>nom de famille</Bold>.
+                </Text>
+                <Text style={helpStyles.subtitle}>Encore des problèmes ?</Text>
+                <Text style={helpStyles.paragraph}>
+                    Vous n'arrivez toujours pas à vous connecter ? Essayer de <Bold>changer votre mot de passe</Bold>.
+                </Text>
+                <Link href={"https://web.isen-ouest.fr/password/index.php?action=sendtoken"}>
+                    <View style={helpStyles.link}>
+                        <MaterialIcons name="open-in-new" size={20} />
+                        <Text>Mot de passe oublié</Text>
+                    </View>
+                </Link>
+            </Sheet>
 
             {/* Modal d'erreur */}
             <ErrorModal
@@ -294,4 +318,40 @@ const styles = StyleSheet.create({
         fontWeight: 600,
         padding: 20,
     },
+});
+
+const helpStyles = StyleSheet.create({
+    //
+    // Help styles
+    //
+    container: {
+        alignItems: "flex-start",
+        padding: 20,
+        gap: 20,
+    },
+    subtitle: {
+        fontSize: 14,
+        fontWeight: "bold",
+        backgroundColor: Colors.primary,
+        color: Colors.white,
+        paddingBlock: 5,
+        paddingInline: 10,
+        borderRadius: 5,
+    },
+    paragraph: {
+        color: Colors.darkGray,
+    },
+    important: {
+        color: Colors.primary,
+        fontWeight: "bold",
+    },
+    link: {
+        flexDirection: "row",
+        gap: 5,
+        alignItems: "center",
+        backgroundColor: Colors.light,
+        paddingBlock: 5,
+        paddingInline: 10,
+        borderRadius: 5,
+    }
 });

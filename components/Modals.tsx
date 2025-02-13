@@ -1,13 +1,4 @@
-import {
-    Modal,
-    View,
-    StyleSheet,
-    Image,
-    TouchableWithoutFeedback,
-    FlatList,
-    TouchableOpacity,
-    Animated,
-} from "react-native";
+import { Modal, View, StyleSheet, Image, TouchableWithoutFeedback, FlatList, TouchableOpacity, Animated } from "react-native";
 import { Text } from "@/components/Texts";
 import { AnimatedPressable, Button } from "@/components/Buttons";
 import { ReactNode, useEffect, useRef } from "react";

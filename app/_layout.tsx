@@ -67,20 +67,11 @@ function RootLayoutNav() {
         >
             <Stack.Screen name="login" />
             {/* Les parenthèrese permettent de faire comme si les routes étaient directement à la racine de /app 
-            Par exemple, <Link href="login-help" /> est possible au lieu de <Link href="(modals)/login-help" /> 
+            Par exemple, <Link href="notes-help" /> est possible au lieu de <Link href="(modals)/notes-help" /> 
             */}
             <Stack.Screen name="(tabs)" />
             {/* //On définit ici les modales */}
 
-            <Stack.Screen
-                name="(modals)/login-help"
-                options={{
-                    presentation: "modal",
-                    animation: "slide_from_bottom",
-                    headerTitle: "Aide à la connexion",
-                    headerShown: true,
-                }}
-            />
             <Stack.Screen
                 name="(modals)/notes-help"
                 options={{
