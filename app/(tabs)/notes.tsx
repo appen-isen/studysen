@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     backIcon: {
         fontSize: 40,
         margin: 20,
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     contentView: {
         flex: 1,
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 25,
         fontWeight: "bold",
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     // Sélecteur de semestre
     semesterSelector: {
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     },
     selectorText: {
         fontSize: 18,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontWeight: "bold",
         marginVertical: 5,
     },
@@ -242,13 +242,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     noteAverageInfo: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontSize: 25,
         textAlign: "center",
         marginLeft: 10,
     },
     noteAverageValue: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontWeight: "bold",
         fontSize: 30,
         marginRight: 10,
@@ -280,7 +280,7 @@ const notesGroupStyles = StyleSheet.create({
     container: {
         width: "90%",
         maxWidth: 500,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
         borderRadius: 10,
         boxShadow: "0px 0px 8px 2px rgba(0,0,0,0.1)",
         marginTop: 30,
@@ -323,7 +323,7 @@ const notesGroupStyles = StyleSheet.create({
     headerAverageText: {
         fontSize: 18,
         fontWeight: "bold",
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     // Contenu du groupe de notes
     content: {
@@ -344,16 +344,16 @@ const notesGroupStyles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 20,
         paddingVertical: 10,
-        backgroundColor: Colors.secondaryColor,
+        backgroundColor: Colors.secondary,
         borderRadius: 10,
         margin: "4%", // Adds spacing between items
         boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)",
     },
     noteNumber: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     noteValue: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontSize: 16,
         fontWeight: "bold",
     },

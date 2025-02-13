@@ -128,7 +128,7 @@ export const DoubleSelector: React.FC<DoubleSelectorProps> = ({
                 style={[
                     doubleSelectorStyles.selectorItem1,
                     selected === 0 && {
-                        backgroundColor: Colors.primaryColor,
+                        backgroundColor: Colors.primary,
                     },
                 ]}
                 onPress={() => setSelected(0)}
@@ -140,7 +140,7 @@ export const DoubleSelector: React.FC<DoubleSelectorProps> = ({
                 style={[
                     doubleSelectorStyles.selectorItem2,
                     selected === 1 && {
-                        backgroundColor: Colors.primaryColor,
+                        backgroundColor: Colors.primary,
                     },
                 ]}
                 onPress={() => setSelected(1)}
@@ -156,7 +156,7 @@ export const DoubleSelector: React.FC<DoubleSelectorProps> = ({
 export const ISENSwitch: React.FC<SwitchProps> = (props) => {
     return (
         <Switch
-            color={Colors.primaryColor}
+            color={Colors.primary}
             style={Platform.OS !== "ios" ? { transform: [{ scale: 1.2 }] } : {}}
             onValueChange={props.onValueChange}
             value={props.value}
@@ -173,10 +173,10 @@ const styles = StyleSheet.create({
         paddingRight: 25,
         height: 50,
         borderRadius: 15,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
     },
     pressedButton: {
-        backgroundColor: Colors.secondaryColor,
+        backgroundColor: Colors.secondary,
     },
     buttonText: {
         fontSize: 22,

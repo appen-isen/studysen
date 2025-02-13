@@ -238,7 +238,7 @@ export default function HomeScreen() {
                             //Sinon on affiche un loader
                             <ActivityIndicator
                                 animating={true}
-                                color={Colors.primaryColor}
+                                color={Colors.primary}
                                 size={50}
                             />
                         )}
@@ -292,7 +292,7 @@ export default function HomeScreen() {
                             //Sinon on affiche un loader
                             <ActivityIndicator
                                 animating={true}
-                                color={Colors.primaryColor}
+                                color={Colors.primary}
                                 size={50}
                             />
                         )}
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 25,
         fontWeight: "bold",
-        color: Colors.primaryColor,
+        color: Colors.primary,
         marginTop: 20,
     },
     noEventText: {
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     noteValue: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontWeight: "bold",
         fontSize: 30,
         marginTop: 10,
@@ -393,7 +393,7 @@ const sectionStyles = StyleSheet.create({
     },
     icon: {
         fontSize: 35,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         marginRight: 15,
     },
     titleText: {

@@ -162,7 +162,7 @@ export function getSubjectColor(subject: string): string {
             color = "#4654ff";
             break;
         default:
-            color = Colors.primaryColor;
+            color = Colors.primary;
     }
     return Colors.hexWithOpacity(color, 0.5);
 }

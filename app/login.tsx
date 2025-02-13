@@ -128,7 +128,7 @@ export default function LoginScreen() {
             <View style={styles.container}>
                 <ActivityIndicator
                     animating={true}
-                    color={Colors.primaryColor}
+                    color={Colors.primary}
                     size={50}
                 />
             </View>
@@ -207,7 +207,7 @@ export default function LoginScreen() {
                         onPress={() => {
                             setRememberMe(!rememberMe);
                         }}
-                        color={Colors.primaryColor}
+                        color={Colors.primary}
                         text="Se souvenir de moi"
                     />
                 </View>
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
         padding: 10,
         width: "60%",
         maxWidth: 300,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
         borderRadius: 50,
         marginTop: 10,
     },
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     loginIcon: {
         fontSize: 60,
         marginBottom: 10,
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     //Les champs
     fieldsView: {

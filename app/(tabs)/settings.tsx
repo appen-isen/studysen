@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
     },
     title: {
         fontSize: 25,
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     },
     logoutIcon: {
         fontSize: 30,
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     // Profil
     profileView: {
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
         width: 75,
         height: 75,
         borderRadius: 75,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
     },
     // Texte du profil
     profileCircleText: {
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         padding: 5,
         width: 250,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
         borderRadius: 50,
         marginTop: 20,
     },
@@ -291,6 +291,6 @@ const navStyles = StyleSheet.create({
         fontSize: 30,
         width: 40,
         textAlign: "center",
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
 });

@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     backIcon: {
         fontSize: 40,
         margin: 20,
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     //Contenu
     contentView: {
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontSize: 25,
         textAlign: "center",
         marginBottom: 20,
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         fontSize: 18,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         marginBottom: 10,
     },
     btn: {

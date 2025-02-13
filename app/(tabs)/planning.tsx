@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 25,
         fontWeight: "bold",
-        color: Colors.primaryColor,
+        color: Colors.primary,
         marginTop: 20,
     },
     // Style du sélecteur de l'affichage de l'emploi du temps
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     },
     weekChevronIcon: {
         fontSize: 30,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         paddingHorizontal: 10,
         marginHorizontal: 20,
     },

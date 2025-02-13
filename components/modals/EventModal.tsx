@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     //Titre de la matière
     title: {
         fontSize: 25,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontWeight: "bold",
         alignSelf: "center",
         textAlign: "center",
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     },
     dateTitle: {
         fontSize: 20,
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     dateText: {
         fontSize: 18,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 20,
         paddingVertical: 2,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
         borderRadius: 20,
     },
     roomIcon: {
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     },
     //Intervenants et Etudiants
     peopleInfoTitle: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         textDecorationLine: "underline",
         fontWeight: "bold",
         fontSize: 20,

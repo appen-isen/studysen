@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     title: {
         alignSelf: "center",
         fontSize: 25,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         marginBottom: 20,
     },
     scrollContainer: {

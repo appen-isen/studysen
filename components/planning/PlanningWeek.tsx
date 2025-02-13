@@ -40,7 +40,7 @@ export default function PlanningWeek(props: {
         return (
             <ActivityIndicator
                 animating={true}
-                color={Colors.primaryColor}
+                color={Colors.primary}
                 size={50}
             />
         );
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
         width: "15%",
         maxWidth: 100,
         height: 50,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
     },
     dayText: {
         color: "white",
@@ -334,7 +334,7 @@ const eventStyles = StyleSheet.create({
         width: "90%",
         maxWidth: 100,
         height: 3,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
         borderRadius: 10,
     },
     hour: {
@@ -349,7 +349,7 @@ const eventStyles = StyleSheet.create({
         height: 13,
         marginBottom: 2,
         borderRadius: 10,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
     },
     roomText: {
         color: "white",

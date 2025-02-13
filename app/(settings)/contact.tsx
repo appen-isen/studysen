@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     backIcon: {
         fontSize: 40,
         margin: 20,
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     contentView: {
         flex: 1,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontSize: 25,
         textAlign: "center",
         marginBottom: 20,
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     link: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontSize: 18,
         fontWeight: "bold",
     },

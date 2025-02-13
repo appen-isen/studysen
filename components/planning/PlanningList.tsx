@@ -100,7 +100,7 @@ export default function PlanningList(props: {
                     {!props.isPlanningLoaded && (
                         <ActivityIndicator
                             animating={true}
-                            color={Colors.primaryColor}
+                            color={Colors.primary}
                             size={50}
                         />
                     )}
@@ -139,7 +139,7 @@ function DayBox(props: {
             // On change le style du jour sélectionné
             style={[
                 styles.dayBox,
-                isSelected && { backgroundColor: Colors.primaryColor },
+                isSelected && { backgroundColor: Colors.primary },
             ]}
             onPress={() => props.onSelectDay(props.dayNumber)}
         >
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 5,
         borderRadius: 15,
-        backgroundColor: Colors.hexWithOpacity(Colors.primaryColor, 0.2),
+        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.2),
     },
     dayTitle: {
         fontSize: 18,
@@ -322,7 +322,7 @@ const eventStyles = StyleSheet.create({
         marginBottom: 15,
         width: "95%",
         height: 120,
-        backgroundColor: Colors.hexWithOpacity(Colors.primaryColor, 0.2),
+        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.2),
     },
     // Style de la vue de l'heure de début et de fin
     timeView: {
@@ -388,7 +388,7 @@ const eventStyles = StyleSheet.create({
         width: 80,
         height: 23,
         borderRadius: 20,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
     },
     roomText: {
         color: "white",
@@ -398,13 +398,13 @@ const eventStyles = StyleSheet.create({
     },
     timeTextInfo: {
         marginLeft: 5,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontWeight: 700,
         fontSize: 13,
     },
     contentInfoIcon: {
         fontSize: 25,
         marginRight: 10,
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
 });
