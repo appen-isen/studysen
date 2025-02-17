@@ -8,19 +8,17 @@ import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 //Layout par défaut de l'application
-
-export {
-    // Catch any errors thrown by the Layout component.
-    ErrorBoundary,
-} from "expo-router";
+export { ErrorBoundary } from "expo-router";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-    //On charge les polices de caractères
     const [loaded, error] = useFonts({
-        OpenSans: require("../assets/fonts/OpenSans.ttf"),
+        "OpenSans-300": require("../assets/fonts/OpenSans-300.ttf"),
+        "OpenSans-400": require("../assets/fonts/OpenSans-400.ttf"),
+        "OpenSans-600": require("../assets/fonts/OpenSans-600.ttf"),
+        "OpenSans-700": require("../assets/fonts/OpenSans-700.ttf"),
         ...FontAwesome.font,
     });
 
