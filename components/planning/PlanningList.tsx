@@ -10,7 +10,6 @@ export default function PlanningList(props: {
     events: PlanningEvent[];
     startDate: Date;
     selectedDay: number;
-    isPlanningLoaded: boolean;
     setSelectedEvent: (event: PlanningEvent) => void;
 }) {
     // On groupe les événements par jour et on change le planning pour fonctionner avec le mode liste
@@ -23,13 +22,7 @@ export default function PlanningList(props: {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
     >
-        {!props.isPlanningLoaded ? (
-            <ActivityIndicator
-                animating={true}
-                color={Colors.primary}
-                size={50}
-            />
-        ) : !planning[selectedDateISO] ? (
+        {!planning[selectedDateISO] ? (
             <Text style={styles.noData}>Aucun événement à afficher</Text>
         ) : <>
             <View style={styles.timeBar}>

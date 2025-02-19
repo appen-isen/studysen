@@ -2,25 +2,16 @@ import { PlanningEvent } from "@/webAurion/utils/types";
 import { ActivityIndicator, Dimensions, StyleSheet, View } from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
-import {
-    fillDayWithBlankEvents,
-    getSubjectColor,
-    groupEventsByDay,
-    truncateString,
-    updatePlanningForListMode,
-} from "@/utils/planning";
+import { fillDayWithBlankEvents, getSubjectColor, groupEventsByDay, truncateString, updatePlanningForListMode } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { AnimatedPressable } from "../Buttons";
 
 export default function PlanningWeek(props: {
     events: PlanningEvent[];
     startDate: Date;
-    isPlanningLoaded: boolean;
     setSelectedEvent: (event: PlanningEvent) => void;
 }) {
-    const planning = fillDayWithBlankEvents(
-        groupEventsByDay(updatePlanningForListMode(props.events))
-    );
+    const planning = fillDayWithBlankEvents(groupEventsByDay(updatePlanningForListMode(props.events)));
 
     //Jours au format JOUR/MOIS
     const daysDate: string[] = [];
@@ -32,17 +23,6 @@ export default function PlanningWeek(props: {
             )
                 .toString()
                 .padStart(2, "0")}`
-        );
-    }
-
-    // On affiche un chargement si l'emploi du temps n'est pas encore chargé
-    if (!props.isPlanningLoaded) {
-        return (
-            <ActivityIndicator
-                animating={true}
-                color={Colors.primary}
-                size={50}
-            />
         );
     }
 
@@ -72,11 +52,6 @@ export default function PlanningWeek(props: {
                 </View>
             </View>
             <View style={styles.weekView}>
-                {/* Les heures */}
-
-                {/* Tableau des événements */}
-                {/* On affiche les événements du jour sélectionné */}
-                {props.isPlanningLoaded && (
                     <View style={styles.table}>
                         <View style={styles.hoursView}>
                             <Text style={styles.hourText}>8h</Text>
@@ -159,7 +134,6 @@ export default function PlanningWeek(props: {
                             })}
                         </View>
                     </View>
-                )}
             </View>
         </View>
     );

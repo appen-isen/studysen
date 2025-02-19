@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
@@ -183,12 +183,17 @@ export default function PlanningScreen() {
             </View>
         </View>
 
-        {planningView === "list" ? (
+        {!isPlanningLoaded ? (
+            <ActivityIndicator
+                animating={true}
+                color={Colors.primary}
+                size={50}
+            />
+        ) : planningView === "list" ? (
             <PlanningList
                 events={planning}
                 selectedDay={selectedDayIndex}
                 startDate={selectedMonday}
-                isPlanningLoaded={isPlanningLoaded}
                 //Affiche les informations d'un cours dans une modal
                 setSelectedEvent={(planningEvent) => {
                     //Si c'est un congé, on affiche directement les informations
@@ -206,8 +211,6 @@ export default function PlanningScreen() {
             <PlanningWeek
                 events={planning}
                 startDate={selectedMonday}
-                isPlanningLoaded={isPlanningLoaded}
-                //Affiche les informations d'un cours dans une modal
                 setSelectedEvent={(planningEvent) => {
                     setSelectedEvent(findEvent(planning, planningEvent));
                 }}
