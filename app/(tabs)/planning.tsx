@@ -6,7 +6,7 @@ import PlanningList from "@/components/planning/PlanningList";
 import PlanningWeek from "@/components/planning/PlanningWeek";
 import useSessionStore from "@/stores/sessionStore";
 import { PlanningEvent } from "@/webAurion/utils/types";
-import { formatDate, getCloserMonday, getDayNumberInWeek, getEndDate, isSameWorkWeek, isToday, weekFromNow } from "@/utils/date";
+import { formatDate, formatFullDate, getCloserMonday, getDayNumberInWeek, getEndDate, isSameWorkWeek, isToday, weekFromNow } from "@/utils/date";
 import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { AnimatedPressable, Toggle } from "@/components/Buttons";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
@@ -217,9 +217,37 @@ export default function PlanningScreen() {
             />
         )}
 
-        {selectedEvent && <Sheet visible={selectedEvent !== null} setVisible={() => setSelectedEvent(null)}>
-            <Text>Hello World!</Text>
-        </Sheet>}
+        {selectedEvent && (
+            <Sheet sheetStyle={popupStyles.container} visible={selectedEvent !== null} setVisible={() => setSelectedEvent(null)}>
+                <View style={popupStyles.headerBox}>
+                    <View style={popupStyles.headerIcon}><MaterialIcons name="functions" size={14} /></View>
+                    <View>
+                        <Text style={popupStyles.headerTitle}>{selectedEvent.title}</Text>
+                        <Text style={popupStyles.headerSubtitle}>{selectedEvent.className}</Text>
+                    </View>
+                </View>
+                <View style={popupStyles.fieldBox}>
+                    <Text style={popupStyles.fieldTitle}>Date de début</Text>
+                    <Text style={[popupStyles.fieldTag, popupStyles.fieldTagLight]}>{formatFullDate(new Date(selectedEvent.start))}</Text>
+                </View>
+                <View style={popupStyles.fieldBox}>
+                    <Text style={popupStyles.fieldTitle}>Date de fin</Text>
+                    <Text style={[popupStyles.fieldTag, popupStyles.fieldTagLight]}>{formatFullDate(new Date(selectedEvent.end))}</Text>
+                </View>
+                <View style={popupStyles.fieldBox}>
+                    <Text style={popupStyles.fieldTitle}>Salle</Text>
+                    <Text style={[popupStyles.fieldTag, popupStyles.fieldTagBlack]}>{selectedEvent.room}</Text>
+                </View>
+                <View>
+                    <Text style={popupStyles.fieldTitle}>Assuré par</Text>
+                    <Text style={popupStyles.fieldValue}>{selectedEvent.instructors}</Text>
+                </View>
+                <View>
+                    <Text style={popupStyles.fieldTitle}>Pour les groupes</Text>
+                    <Text style={popupStyles.fieldValue}>{selectedEvent.learners}</Text>
+                </View>
+            </Sheet>
+        )}
     </Page>;
 }
 
@@ -286,6 +314,64 @@ const timeStyles = StyleSheet.create({
         fontWeight: 600,
     },
     daysLabelSelected: {
+        backgroundColor: Colors.black,
+        color: Colors.white,
+    },
+});
+
+const popupStyles = StyleSheet.create({
+    container: {
+        padding: 20,
+        gap: 20,
+    },
+    headerBox: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+    },
+    headerIcon: {
+        width: 22,
+        height: 22,
+        backgroundColor: "#FFA99D",
+        borderRadius: 999,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: 400,
+    },
+    headerSubtitle: {
+        fontSize: 12,
+        fontWeight: 400,
+        color: Colors.gray,
+    },
+    fieldTitle: {
+        fontSize: 10,
+        fontWeight: 700,
+        color: Colors.gray,
+        textTransform: "uppercase",
+    },
+    fieldBox: {
+        gap: 4,
+        alignItems: "flex-start",
+    },
+    fieldValue: {
+        fontSize: 14,
+        fontWeight: 400,
+    },
+    fieldTag: {
+        paddingBlock: 5,
+        paddingInline: 10,
+        borderRadius: 5,
+        textAlign: "center",
+        fontSize: 12,
+        fontWeight: 600,
+    },
+    fieldTagLight: {
+        backgroundColor: Colors.light,
+    },
+    fieldTagBlack: {
         backgroundColor: Colors.black,
         color: Colors.white,
     },

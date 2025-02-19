@@ -33,6 +33,20 @@ export function formatDate(date: Date, includeYear = false) {
     });
 }
 
+// Format de la date complète
+export function formatFullDate(date: Date) {
+    const formattedDate = date.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+    });
+    const formattedTime = date.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+    return `${formattedDate} — ${formattedTime}`;
+}
+
 // Fonction pour calculer la date cible à partir du jour sélectionné (offset)
 export function getWorkdayFromOffset(startDate: Date, offset: number): string {
     const date = new Date(startDate);
