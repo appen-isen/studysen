@@ -1,5 +1,5 @@
-import { Modal, View, StyleSheet, TouchableWithoutFeedback, Text } from "react-native";
-import { ReactNode, useRef } from "react";
+import { Modal, View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import { ReactNode } from "react";
 import Colors from "@/constants/Colors";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
