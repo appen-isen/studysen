@@ -1,16 +1,10 @@
-import { AnimatedPressable, DoubleSelector } from "@/components/Buttons";
+import { AnimatedPressable, Toggle } from "@/components/Buttons";
 import NoteModal from "@/components/modals/NoteModal";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { useNotesStore } from "@/stores/webaurionStore";
 import { getSemester } from "@/utils/date";
-import {
-    calculateAverage,
-    filterNotesBySemester,
-    getDSNumber,
-    getSubjectNameFromGroup,
-    groupNotesBySubject,
-} from "@/utils/notes";
+import { calculateAverage, filterNotesBySemester, getDSNumber, getSubjectNameFromGroup, groupNotesBySubject } from "@/utils/notes";
 import { Note, NotesList } from "@/webAurion/utils/types";
 import { Octicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -50,36 +44,14 @@ export default function NotesScreen() {
             </View>
             <View style={styles.contentView}>
                 {/* Sélecteur de semestre */}
-                <DoubleSelector
-                    selected={selectedSemester}
-                    setSelected={setSelectedSemester}
-                    firstSelector={
-                        <Text
-                            style={[
-                                styles.selectorText,
-                                selectedSemester === 0 && {
-                                    color: Colors.white,
-                                },
-                            ]}
-                        >
-                            Semestre 1
-                        </Text>
-                    }
-                    secondSelector={
-                        <Text
-                            style={[
-                                styles.selectorText,
-                                selectedSemester === 1 && {
-                                    color: Colors.white,
-                                },
-                            ]}
-                        >
-                            Semestre 2
-                        </Text>
-                    }
-                    containerStyle={styles.semesterSelector}
-                ></DoubleSelector>
-
+                <Toggle
+                    stateList={[
+                        { label: "Semestre 1", icon: "switch-left" },
+                        { label: "Semestre 2", icon: "switch-right" },
+                    ]}
+                    state={selectedSemester}
+                    setState={(currentState) => setSelectedSemester(currentState === 0 ? 1 : 0)}
+                />
                 {selectedNotes.length > 0 && (
                     // Moyenne générale s'il y a des notes
                     <View style={styles.noteAverageView}>
