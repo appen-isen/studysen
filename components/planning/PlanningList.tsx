@@ -45,7 +45,7 @@ export function ListEvent(props: { event: PlanningEvent, onPress: (event: Planni
 
     return <Pressable style={styles.eventBox} onPress={() => props.onPress(props.event)}>
         <View style={styles.headerBox}>
-            <Text style={styles.headerTitle}>{props.event.title}</Text>
+            <Text style={styles.headerTitle}>{props.event.subject}</Text>
             <View style={styles.headerIcon}><MaterialIcons name="functions" size={12} /></View>
         </View>
         <View>
