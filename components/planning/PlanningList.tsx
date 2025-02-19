@@ -2,7 +2,7 @@ import Colors from "@/constants/Colors";
 import { PlanningEvent } from "@/webAurion/utils/types";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
-import { groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
+import { getSubjectColor, getSubjectIcon, groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -46,7 +46,9 @@ export function ListEvent(props: { event: PlanningEvent, onPress: (event: Planni
     return <Pressable style={styles.eventBox} onPress={() => props.onPress(props.event)}>
         <View style={styles.headerBox}>
             <Text style={styles.headerTitle}>{props.event.subject}</Text>
-            <View style={styles.headerIcon}><MaterialIcons name="functions" size={12} /></View>
+            <View style={[styles.headerIcon, { backgroundColor: getSubjectColor(props.event.subject) }]}>
+                <MaterialIcons name={getSubjectIcon(props.event.subject)} size={12} />
+            </View>
         </View>
         <View>
             <Text style={styles.fieldTitle}>Assuré par</Text>
@@ -104,7 +106,6 @@ const styles = StyleSheet.create({
     headerIcon: {
         width: 18,
         height: 18,
-        backgroundColor: "#FFA99D",
         borderRadius: 999,
         justifyContent: "center",
         alignItems: "center",

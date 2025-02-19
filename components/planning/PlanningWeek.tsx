@@ -68,7 +68,7 @@ export function WeekEvent(props: {
         return;
     }
     return <Pressable style={[eventStyles.container, { height: eventHeight }]} onPress={() => props.onPress && props.onPress(props.event)}>
-        <View style={eventStyles.colorBar} />
+        <View style={[eventStyles.colorBar, { backgroundColor: getSubjectColor(props.event.subject) }]} />
         <Text style={eventStyles.subject} numberOfLines={1}>{props.event.subject}</Text>
         <View style={eventStyles.tags}>
             <Text style={[eventStyles.tag, eventStyles.tagWhite]} numberOfLines={1}>{startHour}</Text>
@@ -126,7 +126,6 @@ const eventStyles = StyleSheet.create({
         width: 32,
         height: 8,
         transform: [{ translateY: "-50%" }],
-        backgroundColor: "#FFA99D",
         borderRadius: 999,
     },
     subject: {

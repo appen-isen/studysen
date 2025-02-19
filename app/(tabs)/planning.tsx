@@ -11,7 +11,7 @@ import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { AnimatedPressable, Toggle } from "@/components/Buttons";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import EventModal from "@/components/modals/EventModal";
-import { findEvent, mergePlanning } from "@/utils/planning";
+import { findEvent, getSubjectColor, getSubjectIcon, mergePlanning } from "@/utils/planning";
 import { usePlanningStore, useSyncedPlanningStore } from "@/stores/webaurionStore";
 import { SyncMessage } from "@/components/Sync";
 import { Page, PageHeader } from "@/components/Page";
@@ -220,9 +220,11 @@ export default function PlanningScreen() {
         {selectedEvent && (
             <Sheet sheetStyle={popupStyles.container} visible={selectedEvent !== null} setVisible={() => setSelectedEvent(null)}>
                 <View style={popupStyles.headerBox}>
-                    <View style={popupStyles.headerIcon}><MaterialIcons name="functions" size={14} /></View>
+                    <View style={[popupStyles.headerIcon, { backgroundColor: getSubjectColor(selectedEvent.subject) }]}>
+                        <MaterialIcons name={getSubjectIcon(selectedEvent.subject)} size={14} />
+                    </View>
                     <View>
-                        <Text style={popupStyles.headerTitle}>{selectedEvent.title}</Text>
+                        <Text style={popupStyles.headerTitle}>{selectedEvent.subject}</Text>
                         <Text style={popupStyles.headerSubtitle}>{selectedEvent.className}</Text>
                     </View>
                 </View>
@@ -332,7 +334,6 @@ const popupStyles = StyleSheet.create({
     headerIcon: {
         width: 22,
         height: 22,
-        backgroundColor: "#FFA99D",
         borderRadius: 999,
         justifyContent: "center",
         alignItems: "center",
