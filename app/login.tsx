@@ -8,10 +8,10 @@ import { Link, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Dropdown, ErrorModal } from "@/components/Modals";
 
-import useSessionStore from "@/store/sessionStore";
+import useSessionStore from "@/stores/sessionStore";
 import Session from "@/webAurion/api/Session";
-import { getSecureStoreItem, setSecureStoreItem } from "@/store/secureStore";
-import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
+import { getSecureStoreItem, setSecureStoreItem } from "@/stores/secureStore";
+import useSettingsStore, { CAMPUS } from "@/stores/settingsStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Sheet } from "@/components/Sheet";
 

@@ -1,5 +1,5 @@
-import { initializeSettingsStore } from "@/store/settingsStore";
-import { initializeWebaurionStores } from "@/store/webaurionStore";
+import { initializeSettingsStore } from "@/stores/settingsStore";
+import { initializeWebaurionStores } from "@/stores/webaurionStore";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";

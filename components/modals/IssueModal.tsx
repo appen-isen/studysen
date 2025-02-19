@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import { Button } from "@/components/Buttons";
 import { Input } from "@/components/Inputs";
-import useSettingsStore from "@/store/settingsStore";
+import useSettingsStore from "@/stores/settingsStore";
 import { Bold } from "../Texts";
 import Colors from "@/constants/Colors";
 type IssueModalProps = {

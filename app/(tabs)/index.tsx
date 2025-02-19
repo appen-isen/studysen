@@ -8,8 +8,8 @@ import {
     useNotesStore,
     usePlanningStore,
     useSyncedPlanningStore,
-} from "@/store/webaurionStore";
-import useSessionStore from "@/store/sessionStore";
+} from "@/stores/webaurionStore";
+import useSessionStore from "@/stores/sessionStore";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import { PlanningEvent } from "@/webAurion/utils/types";
 import {
@@ -29,7 +29,7 @@ import {
     requestPermissions,
     scheduleCourseNotification,
 } from "@/utils/notificationConfig";
-import useSettingsStore from "@/store/settingsStore";
+import useSettingsStore from "@/stores/settingsStore";
 import { getSemester } from "@/utils/date";
 
 export default function HomeScreen() {

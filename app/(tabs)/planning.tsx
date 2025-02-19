@@ -4,7 +4,7 @@ import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
 import PlanningList from "@/components/planning/PlanningList";
 import PlanningWeek from "@/components/planning/PlanningWeek";
-import useSessionStore from "@/store/sessionStore";
+import useSessionStore from "@/stores/sessionStore";
 import { PlanningEvent } from "@/webAurion/utils/types";
 import { formatDate, getCloserMonday, getDayNumberInWeek, getEndDate, isSameWorkWeek, isToday, weekFromNow } from "@/utils/date";
 import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
@@ -12,7 +12,7 @@ import { AnimatedPressable, Toggle } from "@/components/Buttons";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import EventModal from "@/components/modals/EventModal";
 import { findEvent, mergePlanning } from "@/utils/planning";
-import { usePlanningStore, useSyncedPlanningStore } from "@/store/webaurionStore";
+import { usePlanningStore, useSyncedPlanningStore } from "@/stores/webaurionStore";
 import { SyncMessage } from "@/components/Sync";
 import { Page, PageHeader } from "@/components/Page";
 import { Sheet } from "@/components/Sheet";
@@ -22,18 +22,18 @@ export default function PlanningScreen() {
     
     const { planning, setPlanning } = usePlanningStore();
     const { syncedPlanning, setSyncedPlanning, clearSyncedPlanning } = useSyncedPlanningStore();
-
-    const [planningView, setPlanningView] = useState<"list" | "week">("list");
+    const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date(0));
     
     const [isPlanningLoaded, setPlanningLoaded] = useState(false);
     const [isSyncing, setSyncing] = useState(planning.length == 0);
+
+    const [planningView, setPlanningView] = useState<"list" | "week">("list");
 
     const [selectedMonday, setSelectedMonday] = useState(getCloserMonday(new Date()));
     const [selectedDayIndex, setSelectedDayIndex] = useState(getDayNumberInWeek(new Date()));
 
     const [selectedEvent, setSelectedEvent] = useState<PlanningEvent | null>();
 
-    const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date(0));
 
     useEffect(() => {
         autoUpdatePlanningIfNeeded();
@@ -141,10 +141,6 @@ export default function PlanningScreen() {
         });
     };
 
-    const handlePlanningViewChange = (view: "list" | "week") => {
-        setPlanningView(view);
-    };
-
     return <Page style={styles.container}>
         <SyncMessage isVisible={isSyncing} />
 
@@ -155,7 +151,7 @@ export default function PlanningScreen() {
                     { label: "Semaine", icon: "calendar-month" },
                 ]}
                 state={planningView === "list" ? 0 : 1}
-                setState={(currentState) => handlePlanningViewChange(currentState === 0 ? "week" : "list")}
+                setState={(currentState) => setPlanningView(currentState === 0 ? "week" : "list")}
             />
         </PageHeader>
         

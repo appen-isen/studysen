@@ -1,20 +1,20 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Bold, Text } from "@/components/Texts";
 import { Href, useRouter } from "expo-router";
-import useSessionStore from "@/store/sessionStore";
-import { removeSecureStoreItem } from "@/store/secureStore";
+import useSessionStore from "@/stores/sessionStore";
+import { removeSecureStoreItem } from "@/stores/secureStore";
 import Colors from "@/constants/Colors";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { AnimatedPressable } from "@/components/Buttons";
 import { ConfirmModal, Dropdown } from "@/components/Modals";
 import { useEffect, useState } from "react";
-import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
+import useSettingsStore, { CAMPUS } from "@/stores/settingsStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
     useNotesStore,
     usePlanningStore,
     useSyncedPlanningStore,
-} from "@/store/webaurionStore";
+} from "@/stores/webaurionStore";
 
 export default function SettingsScreen() {
     const router = useRouter();

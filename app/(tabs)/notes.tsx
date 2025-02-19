@@ -2,7 +2,7 @@ import { AnimatedPressable, DoubleSelector } from "@/components/Buttons";
 import NoteModal from "@/components/modals/NoteModal";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
-import { useNotesStore } from "@/store/webaurionStore";
+import { useNotesStore } from "@/stores/webaurionStore";
 import { getSemester } from "@/utils/date";
 import {
     calculateAverage,

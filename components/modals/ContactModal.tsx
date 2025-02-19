@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/Buttons";
 import { Input } from "@/components/Inputs";
 import axios from "axios";
-import useSettingsStore from "@/store/settingsStore";
+import useSettingsStore from "@/stores/settingsStore";
 import { Bold } from "../Texts";
 import Colors from "@/constants/Colors";
 

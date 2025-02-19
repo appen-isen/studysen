@@ -12,7 +12,7 @@ import {
     sendLocalNotification,
 } from "@/utils/notificationConfig";
 import { Dropdown } from "@/components/Modals";
-import useSettingsStore, { NotificationDelay } from "@/store/settingsStore";
+import useSettingsStore, { NotificationDelay } from "@/stores/settingsStore";
 
 // Paramètres des notifications
 export default function NotifSettings() {
