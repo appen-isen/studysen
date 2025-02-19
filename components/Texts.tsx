@@ -7,13 +7,12 @@ export function Bold(props: TextProps) {
     );
 }
 
-// Permet d'appliquer la police OpenSans à un texte
 export function Text(props: TextProps) {
     const getFontFamily = () => {
+        const styles = Array.isArray(props.style) ? props.style : [props.style];
         if (props.style && typeof props.style === "object") {
-            const styles = Array.isArray(props.style) ? props.style : [props.style];
             const fontWeight = styles
-                .map(style => (style && typeof style === "object" && 'fontWeight' in style ? (style as TextStyle).fontWeight : undefined))
+                .map(style => (style && typeof style === "object" && "fontWeight" in style ? (style as TextStyle).fontWeight : undefined))
                 .find(weight => weight !== undefined);
 
             if (fontWeight) {
@@ -25,10 +24,17 @@ export function Text(props: TextProps) {
         return "OpenSans-400";
     };
 
-    return (
-        <NativeText
-            {...props}
-            style={[{ fontFamily: getFontFamily() }, props.style]}
-        />
-    );
+    const getStyleWithoutFontWeight = () => {
+        const styles = Array.isArray(props.style) ? props.style : [props.style];
+        const newStyles = styles.map(style => {
+            if (style && typeof style === "object") {
+                const { fontWeight, ...newStyle } = style as TextStyle;
+                return newStyle;
+            }
+            return style;
+        });
+        return newStyles;
+    };
+
+    return <NativeText {...props} style={[{ fontFamily: getFontFamily() }, getStyleWithoutFontWeight()]} />;
 }
