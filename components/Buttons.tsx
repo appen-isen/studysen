@@ -14,6 +14,7 @@ import {
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { Switch, SwitchProps } from "react-native-paper";
+import { MaterialIcons } from "@expo/vector-icons";
 interface StyledButtonProps {
     textStyle?: object;
     style?: object;
@@ -106,50 +107,17 @@ export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
     );
 };
 
-interface DoubleSelectorProps {
-    containerStyle?: StyleProp<ViewStyle>;
-    selected: 0 | 1;
-    setSelected: (selected: 0 | 1) => void;
-    firstSelector: React.ReactNode;
-    secondSelector: React.ReactNode;
+interface ToggleProps {
+    state: number;
+    stateList: { label: string; icon: keyof typeof MaterialIcons.glyphMap }[];
+    setState: (currentState: number) => void;
 }
 
-export const DoubleSelector: React.FC<DoubleSelectorProps> = ({
-    containerStyle,
-    selected,
-    setSelected,
-    firstSelector,
-    secondSelector,
-}) => {
-    return (
-        <View style={[doubleSelectorStyles.container, containerStyle]}>
-            {/* Boutons pour change l'affichage de l'emploi du temps (mode liste ou mode semaine) */}
-            <AnimatedPressable
-                style={[
-                    doubleSelectorStyles.selectorItem1,
-                    selected === 0 && {
-                        backgroundColor: Colors.primary,
-                    },
-                ]}
-                onPress={() => setSelected(0)}
-                scale={0.95}
-            >
-                {firstSelector}
-            </AnimatedPressable>
-            <AnimatedPressable
-                style={[
-                    doubleSelectorStyles.selectorItem2,
-                    selected === 1 && {
-                        backgroundColor: Colors.primary,
-                    },
-                ]}
-                onPress={() => setSelected(1)}
-                scale={0.95}
-            >
-                {secondSelector}
-            </AnimatedPressable>
-        </View>
-    );
+export function Toggle(props: ToggleProps) {
+    return <Pressable style={toggleStyles.container} onPress={() => props.setState(props.state)}>
+        <Text style={toggleStyles.label}>{props.stateList[props.state].label}</Text>
+        <MaterialIcons name={props.stateList[props.state].icon} size={24} />
+    </Pressable>;
 };
 
 // Switch avec les couleurs de l'application
@@ -192,24 +160,18 @@ const styles = StyleSheet.create({
     },
 });
 
-const doubleSelectorStyles = StyleSheet.create({
-    // Style du sélecteur double
+const toggleStyles = StyleSheet.create({
     container: {
         flexDirection: "row",
-        backgroundColor: "white",
+        alignItems: "center",
+        gap: 5,
+        paddingBlock: 10,
+        paddingInline: 15,
+        backgroundColor: Colors.light,
         borderRadius: 10,
-        boxShadow: "0px 2px 5px 0px rgba(0,0,0,0.25)",
     },
-    selectorItem1: {
-        borderTopLeftRadius: 10,
-        borderBottomLeftRadius: 10,
-        paddingHorizontal: 15,
-        paddingVertical: 2,
-    },
-    selectorItem2: {
-        borderTopRightRadius: 10,
-        borderBottomRightRadius: 10,
-        paddingHorizontal: 15,
-        paddingVertical: 2,
+    label: {
+        fontSize: 14,
+        fontWeight: 600,
     },
 });

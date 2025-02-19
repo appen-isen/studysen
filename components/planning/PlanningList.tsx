@@ -1,410 +1,141 @@
 import Colors from "@/constants/Colors";
 import { PlanningEvent } from "@/webAurion/utils/types";
-import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { useEffect, useState } from "react";
-import { AnimatedPressable } from "../Buttons";
-import {
-    getSubjectColor,
-    groupEventsByDay,
-    truncateString,
-    updatePlanningForListMode,
-} from "@/utils/planning";
-import {
-    formatDateToLocalTime,
-    getDayNumberInWeek,
-    getWorkdayFromOffset,
-    isSameWorkWeek,
-} from "@/utils/date";
+import { groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
+import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function PlanningList(props: {
     events: PlanningEvent[];
     startDate: Date;
+    selectedDay: number;
     isPlanningLoaded: boolean;
-    resetDayFlag: boolean;
     setSelectedEvent: (event: PlanningEvent) => void;
 }) {
     // On groupe les événements par jour et on change le planning pour fonctionner avec le mode liste
     const planning = groupEventsByDay(updatePlanningForListMode(props.events));
-    //On initialise le jour sélectionné à la date actuelle
-    const [selectedDay, setSelectedDay] = useState(
-        getDayNumberInWeek(new Date())
-    );
 
-    // Fonction pour changer le jour sélectionné
-    const handleDayChange = (dayNumber: number) => {
-        setSelectedDay(dayNumber);
-    };
     // Calcul de la date cible au format ISO (local)
-    const selectedDateISO = getWorkdayFromOffset(props.startDate, selectedDay);
+    const selectedDateISO = getWorkdayFromOffset(props.startDate, props.selectedDay);
 
-    useEffect(() => {
-        if (isSameWorkWeek(props.startDate)) {
-            setSelectedDay(getDayNumberInWeek(new Date()));
-        } else {
-            // S'il y a un changement de semaine, on revient au lundi
-            setSelectedDay(0);
-        }
-    }, [props.resetDayFlag]);
-
-    return (
-        <View style={styles.container}>
-            <View style={styles.daySelector}>
-                {/* On affiche les 5 prochains jours */}
-                <DayBox
-                    dayNumber={0}
-                    selectedDay={selectedDay}
-                    onSelectDay={handleDayChange}
-                    startDate={props.startDate}
-                ></DayBox>
-                <DayBox
-                    dayNumber={1}
-                    selectedDay={selectedDay}
-                    onSelectDay={handleDayChange}
-                    startDate={props.startDate}
-                ></DayBox>
-                <DayBox
-                    dayNumber={2}
-                    selectedDay={selectedDay}
-                    onSelectDay={handleDayChange}
-                    startDate={props.startDate}
-                ></DayBox>
-                <DayBox
-                    dayNumber={3}
-                    selectedDay={selectedDay}
-                    onSelectDay={handleDayChange}
-                    startDate={props.startDate}
-                ></DayBox>
-                <DayBox
-                    dayNumber={4}
-                    selectedDay={selectedDay}
-                    onSelectDay={handleDayChange}
-                    startDate={props.startDate}
-                ></DayBox>
-            </View>
-            <View style={styles.eventsView}>
-                <ScrollView
-                    contentContainerStyle={styles.eventsScroll}
-                    showsVerticalScrollIndicator={false}
-                >
-                    {/* On affiche les événements du jour sélectionné */}
-                    {props.isPlanningLoaded &&
-                        planning[selectedDateISO]?.map((event, index) => (
-                            <ListEvent
-                                key={index}
-                                event={event}
-                                onPress={props.setSelectedEvent}
-                            />
-                        ))}
-                    {!props.isPlanningLoaded && (
-                        <ActivityIndicator
-                            animating={true}
-                            color={Colors.primary}
-                            size={50}
-                        />
-                    )}
-                </ScrollView>
-            </View>
+    return <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+    >
+        <View style={styles.timeBar}>
         </View>
-    );
-}
-
-function DayBox(props: {
-    dayNumber: number;
-    startDate: Date;
-    selectedDay: number;
-    onSelectDay: (dayNumber: number) => void;
-}) {
-    // Calcul de la date cible au format ISO (local)
-    const targetDateISO = getWorkdayFromOffset(
-        props.startDate,
-        props.dayNumber
-    );
-    const targetDate = new Date(targetDateISO); // Conversion de la chaîne ISO en objet Date
-
-    const dayNames = ["Lun", "Mar", "Mer", "Jeu", "Ven"];
-    // Extraction du nom et de la date (jour/mois)
-    const dayName = dayNames[props.dayNumber];
-    const dayDate = `${targetDate.getDate().toString().padStart(2, "0")}/${(
-        targetDate.getMonth() + 1
-    )
-        .toString()
-        .padStart(2, "0")}`;
-
-    const isSelected = props.dayNumber === props.selectedDay;
-
-    return (
-        <AnimatedPressable
-            // On change le style du jour sélectionné
-            style={[
-                styles.dayBox,
-                isSelected && { backgroundColor: Colors.primary },
-            ]}
-            onPress={() => props.onSelectDay(props.dayNumber)}
-        >
-            <Text style={[styles.dayTitle, isSelected && { color: "white" }]}>
-                {dayName}
-            </Text>
-            <Text style={[styles.dayDate, isSelected && { color: "white" }]}>
-                {dayDate}
-            </Text>
-        </AnimatedPressable>
-    );
-}
-
-export function ListEvent(props: {
-    event: PlanningEvent;
-    onPress?: (event: PlanningEvent) => void;
-}) {
-    const [timeText, setTimeText] = useState("");
-
-    useEffect(() => {
-        // On met à jour le texte de l'heure de l'événement
-        const updateEventTime = () => {
-            const now = new Date();
-            const start = new Date(props.event.start);
-            const end = new Date(props.event.end);
-
-            if (now >= start && now <= end) {
-                // L'événement est en cours
-                setTimeText(" ● En cours");
-            } else if (start > now) {
-                const diffMinutes = Math.floor(
-                    (start.getTime() - now.getTime()) / 60000
-                );
-                // L'événement n'a pas encore commencé mais débute dans moins d'une heure
-                if (diffMinutes < 60) {
-                    setTimeText(` ● Dans ${diffMinutes} minutes`);
-                } else {
-                    setTimeText("");
-                }
-            } else {
-                setTimeText("");
-            }
-        };
-
-        // Mise à jour du temps
-        updateEventTime();
-
-        // Mise à jour réuglière du temps toutes les minutes
-        const interval = setInterval(updateEventTime, 60000);
-
-        // Nettoyage de l'intervalle
-        return () => clearInterval(interval);
-    }, [props.event]);
-
-    return (
-        <AnimatedPressable
-            style={eventStyles.container}
-            onPress={() => props.onPress && props.onPress(props.event)}
-            scale={0.95}
-        >
-            {/* Heure de début et de fin */}
-            <View style={eventStyles.timeView}>
-                <Text style={eventStyles.timeText}>
-                    {formatDateToLocalTime(props.event.start)}
-                </Text>
-                <View
-                    style={[
-                        eventStyles.timeSeparator,
-                        //Couleur de fond en fonction de la matière
-                        {
-                            backgroundColor: getSubjectColor(
-                                props.event.subject
-                            ),
-                        },
-                    ]}
-                ></View>
-                <Text style={eventStyles.timeText}>
-                    {formatDateToLocalTime(props.event.end)}
-                </Text>
-            </View>
-            {/* Contenu de l'événement */}
-            <View style={eventStyles.contentView}>
-                <View style={eventStyles.contentInfo}>
-                    {/* Matière */}
-                    <Text style={eventStyles.subject}>
-                        {props.event.title || props.event.subject}
-                        {props.event.className !== "COURS" &&
-                            ` - ${props.event.className}`}
-                    </Text>
-                    {/* Enseignants */}
-                    <Text style={eventStyles.instructors}>
-                        {props.event.instructors}
-                    </Text>
-                    {/* Salle */}
-                    <View style={eventStyles.roomContainer}>
-                        <View style={eventStyles.roomBox}>
-                            <Text style={eventStyles.roomText}>
-                                {truncateString(props.event.room, 6)}
-                            </Text>
-                        </View>
-                        <Text style={eventStyles.timeTextInfo}>{timeText}</Text>
-                    </View>
-                </View>
-                {/* Plus d'infos sur l'événement */}
-                <AnimatedPressable
-                    onPress={() => props.onPress && props.onPress(props.event)}
-                >
-                    <FontAwesome6
-                        name="chevron-right"
-                        style={eventStyles.contentInfoIcon}
+        <View style={styles.eventListBox}>
+            {/* On affiche les événements du jour sélectionné */}
+            {props.isPlanningLoaded &&
+                planning[selectedDateISO]?.map((event, index) => (
+                    <ListEvent
+                        key={index}
+                        event={event}
+                        onPress={props.setSelectedEvent}
                     />
-                </AnimatedPressable>
-            </View>
-        </AnimatedPressable>
-    );
+                ))}
+            {!props.isPlanningLoaded && (
+                <ActivityIndicator
+                    animating={true}
+                    color={Colors.primary}
+                    size={50}
+                />
+            )}
+        </View>
+    </ScrollView>;
+}
+
+export function ListEvent(props: { event: PlanningEvent, onPress: (event: PlanningEvent) => void }) {
+
+    return <Pressable style={styles.eventBox} onPress={() => props.onPress(props.event)}>
+        <View style={styles.headerBox}>
+            <Text style={styles.headerTitle}>{props.event.title}</Text>
+            <View style={styles.headerIcon}><MaterialIcons name="functions" size={12} /></View>
+        </View>
+        <View>
+            <Text style={styles.fieldTitle}>Assuré par</Text>
+            <Text style={styles.fieldValue}>{props.event.instructors}</Text>
+        </View>
+        <View style={styles.tagsBox}>
+            <Text style={[styles.tag, styles.tagWhite]}>{formatDateToLocalTime(props.event.start)} — {formatDateToLocalTime(props.event.end)}</Text>
+            <Text style={[styles.tag, styles.tagBlack]}>{props.event.room}</Text>
+        </View>
+    </Pressable>;
 }
 
 const styles = StyleSheet.create({
     container: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        width: "100%",
-    },
-
-    //Sélecteur de jour
-    daySelector: {
-        display: "flex",
         flexDirection: "row",
-        alignItems: "center",
-        width: "100%",
-        maxWidth: 600,
-        justifyContent: "space-around",
-        marginTop: 10,
+        gap: 15,
     },
-    dayBox: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        paddingHorizontal: 15,
-        paddingVertical: 5,
-        borderRadius: 15,
-        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.2),
+    timeBar: {
+        width: 4,
+        backgroundColor: Colors.light,
+        borderRadius: 999,
     },
-    dayTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
+    eventListBox: {
+        gap: 15,
+        flex: 1,
     },
-    dayDate: {
-        fontSize: 13,
-    },
-    // Vue des événements
-    eventsView: {
-        width: "100%",
-        maxWidth: 600,
-    },
-    eventsScroll: {
-        width: "100%",
-        display: "flex",
-        flexGrow: 0,
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        paddingBottom: 350,
-        marginTop: 30,
-    },
-});
-
-const eventStyles = StyleSheet.create({
-    // Style de la vue d'un événement
-    container: {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: 5,
-        paddingVertical: 3,
+    eventBox: {
+        backgroundColor: Colors.light,
+        paddingBlock: 10,
+        paddingInline: 20,
         borderRadius: 10,
-        marginBottom: 15,
-        width: "95%",
-        height: 120,
-        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.2),
-    },
-    // Style de la vue de l'heure de début et de fin
-    timeView: {
-        display: "flex",
+        width: "100%",
         flexDirection: "column",
         justifyContent: "center",
-        alignItems: "center",
-        width: "20%",
-        height: "95%",
-        backgroundColor: "white",
-        borderRadius: 10,
+        gap: 20,
     },
-    timeSeparator: {
-        width: 5,
-        borderRadius: 10,
-        height: "40%",
-    },
-    timeText: {
-        fontSize: 15,
-        textAlign: "center",
-        fontWeight: 700,
-    },
-    // Style de la vue du contenu de l'événement
-    contentView: {
-        display: "flex",
+    headerBox: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
-        backgroundColor: "white",
-        width: "78%",
-        height: "95%",
-        borderRadius: 10,
+        gap: 10,
     },
-    contentInfo: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        marginLeft: 15,
-        width: "85%",
-    },
-    subject: {
+    headerTitle: {
         fontSize: 18,
-        width: "100%",
-        fontWeight: "bold",
+        fontWeight: 600,
     },
-    instructors: {
-        fontSize: 15,
+    headerIcon: {
+        width: 18,
+        height: 18,
+        backgroundColor: "#FFA99D",
+        borderRadius: 999,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    fieldTitle: {
+        fontSize: 10,
+        fontWeight: "bold",
         color: Colors.gray,
+        textTransform: "uppercase",
     },
-    // Style de la box de la salle
-    roomContainer: {
-        display: "flex",
+    fieldValue: {
+        fontSize: 14,
+    },
+    tagsBox: {
         flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "flex-start",
-        marginTop: 5,
+        flexWrap: "wrap",
+        gap: 15,
     },
-    roomBox: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: 80,
-        height: 23,
-        borderRadius: 20,
+    tag: {
+        paddingBlock: 5,
+        paddingInline: 10,
+        borderRadius: 5,
+        fontSize: 14,
+        fontWeight: 600,
+    },
+    tagWhite: {
+        backgroundColor: Colors.white,
+        color: Colors.black,
+    },
+    tagBlack: {
+        backgroundColor: Colors.black,
+        color: Colors.white,
+    },
+    tagPrimary: {
         backgroundColor: Colors.primary,
+        color: Colors.white,
     },
-    roomText: {
-        color: "white",
-        fontSize: 15,
-        fontWeight: "bold",
-        textAlign: "center",
-    },
-    timeTextInfo: {
-        marginLeft: 5,
-        color: Colors.primary,
-        fontWeight: 700,
-        fontSize: 13,
-    },
-    contentInfoIcon: {
-        fontSize: 25,
-        marginRight: 10,
-        color: Colors.primary,
-    },
-});
+})

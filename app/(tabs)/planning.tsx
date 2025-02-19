@@ -1,74 +1,58 @@
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
 import PlanningList from "@/components/planning/PlanningList";
 import PlanningWeek from "@/components/planning/PlanningWeek";
 import useSessionStore from "@/store/sessionStore";
 import { PlanningEvent } from "@/webAurion/utils/types";
-import {
-    formatDate,
-    getCloserMonday,
-    getEndDate,
-    weekFromNow,
-} from "@/utils/date";
-import { FontAwesome6 } from "@expo/vector-icons";
-import { AnimatedPressable, DoubleSelector } from "@/components/Buttons";
+import { formatDate, getCloserMonday, getDayNumberInWeek, getEndDate, isSameWorkWeek, isToday, weekFromNow } from "@/utils/date";
+import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
+import { AnimatedPressable, Toggle } from "@/components/Buttons";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import EventModal from "@/components/modals/EventModal";
 import { findEvent, mergePlanning } from "@/utils/planning";
-import {
-    usePlanningStore,
-    useSyncedPlanningStore,
-} from "@/store/webaurionStore";
+import { usePlanningStore, useSyncedPlanningStore } from "@/store/webaurionStore";
 import { SyncMessage } from "@/components/Sync";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Page, PageHeader } from "@/components/Page";
+import { Sheet } from "@/components/Sheet";
 
 export default function PlanningScreen() {
     const { session } = useSessionStore();
+    
     const { planning, setPlanning } = usePlanningStore();
-    const { syncedPlanning, setSyncedPlanning, clearSyncedPlanning } =
-        useSyncedPlanningStore();
-    const [planningView, setPlanningView] = useState<"list" | "week">("list");
-    const [isPlanningLoaded, setPlanningLoaded] = useState(false);
-    //Permet de savoir si le planning est synchronisé avec Internet ou s'il est en local
-    const [isSyncing, setSyncing] = useState(planning.length == 0);
-    const [currentStartDate, setCurrentStartDate] = useState(
-        getCloserMonday(new Date())
-    );
-    //Permet de stocker l'événement sélectionné pour l'afficher dans la modal
-    const [selectedEvent, setSelectedEvent] = useState<PlanningEvent | null>();
-    const [eventModalInfoVisible, setEventModalInfoVisible] = useState(false);
-    //Permet de reset le jour actuel dans le PlanningList lorsque l'on clique sur le bouton pour changer l'affichage
-    const [resetDayFlag, setResetDayFlag] = useState(false);
+    const { syncedPlanning, setSyncedPlanning, clearSyncedPlanning } = useSyncedPlanningStore();
 
-    //Permet de stocker la date de la dernière mise à jour du planning
-    const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
+    const [planningView, setPlanningView] = useState<"list" | "week">("list");
+    
+    const [isPlanningLoaded, setPlanningLoaded] = useState(false);
+    const [isSyncing, setSyncing] = useState(planning.length == 0);
+
+    const [selectedMonday, setSelectedMonday] = useState(getCloserMonday(new Date()));
+    const [selectedDayIndex, setSelectedDayIndex] = useState(getDayNumberInWeek(new Date()));
+
+    const [selectedEvent, setSelectedEvent] = useState<PlanningEvent | null>();
+
+    const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date(0));
 
     useEffect(() => {
         autoUpdatePlanningIfNeeded();
 
         const interval = setInterval(() => {
-            autoUpdatePlanningIfNeeded(); // On regarde si on doit mettre à jour le planning toute les 30 secondes
-        }, 15 * 1000);
+            autoUpdatePlanningIfNeeded();
+        }, 15*1000);
 
-        return () => clearInterval(interval); // Cleanup interval on unmount
+        return () => clearInterval(interval);
     }, [lastUpdateTime]);
 
     // Mettre à jour le planning toutes les 10 minutes
     const autoUpdatePlanningIfNeeded = () => {
-        if (lastUpdateTime) {
-            const now = new Date();
-            const elapsedTime = now.getTime() - lastUpdateTime.getTime();
+        const now = new Date();
+        const elapsedTime = now.getTime() - lastUpdateTime.getTime();
 
-            if (elapsedTime > 10 * 60 * 1000) {
-                clearSyncedPlanning();
-                // Si plus de 10 minutes se sont écoulées depuis la dernière mise à jour, on met à jour
-                updatePlanning();
-            }
-        } else {
-            // Si c'est le premier chargement, on télécharge le planning
+        // Si plus de 10 minutes se sont écoulées depuis la dernière mise à jour, on met à jour
+        if (elapsedTime > 10*60*1000) {
+            clearSyncedPlanning();
             updatePlanning();
         }
     };
@@ -139,182 +123,171 @@ export default function PlanningScreen() {
 
     // Fonction pour changer la semaine affichée
     const handleWeekChange = (previous: boolean) => {
-        //On change la date de début de la semaine
-        setCurrentStartDate((prevStart) => {
-            const closerMonday = getCloserMonday(new Date());
-            closerMonday.setHours(8, 0, 0, 0); // Date de début de journée
-            const newDate = new Date(prevStart);
-            const offset = previous ? -7 : 7; // On avance ou recule d'une semaine
-            newDate.setDate(newDate.getDate() + offset);
+        setSelectedMonday((prevStart) => {
+            const closestMonday = getCloserMonday(new Date());
 
-            // On reset le jour actuel dans le PlanningList
-            setResetDayFlag((prevFlag) => !prevFlag);
+            const newDate = new Date(prevStart);
+            newDate.setDate(newDate.getDate() + (previous ? -7 : 7)); // On avance ou recule d'une semaine
 
             // Si on recule et que la date est antérieure au lundi le plus proche, on reste sur le lundi le plus proche
-            if (previous && newDate < closerMonday) {
-                return closerMonday;
+            if (previous && newDate < closestMonday) {
+                return closestMonday;
             }
+
             // On met à jour l'emploi du temps
             updatePlanning(weekFromNow(getCloserMonday(new Date()), newDate));
+            setSelectedDayIndex(isSameWorkWeek(newDate) ? getDayNumberInWeek(new Date()) : 0);
             return newDate;
         });
     };
 
     const handlePlanningViewChange = (view: "list" | "week") => {
         setPlanningView(view);
-        const currentDate = getCloserMonday(new Date());
-        // On reset la date de début de la semaine
-        setCurrentStartDate(currentDate);
-        // On met à jour l'emploi du temps
-        updatePlanning(weekFromNow(getCloserMonday(new Date()), currentDate));
-        // On reset le jour actuel dans le PlanningList
-        setResetDayFlag((prevFlag) => !prevFlag);
     };
 
-    return (
-        <SafeAreaView style={styles.container}>
-            {/* Message de synchronisation */}
-            <SyncMessage isVisible={isSyncing} />
-            {/* Titre de la page */}
-            <Text style={styles.title}>Planning</Text>
+    return <Page style={styles.container}>
+        <SyncMessage isVisible={isSyncing} />
 
-            {/* Sélecteur pour l'affichage de l'emploi du temps */}
-            <DoubleSelector
-                containerStyle={styles.planningViewSelector}
-                //Sélection de l'affichage mode liste ou mode semaine
-                selected={planningView === "list" ? 0 : 1}
-                setSelected={(selected) =>
-                    handlePlanningViewChange(selected === 0 ? "list" : "week")
-                }
-                //Icones pour le sélecteur
-                firstSelector={
-                    <MaterialCommunityIcons
-                        name="calendar-text-outline"
-                        style={[
-                            styles.selectorIcon,
-                            planningView === "list" && { color: "white" },
-                        ]}
-                    />
-                }
-                secondSelector={
-                    <MaterialCommunityIcons
-                        name="calendar-range-outline"
-                        style={[
-                            styles.selectorIcon,
-                            planningView === "week" && { color: "white" },
-                        ]}
-                    />
-                }
+        <PageHeader title="Mes cours">
+            <Toggle
+                stateList={[
+                    { label: "Journée", icon: "event-note" },
+                    { label: "Semaine", icon: "calendar-month" },
+                ]}
+                state={planningView === "list" ? 0 : 1}
+                setState={(currentState) => handlePlanningViewChange(currentState === 0 ? "week" : "list")}
             />
-
-            {/* Sélecteur de semaine */}
-            <View style={styles.weekSelector}>
-                <AnimatedPressable onPress={() => handleWeekChange(true)}>
-                    <FontAwesome6
-                        name="chevron-left"
-                        style={styles.weekChevronIcon}
-                    />
-                </AnimatedPressable>
-                <Text style={styles.weekText}>
-                    Du {formatDate(currentStartDate)} au{" "}
-                    {formatDate(getEndDate(currentStartDate))}
+        </PageHeader>
+        
+        <View style={timeStyles.container}>
+            <View style={timeStyles.weekBox}>
+                <Pressable onPress={() => handleWeekChange(true)} disabled={isSameWorkWeek(selectedMonday)}>
+                    <MaterialIcons name="arrow-back" style={[timeStyles.weekArrow, isSameWorkWeek(selectedMonday) && timeStyles.weekArrowDisabled]} />
+                </Pressable>
+                <Text style={timeStyles.weekText}>
+                    Du <Text style={timeStyles.weekImportant}>{formatDate(selectedMonday)}</Text> au <Text style={timeStyles.weekImportant}>{formatDate(getEndDate(selectedMonday))}</Text>
                 </Text>
-                <AnimatedPressable onPress={() => handleWeekChange(false)}>
-                    <FontAwesome6
-                        name="chevron-right"
-                        style={styles.weekChevronIcon}
-                    />
-                </AnimatedPressable>
+                <Pressable onPress={() => handleWeekChange(false)}>
+                    <MaterialIcons name="arrow-forward" style={timeStyles.weekArrow} />
+                </Pressable>
             </View>
 
-            {/* Affichage de l'emploi du temps */}
-            {planningView === "list" && (
-                <PlanningList
-                    events={planning}
-                    startDate={currentStartDate}
-                    isPlanningLoaded={isPlanningLoaded}
-                    resetDayFlag={resetDayFlag}
-                    //Affiche les informations d'un cours dans une modal
-                    setSelectedEvent={(planningEvent) => {
-                        //Si c'est un congé, on affiche directement les informations
-                        if (planningEvent.className === "CONGES") {
-                            setSelectedEvent(planningEvent);
-                        } else {
-                            //Sinon on affiche les informations complètes de l'événement
-                            setSelectedEvent(
-                                findEvent(planning, planningEvent)
-                            );
-                        }
-                        setEventModalInfoVisible(true);
-                    }}
-                />
-            )}
-            {planningView === "week" && (
-                <PlanningWeek
-                    events={planning}
-                    startDate={currentStartDate}
-                    isPlanningLoaded={isPlanningLoaded}
-                    //Affiche les informations d'un cours dans une modal
-                    setSelectedEvent={(planningEvent) => {
-                        setSelectedEvent(findEvent(planning, planningEvent));
-                        setEventModalInfoVisible(true);
-                    }}
-                />
-            )}
-            {/* Modal pour afficher les informations d'un cours */}
-            {selectedEvent && (
-                <EventModal
-                    event={selectedEvent}
-                    visible={eventModalInfoVisible}
-                    setVisible={setEventModalInfoVisible}
-                ></EventModal>
-            )}
-        </SafeAreaView>
-    );
+            <View style={timeStyles.daysBox}>
+                {["Lun", "Mar", "Mer", "Jeu", "Ven"].map((dayName, index) => {
+                    const day = new Date(selectedMonday.getTime() + index*24*60*60*1000);
+                    return <Pressable style={timeStyles.daysButton} key={index} onPress={() => setSelectedDayIndex(index)} disabled={planningView === "week"}>
+                        <Text style={[
+                            timeStyles.daysLabel,
+                            index === selectedDayIndex && planningView === "list" && timeStyles.daysLabelSelected
+                        ]}>
+                            { isToday(day) ? "Aujour." : `${dayName}. ${day.getDate().toString().padStart(2, "0")}` }
+                        </Text>
+                    </Pressable>;
+                })}
+            </View>
+        </View>
+
+        {planningView === "list" ? (
+            <PlanningList
+                events={planning}
+                selectedDay={selectedDayIndex}
+                startDate={selectedMonday}
+                isPlanningLoaded={isPlanningLoaded}
+                //Affiche les informations d'un cours dans une modal
+                setSelectedEvent={(planningEvent) => {
+                    //Si c'est un congé, on affiche directement les informations
+                    if (planningEvent.className === "CONGES") {
+                        setSelectedEvent(planningEvent);
+                    } else {
+                        //Sinon on affiche les informations complètes de l'événement
+                        setSelectedEvent(
+                            findEvent(planning, planningEvent)
+                        );
+                    }
+                }}
+            />
+        ) : (
+            <PlanningWeek
+                events={planning}
+                startDate={selectedMonday}
+                isPlanningLoaded={isPlanningLoaded}
+                //Affiche les informations d'un cours dans une modal
+                setSelectedEvent={(planningEvent) => {
+                    setSelectedEvent(findEvent(planning, planningEvent));
+                }}
+            />
+        )}
+
+        {selectedEvent && <Sheet visible={selectedEvent !== null} setVisible={() => setSelectedEvent(null)}>
+            <Text>Hello World!</Text>
+        </Sheet>}
+    </Page>;
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "flex-start",
-        backgroundColor: "white",
+        gap: 25,
     },
-    title: {
-        fontSize: 25,
-        fontWeight: "bold",
-        color: Colors.primary,
-        marginTop: 20,
-    },
-    // Style du sélecteur de l'affichage de l'emploi du temps
-    planningViewSelector: {
-        //Responsif (alignement)
-        alignSelf: Dimensions.get("window").width > 600 ? "center" : "flex-end",
-        marginTop: 20,
-        marginRight: Dimensions.get("window").width > 600 ? 0 : 20,
-        marginBottom: 20,
-    },
-    selectorIcon: {
-        fontSize: 30,
-    },
+});
 
-    //Sélecteur de semaine
-    weekSelector: {
-        display: "flex",
+const timeStyles = StyleSheet.create({
+    container: {
+        gap: 10,
+    },
+    //
+    // Week selector
+    //
+    weekBox: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "center",
-        width: "90%",
-        marginBottom: 10,
+        justifyContent: "space-between",
+        width: "100%",
     },
-    weekChevronIcon: {
-        fontSize: 30,
-        color: Colors.primary,
-        paddingHorizontal: 10,
-        marginHorizontal: 20,
+    weekArrow: {
+        width: 36,
+        height: 36,
+        fontSize: 28,
+        textAlign: "center",
+        verticalAlign: "middle",
+        borderRadius: 999,
+        backgroundColor: Colors.black,
+        color: Colors.white,
+    },
+    weekArrowDisabled: {
+        backgroundColor: Colors.hexWithOpacity(Colors.black, 0.5),
     },
     weekText: {
         fontSize: 18,
-        marginHorizontal: 5,
+        fontWeight: 600,
+        color: Colors.gray,
+    },
+    weekImportant: {
+        fontSize: 18,
+        fontWeight: 600,
+        color: Colors.black,
+    },
+    //
+    // Day selector
+    //
+    daysBox: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        gap: 2,
+        width: "100%",
+    },
+    daysButton: {
+        flex: 1,
+    },
+    daysLabel: {
+        backgroundColor: Colors.light,
+        paddingBlock: 5,
+        borderRadius: 5,
+        textAlign: "center",
+        fontSize: 12,
+        fontWeight: 600,
+    },
+    daysLabelSelected: {
+        backgroundColor: Colors.black,
+        color: Colors.white,
     },
 });

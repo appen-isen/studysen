@@ -106,3 +106,12 @@ export function isSameWorkWeek(date: Date) {
     // On regarde si la date est comprise entre le lundi et le vendredi
     return date >= startOfWeek && date <= endOfWeek;
 }
+
+export function isToday(date: Date) {
+    const now = new Date();
+    return (
+        date.getDate() === now.getDate() &&
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear()
+    );
+}
