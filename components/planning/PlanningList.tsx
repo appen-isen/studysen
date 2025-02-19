@@ -23,26 +23,28 @@ export default function PlanningList(props: {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
     >
-        <View style={styles.timeBar}>
-        </View>
-        <View style={styles.eventListBox}>
-            {/* On affiche les événements du jour sélectionné */}
-            {props.isPlanningLoaded &&
-                planning[selectedDateISO]?.map((event, index) => (
+        {!props.isPlanningLoaded ? (
+            <ActivityIndicator
+                animating={true}
+                color={Colors.primary}
+                size={50}
+            />
+        ) : !planning[selectedDateISO] ? (
+            <Text style={styles.noData}>Aucun événement à afficher</Text>
+        ) : <>
+            <View style={styles.timeBar}>
+            </View>
+            <View style={styles.eventListBox}>
+                {/* On affiche les événements du jour sélectionné */}
+                {planning[selectedDateISO]?.map((event, index) => (
                     <ListEvent
                         key={index}
                         event={event}
                         onPress={props.setSelectedEvent}
                     />
                 ))}
-            {!props.isPlanningLoaded && (
-                <ActivityIndicator
-                    animating={true}
-                    color={Colors.primary}
-                    size={50}
-                />
-            )}
-        </View>
+            </View>
+        </>}
     </ScrollView>;
 }
 
@@ -73,6 +75,15 @@ const styles = StyleSheet.create({
         width: 4,
         backgroundColor: Colors.light,
         borderRadius: 999,
+    },
+    noData: {
+        fontSize: 14,
+        fontWeight: 400,
+        textAlign: "center",
+        backgroundColor: Colors.light,
+        padding: 20,
+        borderRadius: 5,
+        width: "100%",
     },
     eventListBox: {
         gap: 15,
