@@ -1,10 +1,11 @@
 import Colors from "@/constants/Colors";
 import { PlanningEvent } from "@/webAurion/utils/types";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { FlatList, LayoutChangeEvent, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import { getSubjectColor, getSubjectIcon, groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useState } from "react";
 
 export default function PlanningList(props: {
     events: PlanningEvent[];
@@ -18,6 +19,46 @@ export default function PlanningList(props: {
     // Calcul de la date cible au format ISO (local)
     const selectedDateISO = getWorkdayFromOffset(props.startDate, props.selectedDay);
 
+    // Liste contenant les hauteurs des éléments "ListEvent", handleLayout permet de les mettre à jour
+    const [eventSizes, setEventSizes] = useState<{ [key: string]: number }>({});
+    const handleLayout = (event: LayoutChangeEvent, id: any) => {
+        const { height } = event.nativeEvent.layout;
+        setEventSizes((prevSizes) => ({
+            ...prevSizes,
+            [id]: height,
+        }));
+    };
+
+    // Calcul de la hauteur de la barre de progression
+    const getProgressBarHeight = () => {
+        const now = new Date();
+        let height: number = 0;
+        for (let i = 0; i < planning[selectedDateISO].length; i++) {
+            const event = planning[selectedDateISO][i];
+            // Si l'événement n'a pas encore commencé
+            if (now < new Date(event.start)) {
+                break;
+            // Si l'événement est terminé
+            } else if (now > new Date(event.end)) {
+                height += eventSizes[event.id];
+                const nextEvent = planning[selectedDateISO][i+1];
+                if (!nextEvent) break;
+                // Si l'événement suivant a déjà commencé
+                if (now >= new Date(nextEvent.start)) {
+                    height += 15;
+                // Si l'événement suivant n'a pas encore commencé
+                } else  {
+                    height += 15 * ((now.getTime() - new Date(event.end).getTime()) / (new Date(nextEvent.start).getTime() - new Date(event.end).getTime()));
+                }
+            // Si l'événement est en cours
+            } else {
+                height += eventSizes[event.id] * ((now.getTime() - new Date(event.start).getTime()) / (new Date(event.end).getTime() - new Date(event.start).getTime()));
+                break;
+            }
+        }
+        return height;
+    }
+
     return <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
@@ -26,24 +67,27 @@ export default function PlanningList(props: {
             <Text style={styles.noData}>Aucun événement à afficher</Text>
         ) : <>
             <View style={styles.timeBar}>
+                <View style={[styles.timeBarProgress, { height: getProgressBarHeight() }]} />
             </View>
-            <View style={styles.eventListBox}>
-                {/* On affiche les événements du jour sélectionné */}
-                {planning[selectedDateISO]?.map((event, index) => (
+            <FlatList
+                data={planning[selectedDateISO]}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
                     <ListEvent
-                        key={index}
-                        event={event}
+                        event={item}
                         onPress={props.setSelectedEvent}
+                        handleLayout={(e: LayoutChangeEvent) => handleLayout(e, item.id)}
                     />
-                ))}
-            </View>
+                )}
+                ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+                scrollEnabled={false}
+            />
         </>}
     </ScrollView>;
 }
 
-export function ListEvent(props: { event: PlanningEvent, onPress: (event: PlanningEvent) => void }) {
-
-    return <Pressable style={styles.eventBox} onPress={() => props.onPress(props.event)}>
+export function ListEvent(props: { event: PlanningEvent, onPress: (event: PlanningEvent) => void, handleLayout: (event: LayoutChangeEvent) => void }) {
+    return <Pressable style={styles.eventBox} onPress={() => props.onPress(props.event)} onLayout={props.handleLayout}>
         <View style={styles.headerBox}>
             <Text style={styles.headerTitle}>{props.event.subject}</Text>
             <View style={[styles.headerIcon, { backgroundColor: getSubjectColor(props.event.subject) }]}>
@@ -71,6 +115,11 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.light,
         borderRadius: 999,
     },
+    timeBarProgress: {
+        width: "100%",
+        backgroundColor: Colors.primary,
+        borderRadius: 999,
+    },
     noData: {
         fontSize: 14,
         fontWeight: 400,
@@ -79,10 +128,6 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 5,
         width: "100%",
-    },
-    eventListBox: {
-        gap: 15,
-        flex: 1,
     },
     eventBox: {
         backgroundColor: Colors.light,
