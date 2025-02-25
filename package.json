@@ -25,6 +25,8 @@
     "cheerio": "1.0.0-rc.12",
     "expo": "~52.0.26",
     "expo-application": "~6.0.2",
+    "expo-constants": "^17.0.5",
+    "expo-device": "^7.0.2",
     "expo-font": "~13.0.1",
     "expo-linking": "~7.0.5",
     "expo-notifications": "~0.29.13",

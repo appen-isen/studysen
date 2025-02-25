@@ -67,6 +67,29 @@ export default function HomeScreen() {
         return () => clearInterval(interval); // Cleanup interval on unmount
     }, [lastUpdateTime]);
 
+    //Nom de l'utilisateur et email
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [firstLetters, setFirstLetters] = useState("");
+    useEffect(() => {
+        if (settings.username) {
+            const username = settings.username;
+            setUsername(username);
+            //Initiales du prénom et du nom
+            const firstLetters = username.split(" ");
+            setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
+
+            //On convertit le Prénom Nom en email valide
+            const normalizedName = username
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase();
+            setEmail(
+                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
+            );
+        }
+    }, [settings]);
+
     // Mettre à jour le planning toutes les 10 minutes
     const autoUpdatePlanningIfNeeded = () => {
         if (lastUpdateTime) {
@@ -140,7 +163,8 @@ export default function HomeScreen() {
                                     scheduleCourseNotification(
                                         event.title || event.subject,
                                         event.room,
-                                        new Date(event.start)
+                                        new Date(event.start),
+                                        email
                                     );
                                 }
                             });
