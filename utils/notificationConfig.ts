@@ -1,12 +1,9 @@
 import useSettingsStore from "@/store/settingsStore";
 import * as Notifications from "expo-notifications";
 import axios from "axios";
-import { useEffect, useState } from "react";
 
 // Define the API base URL for development and production
-const API_BASE_URL = __DEV__
-    ? 'http://10.30.41.179:3000/v1'
-    : 'https://api.isen-orbit.fr/v1';
+const API_BASE_URL = 'https://api.isen-orbit.fr/v1';
 
 // Request permission for notifications
 export const requestPermissions = async () => {
