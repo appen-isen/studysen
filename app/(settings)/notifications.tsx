@@ -7,9 +7,9 @@ import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-    cancelAllScheduledNotifications,
-    requestPermissions,
-    sendLocalNotification,
+    cancelAllScheduledNotifications, deleteNotifications, getUserIdByEmail,
+    requestPermissions, scheduleCourseNotification,
+    sendTestNotification
 } from "@/utils/notificationConfig";
 import { Dropdown } from "@/components/Modals";
 import useSettingsStore, { NotificationDelay } from "@/store/settingsStore";
@@ -36,8 +36,38 @@ export default function NotifSettings() {
         }
     };
 
-    const handleDelayChange = (value: string) => {
-        setSettings("notificationsDelay", value as NotificationDelay);
+    const handleDelayChange = async (value: NotificationDelay) => {
+        try {
+            const { settings } = useSettingsStore.getState();
+
+            if (settings.username) {
+                // Normalize email
+                const normalizedName = settings.username
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toLowerCase();
+                const email = normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
+
+                // Get user ID
+                const userId = await getUserIdByEmail(email);
+
+                // Delete all existing notifications
+                await deleteNotifications(userId);
+
+                // Update the settings with new delay
+                setSettings("notificationsDelay", value);
+
+                // Reschedule notifications with new delay
+                await scheduleCourseNotification(
+                    "Test Course",
+                    "Room 101",
+                    new Date(Date.now() + 1000 * 60 * 60), // 1 hour from now
+                    email
+                );
+            }
+        } catch (error) {
+            console.error("Error updating notification delay:", error);
+        }
     };
 
     return (
@@ -85,20 +115,15 @@ export default function NotifSettings() {
                     setVisible={setDelayMenuVisible}
                     options={["5min", "15min", "30min", "1h"]}
                     selectedItem={settings.notificationsDelay}
-                    setSelectedItem={(newDelay) =>
-                        setSettings(
-                            "notificationsDelay",
-                            newDelay as NotificationDelay
-                        )
-                    }
+                    setSelectedItem={handleDelayChange}
                     modalBoxStyle={styles.dropdownBoxStyle}
-                ></Dropdown>
+                />
 
                 {/* Bouton pour envoyer une notification de test */}
                 <Button
                     title="Envoyer une notification"
                     textStyle={styles.buttonText}
-                    onPress={sendLocalNotification}
+                    onPress={sendTestNotification}
                 />
                 <Text style={styles.infoText}>
                     Les notifications sont encore en beta et peuvent ne pas

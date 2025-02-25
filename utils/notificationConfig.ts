@@ -37,18 +37,42 @@ Notifications.setNotificationChannelAsync("default", {
     lightColor: "#FF231F7C",
 });
 
-// Send a local notification
-export const sendLocalNotification = async () => {
+export const sendTestNotification = async () => {
+    const { settings } = useSettingsStore.getState();
+
     try {
+        // Send a local notification
         await Notifications.scheduleNotificationAsync({
             content: {
                 title: "ISEN Orbit",
-                body: "Notification de test",
+                body: "Notification local de test",
             },
             trigger: null,
         });
+
+        // Get user information for backend notification
+        if (settings.username) {
+            const normalizedName = settings.username
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase();
+            const email = normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
+
+            const deviceId = await registerForPushNotificationsAsync();
+            const userId = await getUserIdByEmail(email);
+            console.log(userId)
+            console.log(deviceId)
+            // Send notification through backend
+            await axios.post(`${API_BASE_URL}/notifications/send-notifications`, {
+                user_id: userId,
+                device_id: deviceId,
+                title: "ISEN Orbit",
+                message: "Notification backend de test",
+                date: new Date(),
+            });
+        }
     } catch (error) {
-        console.error(error);
+        console.error("Error sending test notification:", error);
     }
 };
 
