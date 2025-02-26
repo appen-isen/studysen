@@ -26,25 +26,33 @@ Notifications.setNotificationHandler({
     }),
 });
 
-// Configure notification channel for Android
-Notifications.setNotificationChannelAsync("default", {
-    name: "default",
-    importance: Notifications.AndroidImportance.MAX,
-    vibrationPattern: [0, 250, 250, 250],
-    lightColor: "#FF231F7C",
-});
-
 export const sendTestNotification = async () => {
     const { settings } = useSettingsStore.getState();
 
     try {
+        // Configure notification channel for Android
+        await Notifications.setNotificationChannelAsync("default", {
+            name: "ISEN Orbit",
+            description: "Notifications pour ISEN Orbit",
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: "#FF231F7C",
+            enableLights: true,
+            enableVibrate: true,
+            sound: 'default'
+        });
+
         // Send a local notification
         await Notifications.scheduleNotificationAsync({
             content: {
                 title: "ISEN Orbit",
                 body: "Notification local de test",
+                sound: 'default',
+                priority: 'max'
             },
-            trigger: null,
+            trigger: {
+                seconds: 1
+            },
         });
 
         // Get user information for backend notification
@@ -57,8 +65,6 @@ export const sendTestNotification = async () => {
 
             const deviceId = await registerForPushNotificationsAsync();
             const userId = await getUserIdByEmail(email);
-            console.log(userId)
-            console.log(deviceId)
             // Send notification through backend
             await axios.post(`${API_BASE_URL}/notifications/send-notifications`, {
                 user_id: userId,
@@ -107,8 +113,37 @@ export const cancelAllScheduledNotifications = async () => {
 };
 
 export const registerForPushNotificationsAsync = async () => {
-    const token = (await Notifications.getExpoPushTokenAsync()).data;
-    return token;
+    const { settings, setSettings } = useSettingsStore.getState();
+
+    try {
+        if (settings.deviceId) {
+            return settings.deviceId;
+        }
+
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+
+        if (finalStatus !== 'granted') {
+            return;
+        }
+
+        const tokenData = await Notifications.getExpoPushTokenAsync({
+            projectId: '15623357-9e22-4071-b51c-e03f519d5492'
+        });
+
+        const token = tokenData.data;
+
+        setSettings("deviceId", token);
+        return token;
+
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const getUserIdByEmail = async (email: string) => {
