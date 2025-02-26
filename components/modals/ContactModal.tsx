@@ -4,7 +4,7 @@ import {
     StyleSheet,
     KeyboardAvoidingView,
     Platform,
-    ScrollView,
+    ScrollView, Alert
 } from "react-native";
 import { Button } from "@/components/Buttons";
 import { Input } from "@/components/Inputs";
@@ -56,8 +56,10 @@ ${username}
             // Fermer la modal et supprimer les champs
             setTitle("");
             setProblemDescription("");
+            Alert.alert("Issue créée", "Votre issue a bien été créée sur GitHub");
             onClose();
         } catch (error) {
+            Alert.alert("Erreur", "Impossible de créer l'issue: " + error);
             console.error("Failed to create issue:", error);
         }
     };

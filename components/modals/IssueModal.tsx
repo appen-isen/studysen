@@ -12,6 +12,8 @@ import { Input } from "@/components/Inputs";
 import useSettingsStore from "@/store/settingsStore";
 import { Bold } from "../Texts";
 import Colors from "@/constants/Colors";
+import { Alert } from "react-native";
+
 type IssueModalProps = {
     visible: boolean;
     onClose: () => void;
@@ -71,8 +73,10 @@ ${username}
             setReproductionSteps("");
             setExpectedBehavior("");
             setDeviceInfo("");
+            Alert.alert("Issue créée", "Votre issue a bien été créée sur GitHub");
             onClose();
         } catch (error) {
+            Alert.alert("Erreur", "Impossible de créer l'issue: " + error);
             console.error("Failed to create issue:", error);
         }
     };
