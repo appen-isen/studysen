@@ -107,7 +107,16 @@ export const cancelAllScheduledNotifications = async () => {
 };
 
 export const registerForPushNotificationsAsync = async () => {
+    const { settings, setSettings } = useSettingsStore.getState();
+
+    if (settings.deviceId) {
+        console.log("Device ID already registered:", settings.deviceId);
+        return settings.deviceId;
+    }
+
     const token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log("Device ID registered:", token);
+    setSettings("deviceId", token);
     return token;
 };
 
