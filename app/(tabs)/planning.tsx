@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Colors from "@/constants/Colors";
@@ -249,7 +249,12 @@ export default function PlanningScreen() {
                     }}
                 />
             )}
+            {/*Put the planning in a scroll view*/}
             {planningView === "week" && (
+                <ScrollView
+                    style={styles.scrollView}
+                    contentContainerStyle={styles.scrollViewContent}
+                    >
                 <PlanningWeek
                     events={planning}
                     startDate={currentStartDate}
@@ -260,6 +265,7 @@ export default function PlanningScreen() {
                         setEventModalInfoVisible(true);
                     }}
                 />
+                </ScrollView>
             )}
             {/* Modal pour afficher les informations d'un cours */}
             {selectedEvent && (
@@ -316,5 +322,12 @@ const styles = StyleSheet.create({
     weekText: {
         fontSize: 18,
         marginHorizontal: 5,
+    },
+    scrollView: {
+        width: '100%',
+        flex: 1,
+    },
+    scrollViewContent: {
+        flexGrow: 1,
     },
 });

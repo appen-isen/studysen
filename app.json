@@ -3,7 +3,7 @@
         "name": "ISEN Orbit",
         "slug": "isen-orbit",
         "version": "1.0.0",
-        "orientation": "portrait",
+        "orientation": "default",
         "icon": "./assets/images/icon.png",
         "scheme": "isen-orbit",
         "userInterfaceStyle": "automatic",
@@ -14,14 +14,21 @@
             "backgroundColor": "#FFFFFF"
         },
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "requireFullScreen": true,
         },
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/images/adaptive-icon.png",
                 "backgroundColor": "#FFFFFF"
             },
-            "permissions": ["RECEIVE_BOOT_COMPLETED", "VIBRATE", "WAKE_LOCK"],
+            "permissions": [
+                "RECEIVE_BOOT_COMPLETED",
+                "VIBRATE",
+                "WAKE_LOCK",
+                "android.permission.SCHEDULE_EXACT_ALARM",
+                "android.permission.USE_EXACT_ALARM"
+            ],
             "package": "com.appenisen.isenorbit"
         },
         "web": {
@@ -36,7 +43,16 @@
                 "expo-notifications",
                 {
                     "icon": "./assets/images/notification_icon.png",
-                    "color": "#ffffff"
+                    "color": "#ffffff",
+                    "androidMode": "default",
+                    "androidCollapsedTitle": "ISEN Orbit",
+                    "allowsNotificationsEnabled": true
+                }
+            ],
+            [
+                "expo-screen-orientation",
+                {
+                    "initialOrientation": "DEFAULT"
                 }
             ]
         ],
