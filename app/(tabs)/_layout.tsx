@@ -24,7 +24,7 @@ export default function TabLayout() {
     //On utilise un hook pour gérer l'état de l'application (arrivée en arrière-plan, en premier plan, etc.)
     const appState = useRef<AppStateStatus>(AppState.currentState);
     const [lastBackgroundTime, setLastBackgroundTime] = useState<number | null>(
-        null
+        null,
     );
     const [shouldRestart, setShouldRestart] = useState(false);
 
@@ -55,7 +55,7 @@ export default function TabLayout() {
 
         const subscription = AppState.addEventListener(
             "change",
-            handleAppStateChange
+            handleAppStateChange,
         );
 
         return () => {

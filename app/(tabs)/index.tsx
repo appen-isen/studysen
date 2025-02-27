@@ -38,7 +38,7 @@ export default function HomeScreen() {
     const { notes, setNotes } = useNotesStore();
     const { settings } = useSettingsStore();
     const [noteAverageValue, setNoteAverageValue] = useState<string>(
-        calculateAverage(notes)
+        calculateAverage(notes),
     );
     // Gestion du planning
     const { planning, setPlanning } = usePlanningStore();
@@ -85,7 +85,7 @@ export default function HomeScreen() {
                 .replace(/[\u0300-\u036f]/g, "")
                 .toLowerCase();
             setEmail(
-                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
+                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr",
             );
         }
     }, [settings]);
@@ -117,7 +117,7 @@ export default function HomeScreen() {
         const isWeekInPlanning = planning.some(
             (event) =>
                 new Date(event.start).getTime() >= startTimestamp &&
-                new Date(event.end).getTime() <= endTimestamp
+                new Date(event.end).getTime() <= endTimestamp,
         );
         // Pas besoin de retélécharger les événements si la semaine est déjà chargée
         if (isWeekInPlanning) {
@@ -135,8 +135,8 @@ export default function HomeScreen() {
                         // On met à jour le planning en fusionnant les événements
                         mergePlanning(
                             usePlanningStore.getState().planning,
-                            currentWeekPlanning
-                        )
+                            currentWeekPlanning,
+                        ),
                     );
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé
@@ -144,8 +144,8 @@ export default function HomeScreen() {
                         // On met à jour le planning synchronisé en fusionnant les événements
                         mergePlanning(
                             useSyncedPlanningStore.getState().syncedPlanning,
-                            currentWeekPlanning
-                        )
+                            currentWeekPlanning,
+                        ),
                     );
                     // On met à jour la date de la dernière mise à jour
                     setLastUpdateTime(new Date());
@@ -164,7 +164,7 @@ export default function HomeScreen() {
                                         event.title || event.subject,
                                         event.room,
                                         new Date(event.start),
-                                        email
+                                        email,
                                     );
                                 }
                             });
@@ -190,7 +190,7 @@ export default function HomeScreen() {
                     // On affiche la moyenne du semestre actuel
                     const filteredNotes = filterNotesBySemester(
                         fetchedNotes,
-                        getSemester()
+                        getSemester(),
                     );
                     setNoteAverageValue(calculateAverage(filteredNotes));
                 })
@@ -246,8 +246,8 @@ export default function HomeScreen() {
                                             setSelectedEvent(
                                                 findEvent(
                                                     planning,
-                                                    planningEvent
-                                                )
+                                                    planningEvent,
+                                                ),
                                             );
                                         }
                                         setEventModalInfoVisible(true);
@@ -300,8 +300,8 @@ export default function HomeScreen() {
                                             setSelectedEvent(
                                                 findEvent(
                                                     planning,
-                                                    planningEvent
-                                                )
+                                                    planningEvent,
+                                                ),
                                             );
                                         }
                                         setEventModalInfoVisible(true);

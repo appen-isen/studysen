@@ -19,7 +19,7 @@ export default function PlanningWeek(props: {
     setSelectedEvent: (event: PlanningEvent) => void;
 }) {
     const planning = fillDayWithBlankEvents(
-        groupEventsByDay(updatePlanningForListMode(props.events))
+        groupEventsByDay(updatePlanningForListMode(props.events)),
     );
 
     //Jours au format JOUR/MOIS
@@ -31,7 +31,7 @@ export default function PlanningWeek(props: {
                 targetDate.getMonth() + 1
             )
                 .toString()
-                .padStart(2, "0")}`
+                .padStart(2, "0")}`,
         );
     }
 
@@ -207,7 +207,7 @@ export function WeekEvent(props: {
                             eventStyles.separator,
                             {
                                 backgroundColor: getSubjectColor(
-                                    props.event.subject
+                                    props.event.subject,
                                 ),
                             },
                         ]}

@@ -94,7 +94,7 @@ export function isSameWorkWeek(date: Date) {
     // On cherche la date du lundi
     const startOfWeek = new Date(now);
     startOfWeek.setDate(
-        now.getDate() - (currentDay === 0 ? 6 : currentDay - 1)
+        now.getDate() - (currentDay === 0 ? 6 : currentDay - 1),
     );
     startOfWeek.setHours(1, 0, 0); // Début de la journée
 

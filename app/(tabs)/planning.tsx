@@ -35,7 +35,7 @@ export default function PlanningScreen() {
     //Permet de savoir si le planning est synchronisé avec Internet ou s'il est en local
     const [isSyncing, setSyncing] = useState(planning.length == 0);
     const [currentStartDate, setCurrentStartDate] = useState(
-        getCloserMonday(new Date())
+        getCloserMonday(new Date()),
     );
     //Permet de stocker l'événement sélectionné pour l'afficher dans la modal
     const [selectedEvent, setSelectedEvent] = useState<PlanningEvent | null>();
@@ -83,7 +83,7 @@ export default function PlanningScreen() {
         const isWeekInPlanning = planning.some(
             (event) =>
                 new Date(event.start).getTime() >= startTimestamp &&
-                new Date(event.end).getTime() <= endTimestamp
+                new Date(event.end).getTime() <= endTimestamp,
         );
         // On vérifie si les événements sont déjà synchronisés avec Internet
         // On récupère le store directement de cette manière pour éviter les problèmes d'attentes de rendu
@@ -92,7 +92,7 @@ export default function PlanningScreen() {
             .syncedPlanning.some(
                 (event) =>
                     new Date(event.start).getTime() >= startTimestamp &&
-                    new Date(event.end).getTime() <= endTimestamp
+                    new Date(event.end).getTime() <= endTimestamp,
             );
 
         // Pas besoin de retélécharger les événements si la semaine est déjà chargée
@@ -114,8 +114,8 @@ export default function PlanningScreen() {
                         // On met à jour le planning en fusionnant les événements
                         mergePlanning(
                             usePlanningStore.getState().planning,
-                            currentWeekPlanning
-                        )
+                            currentWeekPlanning,
+                        ),
                     );
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé
@@ -123,8 +123,8 @@ export default function PlanningScreen() {
                         // On met à jour le planning synchronisé en fusionnant les événements
                         mergePlanning(
                             useSyncedPlanningStore.getState().syncedPlanning,
-                            currentWeekPlanning
-                        )
+                            currentWeekPlanning,
+                        ),
                     );
                     setSyncing(false);
                     // On met à jour la date de la dernière mise à jour
@@ -242,7 +242,7 @@ export default function PlanningScreen() {
                         } else {
                             //Sinon on affiche les informations complètes de l'événement
                             setSelectedEvent(
-                                findEvent(planning, planningEvent)
+                                findEvent(planning, planningEvent),
                             );
                         }
                         setEventModalInfoVisible(true);
@@ -254,17 +254,19 @@ export default function PlanningScreen() {
                 <ScrollView
                     style={styles.scrollView}
                     contentContainerStyle={styles.scrollViewContent}
-                    >
-                <PlanningWeek
-                    events={planning}
-                    startDate={currentStartDate}
-                    isPlanningLoaded={isPlanningLoaded}
-                    //Affiche les informations d'un cours dans une modal
-                    setSelectedEvent={(planningEvent) => {
-                        setSelectedEvent(findEvent(planning, planningEvent));
-                        setEventModalInfoVisible(true);
-                    }}
-                />
+                >
+                    <PlanningWeek
+                        events={planning}
+                        startDate={currentStartDate}
+                        isPlanningLoaded={isPlanningLoaded}
+                        //Affiche les informations d'un cours dans une modal
+                        setSelectedEvent={(planningEvent) => {
+                            setSelectedEvent(
+                                findEvent(planning, planningEvent),
+                            );
+                            setEventModalInfoVisible(true);
+                        }}
+                    />
                 </ScrollView>
             )}
             {/* Modal pour afficher les informations d'un cours */}
@@ -324,7 +326,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
     },
     scrollView: {
-        width: '100%',
+        width: "100%",
         flex: 1,
     },
     scrollViewContent: {

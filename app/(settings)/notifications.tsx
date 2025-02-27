@@ -7,9 +7,12 @@ import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-    cancelAllScheduledNotifications, deleteNotifications, getUserIdByEmail,
-    requestPermissions, scheduleCourseNotification,
-    sendTestNotification
+    cancelAllScheduledNotifications,
+    deleteNotifications,
+    getUserIdByEmail,
+    requestPermissions,
+    scheduleCourseNotification,
+    sendTestNotification,
 } from "@/utils/notificationConfig";
 import { Dropdown } from "@/components/Modals";
 import useSettingsStore, { NotificationDelay } from "@/store/settingsStore";
@@ -46,7 +49,8 @@ export default function NotifSettings() {
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "")
                     .toLowerCase();
-                const email = normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
+                const email =
+                    normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
 
                 // Get user ID
                 const userId = await getUserIdByEmail(email);
@@ -62,7 +66,7 @@ export default function NotifSettings() {
                     "Test Course",
                     "Room 101",
                     new Date(Date.now() + 1000 * 60 * 60), // 1 hour from now
-                    email
+                    email,
                 );
             }
         } catch (error) {

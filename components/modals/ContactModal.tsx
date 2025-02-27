@@ -50,7 +50,7 @@ ${username}
                     body,
                     labels: ["suggestion"],
                     assignees: ["dd060606", "BreizhHardware"],
-                }
+                },
             );
             console.log("Issue created:", response.data);
             // Fermer la modal et supprimer les champs
