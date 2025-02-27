@@ -56,6 +56,12 @@
                 {
                     "initialOrientation": "DEFAULT"
                 }
+            ],
+            [
+                "expo-image-picker",
+                {
+                    "photosPermission": "L'application accède à vos photos pour les rapports de bug."
+                }
             ]
         ],
         "experiments": {

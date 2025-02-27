@@ -133,10 +133,6 @@ export default function NotifSettings() {
                     Les notifications sont encore en beta et peuvent ne pas
                     fonctionner correctement.
                 </Text>
-                {/* Affiche le token de l'appareil */}
-                <Text style={styles.infoText}>
-                    Token de l'appareil: {settings.deviceId}
-                </Text>
             </View>
         </SafeAreaView>
     );
