@@ -15,6 +15,7 @@ type Settings = {
     username: string;
     notificationsEnabled: boolean;
     notificationsDelay: NotificationDelay;
+    deviceId?: string;
 };
 
 type SettingsState = {

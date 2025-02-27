@@ -16,6 +16,7 @@
         "ios": {
             "supportsTablet": true,
             "requireFullScreen": true,
+            "bundleIdentifier": "com.appenisen.isenorbit"
         },
         "android": {
             "adaptiveIcon": {
@@ -29,7 +30,8 @@
                 "android.permission.SCHEDULE_EXACT_ALARM",
                 "android.permission.USE_EXACT_ALARM"
             ],
-            "package": "com.appenisen.isenorbit"
+            "package": "com.appenisen.isenorbit",
+            "googleServicesFile": "./google-services.json"
         },
         "web": {
             "bundler": "metro",

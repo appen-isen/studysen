@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "274519219143",
+    "project_id": "isen-orbit",
+    "storage_bucket": "isen-orbit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:274519219143:android:2e341c67abef1b48c757e2",
+        "android_client_info": {
+          "package_name": "com.appenisen.isenorbit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCpGMerRmJRVZjSYieRTgkkl7bpGJmjIc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
