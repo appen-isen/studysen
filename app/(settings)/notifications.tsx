@@ -65,14 +65,6 @@ export default function NotifSettings() {
 
                 // Update the settings with new delay
                 setSettings("notificationsDelay", value);
-
-                // Reschedule notifications with new delay
-                await scheduleCourseNotification(
-                    "Test Course",
-                    "Room 101",
-                    new Date(Date.now() + 1000 * 60 * 60), // 1 hour from now
-                    email,
-                );
             }
         } catch (error) {
             console.error("Error updating notification delay:", error);
@@ -142,6 +134,13 @@ export default function NotifSettings() {
                         handleDelayChange(item as NotificationDelay)
                     }
                     modalBoxStyle={styles.dropdownBoxStyle}
+                />
+
+                {/* Bouton pour appliquer les changements */}
+                <Button
+                    title="Appliquer les changements"
+                    textStyle={styles.buttonText}
+                    onPress={() => router.replace("/login")}
                 />
 
                 {/* Bouton pour envoyer une notification de test */}
