@@ -36,7 +36,7 @@ export default function EventModal(props: EventModalProps) {
                         styles.separator,
                         {
                             backgroundColor: getSubjectColor(
-                                props.event.subject
+                                props.event.subject,
                             ),
                         },
                     ]}

@@ -29,7 +29,7 @@ export default function PlanningList(props: {
     const planning = groupEventsByDay(updatePlanningForListMode(props.events));
     //On initialise le jour sélectionné à la date actuelle
     const [selectedDay, setSelectedDay] = useState(
-        getDayNumberInWeek(new Date())
+        getDayNumberInWeek(new Date()),
     );
 
     // Fonction pour changer le jour sélectionné
@@ -119,7 +119,7 @@ function DayBox(props: {
     // Calcul de la date cible au format ISO (local)
     const targetDateISO = getWorkdayFromOffset(
         props.startDate,
-        props.dayNumber
+        props.dayNumber,
     );
     const targetDate = new Date(targetDateISO); // Conversion de la chaîne ISO en objet Date
 
@@ -171,7 +171,7 @@ export function ListEvent(props: {
                 setTimeText(" ● En cours");
             } else if (start > now) {
                 const diffMinutes = Math.floor(
-                    (start.getTime() - now.getTime()) / 60000
+                    (start.getTime() - now.getTime()) / 60000,
                 );
                 // L'événement n'a pas encore commencé mais débute dans moins d'une heure
                 if (diffMinutes < 60) {
@@ -211,7 +211,7 @@ export function ListEvent(props: {
                         //Couleur de fond en fonction de la matière
                         {
                             backgroundColor: getSubjectColor(
-                                props.event.subject
+                                props.event.subject,
                             ),
                         },
                     ]}

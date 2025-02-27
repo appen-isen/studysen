@@ -64,7 +64,7 @@ ${username}
                     body,
                     labels: ["bug"],
                     assignees: ["dd060606", "BreizhHardware"],
-                }
+                },
             );
             console.log("Issue created:", response.data);
             // Fermer la modal et supprimer les champs

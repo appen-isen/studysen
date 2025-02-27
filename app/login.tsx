@@ -106,7 +106,7 @@ export default function LoginScreen() {
                     router.replace("/(tabs)");
                 } else {
                     setErrorMessage(
-                        "Nom d'utilisateur ou mot de passe incorrect"
+                        "Nom d'utilisateur ou mot de passe incorrect",
                     );
                     setErrorVisible(true);
                 }
@@ -116,7 +116,8 @@ export default function LoginScreen() {
                 //Erreur de connexion
                 setAuthenticating(false);
                 setErrorMessage(
-                    "Une erreur est survenue lors de la connexion: " + e.message
+                    "Une erreur est survenue lors de la connexion: " +
+                        e.message,
                 );
                 setErrorVisible(true);
             });
@@ -163,7 +164,7 @@ export default function LoginScreen() {
                     setSelectedItem={(newCampus) =>
                         setSettings(
                             "campus",
-                            newCampus as (typeof CAMPUS)[number]
+                            newCampus as (typeof CAMPUS)[number],
                         )
                     }
                     modalBoxStyle={styles.dropdownBoxStyle}

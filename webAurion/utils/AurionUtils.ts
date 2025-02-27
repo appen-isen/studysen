@@ -20,7 +20,7 @@ export function getViewState(html: string): string | undefined {
 export function getJSFFormParams(
     formId: string,
     renderId: string,
-    viewState: string
+    viewState: string,
 ): URLSearchParams {
     const params = new URLSearchParams();
     params.append("javax.faces.partial.ajax", "true");
