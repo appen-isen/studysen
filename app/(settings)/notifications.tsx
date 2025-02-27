@@ -7,9 +7,12 @@ import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
-    cancelAllScheduledNotifications, deleteNotifications, getUserIdByEmail,
-    requestPermissions, scheduleCourseNotification,
-    sendTestNotification
+    cancelAllScheduledNotifications,
+    deleteNotifications,
+    getUserIdByEmail,
+    requestPermissions,
+    scheduleCourseNotification,
+    sendTestNotification,
 } from "@/utils/notificationConfig";
 import { Dropdown } from "@/components/Modals";
 import useSettingsStore, { NotificationDelay } from "@/store/settingsStore";
@@ -36,6 +39,11 @@ export default function NotifSettings() {
         }
     };
 
+    const toggleNotificationsLocal = () => {
+        const nextNotifState = !settings.localNotifications;
+        setSettings("localNotifications", nextNotifState);
+    };
+
     const handleDelayChange = async (value: NotificationDelay) => {
         try {
             const { settings } = useSettingsStore.getState();
@@ -46,7 +54,8 @@ export default function NotifSettings() {
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "")
                     .toLowerCase();
-                const email = normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
+                const email =
+                    normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
 
                 // Get user ID
                 const userId = await getUserIdByEmail(email);
@@ -94,6 +103,20 @@ export default function NotifSettings() {
                     />
                 </Pressable>
 
+                {/* Switch pour activer/désactiver les notifications en mode local*/}
+                <Pressable
+                    style={styles.switchContainer}
+                    onPress={toggleNotificationsLocal}
+                >
+                    <Bold style={styles.switchLabel}>
+                        Forcer les notifications locales
+                    </Bold>
+                    <ISENSwitch
+                        onValueChange={toggleNotificationsLocal}
+                        value={settings.localNotifications}
+                    />
+                </Pressable>
+
                 {/* Sélecteur pour le délai de notification */}
                 {/* Bouton pour choisir le campus */}
                 <AnimatedPressable
@@ -115,7 +138,9 @@ export default function NotifSettings() {
                     setVisible={setDelayMenuVisible}
                     options={["5min", "15min", "30min", "1h"]}
                     selectedItem={settings.notificationsDelay}
-                    setSelectedItem={handleDelayChange}
+                    setSelectedItem={(item: string) =>
+                        handleDelayChange(item as NotificationDelay)
+                    }
                     modalBoxStyle={styles.dropdownBoxStyle}
                 />
 
@@ -128,10 +153,6 @@ export default function NotifSettings() {
                 <Text style={styles.infoText}>
                     Les notifications sont encore en beta et peuvent ne pas
                     fonctionner correctement.
-                </Text>
-                {/* Affiche le token de l'appareil */}
-                <Text style={styles.infoText}>
-                    Token de l'appareil: {settings.deviceId}
                 </Text>
             </View>
         </SafeAreaView>

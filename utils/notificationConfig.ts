@@ -3,7 +3,7 @@ import * as Notifications from "expo-notifications";
 import axios from "axios";
 
 // Define the API base URL for development and production
-const API_BASE_URL = 'https://api.isen-orbit.fr/v1';
+const API_BASE_URL = "https://api.isen-orbit.fr/v1";
 
 // Request permission for notifications
 export const requestPermissions = async () => {
@@ -39,7 +39,7 @@ export const sendTestNotification = async () => {
             lightColor: "#FF231F7C",
             enableLights: true,
             enableVibrate: true,
-            sound: 'default'
+            sound: "default",
         });
 
         // Send a local notification
@@ -47,12 +47,10 @@ export const sendTestNotification = async () => {
             content: {
                 title: "ISEN Orbit",
                 body: "Notification local de test",
-                sound: 'default',
-                priority: 'max'
+                sound: "default",
+                priority: "max",
             },
-            trigger: {
-                seconds: 1
-            },
+            trigger: null,
         });
 
         // Get user information for backend notification
@@ -61,18 +59,22 @@ export const sendTestNotification = async () => {
                 .normalize("NFD")
                 .replace(/[\u0300-\u036f]/g, "")
                 .toLowerCase();
-            const email = normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
+            const email =
+                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
 
             const deviceId = await registerForPushNotificationsAsync();
             const userId = await getUserIdByEmail(email);
             // Send notification through backend
-            await axios.post(`${API_BASE_URL}/notifications/send-notifications`, {
-                user_id: userId,
-                device_id: deviceId,
-                title: "ISEN Orbit",
-                message: "Notification backend de test",
-                date: new Date(),
-            });
+            await axios.post(
+                `${API_BASE_URL}/notifications/send-notifications`,
+                {
+                    user_id: userId,
+                    device_id: deviceId,
+                    title: "ISEN Orbit",
+                    message: "Notification backend de test",
+                    date: new Date(),
+                }
+            );
         }
     } catch (error) {
         console.error("Error sending test notification:", error);
@@ -90,7 +92,8 @@ export const cancelAllScheduledNotifications = async () => {
                 .normalize("NFD")
                 .replace(/[\u0300-\u036f]/g, "")
                 .toLowerCase();
-            const email = normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
+            const email =
+                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
 
             const response = await axios.get(`${API_BASE_URL}/users/${email}`);
             if (response.data.message[0] !== undefined) {
@@ -98,17 +101,28 @@ export const cancelAllScheduledNotifications = async () => {
             }
             if (userId === undefined) {
                 console.error("L'utilisateur n'a pas été trouvé");
-                const response = await axios.post(`${API_BASE_URL}/users/${email}`);
+                const response = await axios.post(
+                    `${API_BASE_URL}/users/${email}`
+                );
                 userId = response.data.message.user_id;
             }
 
             if (userId) {
                 await deleteNotifications(userId);
-                console.log("Toutes les notifications planifiées ont été annulées");
+                console.log(
+                    "Toutes les notifications planifiées du backend ont été annulées"
+                );
             }
         }
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        console.log(
+            "Toutes les notifications planifiées en local ont été annulées"
+        );
     } catch (error) {
-        console.error("Erreur lors de l'annulation des notifications planifiées:", error);
+        console.error(
+            "Erreur lors de l'annulation des notifications planifiées:",
+            error
+        );
     }
 };
 
@@ -120,27 +134,27 @@ export const registerForPushNotificationsAsync = async () => {
             return settings.deviceId;
         }
 
-        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        const { status: existingStatus } =
+            await Notifications.getPermissionsAsync();
 
         let finalStatus = existingStatus;
-        if (existingStatus !== 'granted') {
+        if (existingStatus !== "granted") {
             const { status } = await Notifications.requestPermissionsAsync();
             finalStatus = status;
         }
 
-        if (finalStatus !== 'granted') {
+        if (finalStatus !== "granted") {
             return;
         }
 
         const tokenData = await Notifications.getExpoPushTokenAsync({
-            projectId: '15623357-9e22-4071-b51c-e03f519d5492'
+            projectId: "15623357-9e22-4071-b51c-e03f519d5492",
         });
 
         const token = tokenData.data;
 
         setSettings("deviceId", token);
         return token;
-
     } catch (error) {
         throw error;
     }
@@ -151,7 +165,7 @@ export const getUserIdByEmail = async (email: string) => {
         const response = await axios.get(`${API_BASE_URL}/users/${email}`);
         return response.data.message[0].user_id;
     } catch (error) {
-        console.error('Error fetching user ID:', error);
+        console.error("Error fetching user ID:", error);
         throw error;
     }
 };
@@ -164,33 +178,62 @@ export const scheduleCourseNotification = async (
 ) => {
     const { settings } = useSettingsStore.getState();
     const notificationTime = new Date(
-        courseTime.getTime() - getDelayInMilliseconds(settings.notificationsDelay)
+        courseTime.getTime() -
+            getDelayInMilliseconds(settings.notificationsDelay)
     );
 
     try {
-        const deviceId = await registerForPushNotificationsAsync();
-        const userId = await getUserIdByEmail(email);
+        const notifMessage = `Votre cours de ${courseName}${
+            courseRoom ? " en " + courseRoom : ""
+        } commence dans ${settings.notificationsDelay}.`;
+        //Plannification en local
+        if (settings.localNotifications) {
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: "Rappel de cours",
+                    body: notifMessage,
+                },
+                trigger: {
+                    type: Notifications.SchedulableTriggerInputTypes.DATE,
+                    date: notificationTime,
+                },
+            });
+        }
+        //Plannification via le backend
+        else {
+            const deviceId = await registerForPushNotificationsAsync();
+            const userId = await getUserIdByEmail(email);
 
-        await axios.post(`${API_BASE_URL}/notifications/add-notifications`, {
-            user_id: userId,
-            device_id: deviceId,
-            title: "Rappel de cours",
-            message: `Votre cours de ${courseName}${
-                courseRoom ? " en " + courseRoom : ""
-            } commence dans ${settings.notificationsDelay}.`,
-            date: notificationTime,
-        });
-        console.log(`Notification planifiée pour ${courseName} à ${notificationTime}`);
+            await axios.post(
+                `${API_BASE_URL}/notifications/add-notifications`,
+                {
+                    user_id: userId,
+                    device_id: deviceId,
+                    title: "Rappel de cours",
+                    message: notifMessage,
+                    date: notificationTime,
+                }
+            );
+        }
+
+        console.log(
+            `Notification planifiée pour ${courseName} à ${notificationTime}`
+        );
     } catch (error) {
-        console.error("Erreur lors de la planification de la notification:", error);
+        console.error(
+            "Erreur lors de la planification de la notification:",
+            error
+        );
     }
 };
 
 export const deleteNotifications = async (userId: string) => {
     try {
-        const response = await axios.delete(`${API_BASE_URL}/notifications/delete-notifications/${userId}`);
+        const response = await axios.delete(
+            `${API_BASE_URL}/notifications/delete-notifications/${userId}`
+        );
     } catch (error) {
-        console.error('Error deleting notifications:', error);
+        console.error("Error deleting notifications:", error);
     }
 };
 
