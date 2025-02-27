@@ -25,7 +25,7 @@ export function Input(props: TextInputProps & InputProps) {
     const [focused, setFocused] = useState(false);
     // Affichage du contenu de l'input
     const [textVisible, setTextVisible] = useState(
-        props.password === undefined
+        props.password === undefined,
     );
     const {
         icon,
@@ -40,8 +40,8 @@ export function Input(props: TextInputProps & InputProps) {
     let inputStyle = password
         ? withIconStyles.passwordInput
         : icon
-        ? withIconStyles.input
-        : styles.input;
+          ? withIconStyles.input
+          : styles.input;
 
     return (
         <View

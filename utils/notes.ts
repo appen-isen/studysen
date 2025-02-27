@@ -114,7 +114,7 @@ export function getSemesterFromCode(code: string): number {
 // Fonction pour filtrer les notes par semestre
 export function filterNotesBySemester(
     notes: NotesList[],
-    semester: 0 | 1
+    semester: 0 | 1,
 ): NotesList[] {
     return notes.filter((note) => {
         const match = note.code.match(/_S(\d+)/);

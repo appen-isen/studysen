@@ -28,7 +28,7 @@ class PlanningApi {
                 const params = getJSFFormParams(
                     "j_idt118",
                     "j_idt118",
-                    viewState
+                    viewState,
                 );
 
                 //On récupère les dates de début et de fin de l'emploi du temps
@@ -39,7 +39,7 @@ class PlanningApi {
 
                 const response = await this.session.sendPOST<string>(
                     "faces/Planning.xhtml",
-                    params
+                    params,
                 );
                 resolve(planningResponseToEvents(response));
             } catch (error) {

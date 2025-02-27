@@ -71,7 +71,7 @@ export default function NotifSettings() {
                     "Test Course",
                     "Room 101",
                     new Date(Date.now() + 1000 * 60 * 60), // 1 hour from now
-                    email
+                    email,
                 );
             }
         } catch (error) {

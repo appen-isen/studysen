@@ -12,7 +12,7 @@ export async function getSecureStoreItem(key: string): Promise<string | null> {
 }
 export async function setSecureStoreItem(
     key: string,
-    value: string
+    value: string,
 ): Promise<void> {
     try {
         await setItemAsync(key, value);

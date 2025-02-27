@@ -48,7 +48,7 @@ export default function SettingsScreen() {
                 .replace(/[\u0300-\u036f]/g, "")
                 .toLowerCase();
             setEmail(
-                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
+                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr",
             );
         }
     }, [settings]);
@@ -99,7 +99,7 @@ export default function SettingsScreen() {
                         setSelectedItem={(newCampus) =>
                             setSettings(
                                 "campus",
-                                newCampus as (typeof CAMPUS)[number]
+                                newCampus as (typeof CAMPUS)[number],
                             )
                         }
                         modalBoxStyle={styles.dropdownBoxStyle}

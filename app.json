@@ -1,68 +1,86 @@
 {
-  "expo": {
-    "name": "ISEN Orbit",
-    "slug": "isen-orbit",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "isen-orbit",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#FFFFFF"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.appenisen.isenorbit"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      },
-      "permissions": [
-        "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE",
-        "WAKE_LOCK"
-      ],
-      "package": "com.appenisen.isenorbit",
-      "googleServicesFile": "./google-services.json"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      "expo-secure-store",
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/images/notification_icon.png",
-          "color": "#ffffff"
+    "expo": {
+        "name": "ISEN Orbit",
+        "slug": "isen-orbit",
+        "version": "1.0.0",
+        "orientation": "default",
+        "icon": "./assets/images/icon.png",
+        "scheme": "isen-orbit",
+        "userInterfaceStyle": "automatic",
+        "newArchEnabled": true,
+        "splash": {
+            "image": "./assets/images/splash-icon.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#FFFFFF"
+        },
+        "ios": {
+            "supportsTablet": true,
+            "requireFullScreen": true,
+            "bundleIdentifier": "com.appenisen.isenorbit"
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/images/adaptive-icon.png",
+                "backgroundColor": "#FFFFFF"
+            },
+            "permissions": [
+                "RECEIVE_BOOT_COMPLETED",
+                "VIBRATE",
+                "WAKE_LOCK",
+                "android.permission.SCHEDULE_EXACT_ALARM",
+                "android.permission.USE_EXACT_ALARM"
+            ],
+            "package": "com.appenisen.isenorbit",
+            "googleServicesFile": "./google-services.json"
+        },
+        "web": {
+            "bundler": "metro",
+            "output": "static",
+            "favicon": "./assets/images/favicon.png"
+        },
+        "plugins": [
+            "expo-router",
+            "expo-secure-store",
+            [
+                "expo-notifications",
+                {
+                    "icon": "./assets/images/notification_icon.png",
+                    "color": "#ffffff",
+                    "androidMode": "default",
+                    "androidCollapsedTitle": "ISEN Orbit",
+                    "allowsNotificationsEnabled": true
+                }
+            ],
+            [
+                "expo-screen-orientation",
+                {
+                    "initialOrientation": "DEFAULT"
+                }
+            ],
+            [
+                "expo-image-picker",
+                {
+                    "photosPermission": "L'application accède à vos photos pour les rapports de bug."
+                }
+            ]
+        ],
+        "experiments": {
+            "typedRoutes": true
+        },
+        "extra": {
+            "router": {
+                "origin": false
+            },
+            "eas": {
+                "projectId": "15623357-9e22-4071-b51c-e03f519d5492"
+            }
+        },
+        "owner": "appen-isen",
+        "runtimeVersion": {
+            "policy": "appVersion"
+        },
+        "updates": {
+            "url": "https://u.expo.dev/15623357-9e22-4071-b51c-e03f519d5492"
         }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "15623357-9e22-4071-b51c-e03f519d5492"
-      }
-    },
-    "owner": "appen-isen",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/15623357-9e22-4071-b51c-e03f519d5492"
     }
-  }
 }

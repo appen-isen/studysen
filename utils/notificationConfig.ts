@@ -174,7 +174,7 @@ export const scheduleCourseNotification = async (
     courseName: string,
     courseRoom: string,
     courseTime: Date,
-    email: string
+    email: string,
 ) => {
     const { settings } = useSettingsStore.getState();
     const notificationTime = new Date(
