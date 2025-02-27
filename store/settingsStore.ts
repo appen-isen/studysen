@@ -15,7 +15,8 @@ type Settings = {
     username: string;
     notificationsEnabled: boolean;
     notificationsDelay: NotificationDelay;
-    deviceId?: string;
+    localNotifications: boolean;
+    deviceId: string;
 };
 
 type SettingsState = {
@@ -31,6 +32,8 @@ function getDefaultSettings(): Settings {
         username: "",
         notificationsEnabled: true,
         notificationsDelay: "15min",
+        localNotifications: false,
+        deviceId: "",
     };
 }
 

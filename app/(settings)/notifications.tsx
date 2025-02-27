@@ -39,6 +39,11 @@ export default function NotifSettings() {
         }
     };
 
+    const toggleNotificationsLocal = () => {
+        const nextNotifState = !settings.localNotifications;
+        setSettings("localNotifications", nextNotifState);
+    };
+
     const handleDelayChange = async (value: NotificationDelay) => {
         try {
             const { settings } = useSettingsStore.getState();
@@ -98,6 +103,20 @@ export default function NotifSettings() {
                     />
                 </Pressable>
 
+                {/* Switch pour activer/désactiver les notifications en mode local*/}
+                <Pressable
+                    style={styles.switchContainer}
+                    onPress={toggleNotificationsLocal}
+                >
+                    <Bold style={styles.switchLabel}>
+                        Forcer les notifications locales
+                    </Bold>
+                    <ISENSwitch
+                        onValueChange={toggleNotificationsLocal}
+                        value={settings.localNotifications}
+                    />
+                </Pressable>
+
                 {/* Sélecteur pour le délai de notification */}
                 {/* Bouton pour choisir le campus */}
                 <AnimatedPressable
@@ -119,7 +138,9 @@ export default function NotifSettings() {
                     setVisible={setDelayMenuVisible}
                     options={["5min", "15min", "30min", "1h"]}
                     selectedItem={settings.notificationsDelay}
-                    setSelectedItem={handleDelayChange}
+                    setSelectedItem={(item: string) =>
+                        handleDelayChange(item as NotificationDelay)
+                    }
                     modalBoxStyle={styles.dropdownBoxStyle}
                 />
 
