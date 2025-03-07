@@ -6,71 +6,57 @@ import {
     StyleSheet,
     View,
 } from "react-native";
-import { AnimatedPressable, Button } from "@/components/Buttons";
+import { Button } from "@/components/Buttons";
 import { Input, Checkbox } from "@/components/Inputs";
 import { Bold, Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Dropdown, ErrorModal } from "@/components/Modals";
+import { ErrorModal } from "@/components/Modals";
 
 import useSessionStore from "@/stores/sessionStore";
 import Session from "@/webAurion/api/Session";
 import { getSecureStoreItem, setSecureStoreItem } from "@/stores/secureStore";
-import useSettingsStore, { CAMPUS } from "@/stores/settingsStore";
+import useSettingsStore from "@/stores/settingsStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Sheet } from "@/components/Sheet";
 
 export default function LoginScreen() {
     const router = useRouter();
     const { setSession } = useSessionStore();
-
     const { settings, setSettings } = useSettingsStore();
 
-    //Connexion automatique
+    // Auto login state
     const [autoLogin, setAutoLogin] = useState(false);
+
     useEffect(() => {
-        const fetchStoredCredentials = async () => {
-            //On récupère les identifiants stockés dans le secure store
-            const storedUsername = await getSecureStoreItem("username");
-            const storedPassword = await getSecureStoreItem("password");
-            if (storedUsername && storedPassword) {
+        const attemptTokenLogin = async () => {
+            const storedToken = await getSecureStoreItem("jwt_token");
+            if (storedToken) {
                 setAutoLogin(true);
                 //On connecte l'utilisateur automatiquement
                 const session = new Session();
                 try {
-                    await session.login(storedUsername, storedPassword, 6000);
-                    //On sauvegarde la session dans le store
+                    await session.login("", "", storedToken);
                     setSession(session);
-                    //On sauvegarde le nom d'utilisateur dans les paramètres
                     setSettings("username", session.getUsername());
-
-                    //On redirige l'utilisateur vers la page principale
                     router.replace("/(tabs)");
                 } catch (err) {
-                    //Probablement un timeout, donc on considère que l'utilisateur est hors ligne
-                    console.log("Offline mode enabled!");
-                    console.error(err);
-                    router.replace({
-                        pathname: "/(tabs)",
-                        params: { offlineMode: 1 },
-                    });
+                    console.log("Token login failed, removing stored token");
+                    await getSecureStoreItem("jwt_token");
+                    setAutoLogin(false);
                 }
             }
         };
-        fetchStoredCredentials();
+        attemptTokenLogin();
     }, []);
-
-    //Menu déroulant pour choisir le campus
-    const [campusMenuVisible, setCampusMenuVisible] = useState(false);
 
     //Checkbox pour se souvenir de l'utilisateur
     const [rememberMe, setRememberMe] = useState(true);
     const [authenticating, setAuthenticating] = useState(false);
 
-    //Utilisateur et mot de passe
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     //Message d'erreur
@@ -81,7 +67,7 @@ export default function LoginScreen() {
 
     //Gestion de la connexion
     const handleLogin = async () => {
-        if (username === "" || password === "") {
+        if (email === "" || password === "") {
             setErrorMessage("Veuillez remplir tous les champs");
             setErrorVisible(true);
             return;
@@ -91,37 +77,28 @@ export default function LoginScreen() {
         // Requête de connexion
         const session = new Session();
 
-        session
-            .login(username, password)
-            .then(async (res) => {
-                if (res) {
-                    setSession(session);
-                    //On sauvegarde la session lorsque l'utilisateur relance l'app
-                    if (rememberMe) {
-                        await setSecureStoreItem("username", username);
-                        await setSecureStoreItem("password", password);
-                    }
-                    //On sauvegarde le nom d'utilisateur dans les paramètres
-                    setSettings("username", session.getUsername());
+        try {
+            await session.login(email, password);
+            setSession(session);
 
-                    router.replace("/(tabs)");
-                } else {
-                    setErrorMessage(
-                        "Nom d'utilisateur ou mot de passe incorrect",
-                    );
-                    setErrorVisible(true);
-                }
-                setAuthenticating(false);
-            })
-            .catch((e) => {
-                //Erreur de connexion
-                setAuthenticating(false);
-                setErrorMessage(
-                    "Une erreur est survenue lors de la connexion: " +
-                        e.message,
-                );
-                setErrorVisible(true);
-            });
+            if (rememberMe) {
+                await setSecureStoreItem("jwt_token", session.getToken());
+            }
+
+            setSettings("username", session.getUsername());
+            setSettings("userISENId", session.getIsenId());
+            router.replace("/(tabs)");
+        } catch (error) {
+            setErrorMessage(
+                "Une erreur est survenue lors de la connexion: " +
+                    (error instanceof Error
+                        ? error.message
+                        : "Erreur inconnue"),
+            );
+            setErrorVisible(true);
+        } finally {
+            setAuthenticating(false);
+        }
     };
 
     // Chargement de la connexion automatique
@@ -142,51 +119,24 @@ export default function LoginScreen() {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.containerView}
             >
-                {/* Bouton pour choisir le campus */}
-                <AnimatedPressable
-                    style={styles.campusSelect}
-                    onPress={() => setCampusMenuVisible(true)}
-                >
-                    <Text style={styles.campusSelectText}>
-                        Campus de <Bold>{settings.campus}</Bold>
-                    </Text>
-                    <MaterialIcons
-                        style={styles.campusSelectText}
-                        name="keyboard-arrow-down"
-                        size={20}
-                    />
-                </AnimatedPressable>
-                <Dropdown
-                    visible={campusMenuVisible}
-                    setVisible={setCampusMenuVisible}
-                    options={[...CAMPUS]}
-                    selectedItem={settings.campus}
-                    setSelectedItem={(newCampus) =>
-                        setSettings(
-                            "campus",
-                            newCampus as (typeof CAMPUS)[number],
-                        )
-                    }
-                    modalBoxStyle={styles.dropdownBoxStyle}
-                ></Dropdown>
-
                 {/* Haut de la page */}
                 <View style={styles.headerBox}>
                     <MaterialIcons name="login" style={styles.headerIcon} />
                     <Text style={styles.headerTitle}>Connexion</Text>
                     <Text style={styles.headerLabel}>
-                        Utilisez les identifiants de l'ENT
+                        Utilisez les identifiants ISEN Orbit
                     </Text>
                 </View>
                 {/* Champs */}
                 <View style={styles.fieldsBox}>
                     <Input
-                        placeholder="Nom d'utilisateur"
+                        placeholder="Email"
                         icon="account-circle"
-                        onChangeText={(text) => setUsername(text)}
-                        value={username}
-                        autoComplete="username"
-                    ></Input>
+                        onChangeText={setEmail}
+                        value={email}
+                        autoComplete="email"
+                        keyboardType="email-address"
+                    />
                     <Input
                         placeholder="Mot de passe"
                         icon="key"
@@ -216,6 +166,11 @@ export default function LoginScreen() {
                     >
                         <Text>J'ai besoin d'aide</Text>
                     </Pressable>
+                    <View style={styles.linksContainer}>
+                        <Link href={"/register"} style={styles.registerLink}>
+                            Pas encore de compte ? S'inscrire
+                        </Link>
+                    </View>
                 </View>
 
                 {/* Modal d'aide */}
@@ -264,7 +219,7 @@ export default function LoginScreen() {
                 <ErrorModal
                     visible={errorVisible}
                     message={errorMessage}
-                    setVisible={(visible) => setErrorVisible(visible)}
+                    setVisible={setErrorVisible}
                 />
             </KeyboardAvoidingView>
         </SafeAreaView>
@@ -350,6 +305,22 @@ const styles = StyleSheet.create({
         gap: 10,
         color: Colors.darkGray,
         fontWeight: 600,
+        marginTop: 15,
+        textDecorationLine: "underline",
+    },
+    linksContainer: {
+        marginTop: 15,
+        gap: 10,
+        alignItems: "center",
+    },
+    helpLink: {
+        fontWeight: "600",
+        textDecorationLine: "underline",
+    },
+    registerLink: {
+        color: Colors.primary,
+        fontWeight: "600",
+        textDecorationLine: "underline",
         padding: 20,
     },
 });

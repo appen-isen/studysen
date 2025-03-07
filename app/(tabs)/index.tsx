@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View, ScrollView } from "react-native";
+import {
+    ActivityIndicator,
+    StyleSheet,
+    View,
+    ScrollView,
+    Linking,
+} from "react-native";
 import { Text } from "@/components/Texts";
 import { Button } from "@/components/Buttons";
 import Colors from "@/constants/Colors";
@@ -57,7 +63,6 @@ export default function HomeScreen() {
     //Lorsque la page est chargée
     useEffect(() => {
         requestPermissions();
-        updateNotes();
         autoUpdatePlanningIfNeeded();
 
         const interval = setInterval(() => {
@@ -178,31 +183,11 @@ export default function HomeScreen() {
         }
     };
 
-    // Fonction pour mettre à jour les notes
-    const updateNotes = () => {
-        if (session) {
-            // Requête pour charger les notes
-            session
-                .getNotesApi()
-                .fetchNotes()
-                .then((fetchedNotes) => {
-                    setNotes(fetchedNotes);
-                    // On affiche la moyenne du semestre actuel
-                    const filteredNotes = filterNotesBySemester(
-                        fetchedNotes,
-                        getSemester(),
-                    );
-                    setNoteAverageValue(calculateAverage(filteredNotes));
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        }
-    };
-
     // Action lors de l'appui sur le bouton pour afficher les notes
     const handleViewNotes = () => {
-        router.push("/notes");
+        Linking.openURL(
+            "https://web.isen-ouest.fr/webAurion/faces/LearnerNotationListPage.xhtml",
+        );
     };
 
     // Demande de permission pour les notifications
@@ -234,6 +219,7 @@ export default function HomeScreen() {
                             getCurrentEvent(formattedPlanning) !== null ? (
                                 <ListEvent
                                     event={getCurrentEvent(formattedPlanning)!}
+                                    handleLayout={() => {}}
                                     //Affiche les informations d'un cours dans une modal
                                     onPress={(planningEvent) => {
                                         //Si c'est un congé, on affiche directement les informations
@@ -288,6 +274,7 @@ export default function HomeScreen() {
                                     event={
                                         getNextEventToday(formattedPlanning)!
                                     }
+                                    handleLayout={() => {}}
                                     //Affiche les informations d'un cours dans une modal
                                     onPress={(planningEvent) => {
                                         //Si c'est un congé, on affiche directement les informations
@@ -335,10 +322,6 @@ export default function HomeScreen() {
                     </View>
                     {/* Contenu de la section */}
                     <View style={sectionStyles.content}>
-                        <Text style={styles.noteTitle}>
-                            Moyenne du semestre
-                        </Text>
-                        <Text style={styles.noteValue}>{noteAverageValue}</Text>
                         <Button
                             title="Voir mes notes"
                             //On redirige vers l'onglet notes

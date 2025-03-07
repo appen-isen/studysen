@@ -4,7 +4,7 @@ export type PlanningEvent = {
     subject: string;
     room: string;
     instructors: string;
-    learners: string;
+    description: string;
     start: string;
     end: string;
     className: string;
