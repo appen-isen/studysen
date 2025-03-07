@@ -144,7 +144,6 @@ export function ListEvent(props: {
                         styles.headerIcon,
                         {
                             backgroundColor: getSubjectColor(
-                                props.event.subject,
                                 props.event.subject
                             ),
                         },

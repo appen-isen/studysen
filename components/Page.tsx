@@ -4,15 +4,23 @@ import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export function Page(props: { children?: ReactNode, style?: any }) {
-    return <SafeAreaView style={pageStyles.container}><View style={[pageStyles.content, props.style]}>{props.children}</View></SafeAreaView>;
+export function Page(props: { children?: ReactNode; style?: any }) {
+    return (
+        <SafeAreaView style={pageStyles.container}>
+            <View style={[pageStyles.content, props.style]}>
+                {props.children}
+            </View>
+        </SafeAreaView>
+    );
 }
 
-export function PageHeader(props: { title: string, children?: ReactNode }) {
-    return <View style={headerStyles.container}>
-        <Text style={headerStyles.title}>{props.title}</Text>
-        {props.children}
-    </View>;
+export function PageHeader(props: { title: string; children?: ReactNode }) {
+    return (
+        <View style={headerStyles.container}>
+            <Text style={headerStyles.title}>{props.title}</Text>
+            {props.children}
+        </View>
+    );
 }
 
 const pageStyles = StyleSheet.create({
@@ -33,6 +41,7 @@ const headerStyles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+        marginTop: 20,
     },
     title: {
         paddingBlock: 10,

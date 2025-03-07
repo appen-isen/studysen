@@ -48,10 +48,10 @@ export default function PlanningScreen() {
     const [planningView, setPlanningView] = useState<"list" | "week">("list");
 
     const [selectedMonday, setSelectedMonday] = useState(
-        getCloserMonday(new Date()),
+        getCloserMonday(new Date())
     );
     const [selectedDayIndex, setSelectedDayIndex] = useState(
-        getDayNumberInWeek(new Date()),
+        getDayNumberInWeek(new Date())
     );
 
     const [selectedEvent, setSelectedEvent] = useState<PlanningEvent | null>();
@@ -88,8 +88,7 @@ export default function PlanningScreen() {
         const isWeekInPlanning = planning.some(
             (event) =>
                 new Date(event.start).getTime() >= startTimestamp &&
-                new Date(event.end).getTime() <= endTimestamp,
-                new Date(event.end).getTime() <= endTimestamp,
+                new Date(event.end).getTime() <= endTimestamp
         );
         // On vérifie si les événements sont déjà synchronisés avec Internet
         // On récupère le store directement de cette manière pour éviter les problèmes d'attentes de rendu
@@ -98,8 +97,7 @@ export default function PlanningScreen() {
             .syncedPlanning.some(
                 (event) =>
                     new Date(event.start).getTime() >= startTimestamp &&
-                    new Date(event.end).getTime() <= endTimestamp,
-                    new Date(event.end).getTime() <= endTimestamp,
+                    new Date(event.end).getTime() <= endTimestamp
             );
 
         // Pas besoin de retélécharger les événements si la semaine est déjà chargée
@@ -121,10 +119,8 @@ export default function PlanningScreen() {
                         // On met à jour le planning en fusionnant les événements
                         mergePlanning(
                             usePlanningStore.getState().planning,
-                            currentWeekPlanning,
-                        ),
-                            currentWeekPlanning,
-                        ),
+                            currentWeekPlanning
+                        )
                     );
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé
@@ -132,10 +128,8 @@ export default function PlanningScreen() {
                         // On met à jour le planning synchronisé en fusionnant les événements
                         mergePlanning(
                             useSyncedPlanningStore.getState().syncedPlanning,
-                            currentWeekPlanning,
-                        ),
-                            currentWeekPlanning,
-                        ),
+                            currentWeekPlanning
+                        )
                     );
                     setSyncing(false);
                     // On met à jour la date de la dernière mise à jour
@@ -164,7 +158,7 @@ export default function PlanningScreen() {
             // On met à jour l'emploi du temps
             updatePlanning(weekFromNow(getCloserMonday(new Date()), newDate));
             setSelectedDayIndex(
-                isSameWorkWeek(newDate) ? getDayNumberInWeek(new Date()) : 0,
+                isSameWorkWeek(newDate) ? getDayNumberInWeek(new Date()) : 0
             );
             return newDate;
         });
@@ -232,7 +226,7 @@ export default function PlanningScreen() {
                         (dayName, index) => {
                             const day = new Date(
                                 selectedMonday.getTime() +
-                                    index * 24 * 60 * 60 * 1000,
+                                    index * 24 * 60 * 60 * 1000
                             );
                             return (
                                 <AnimatedPressable
@@ -258,7 +252,7 @@ export default function PlanningScreen() {
                                     </Text>
                                 </AnimatedPressable>
                             );
-                        },
+                        }
                     )}
                 </View>
             </View>
@@ -282,8 +276,7 @@ export default function PlanningScreen() {
                         } else {
                             //Sinon on affiche les informations complètes de l'événement
                             setSelectedEvent(
-                                findEvent(planning, planningEvent),
-                                findEvent(planning, planningEvent),
+                                findEvent(planning, planningEvent)
                             );
                         }
                     }}
