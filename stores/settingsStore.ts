@@ -7,8 +7,15 @@ import {
 
 // Liste des campus
 export const CAMPUS = ["Nantes", "Rennes", "Brest", "Caen"] as const;
+export type Campus = (typeof CAMPUS)[number];
 
 export type NotificationDelay = "5min" | "15min" | "30min" | "1h";
+
+export const classNameValues = ["CIPA", "CIR", "EST", "CENT", "CSI"] as const;
+export type className = (typeof classNameValues)[number];
+
+export const yearValues = ["1", "2", "3", "4", "5"] as const;
+export type year = (typeof yearValues)[number];
 
 type Settings = {
     campus: (typeof CAMPUS)[number];
@@ -17,6 +24,10 @@ type Settings = {
     notificationsDelay: NotificationDelay;
     localNotifications: boolean;
     deviceId: string;
+    userISENId: string;
+    email: string;
+    className?: (typeof classNameValues)[number];
+    year?: (typeof yearValues)[number];
 };
 
 type SettingsState = {
@@ -34,6 +45,10 @@ function getDefaultSettings(): Settings {
         notificationsDelay: "15min",
         localNotifications: false,
         deviceId: "",
+        userISENId: "",
+        email: "",
+        className: undefined,
+        year: undefined,
     };
 }
 

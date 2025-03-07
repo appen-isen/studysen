@@ -53,6 +53,8 @@ export const sendTestNotification = async () => {
             trigger: null,
         });
 
+        console.log("All notifications send");
+
         // Get user information for backend notification
         if (settings.username) {
             const normalizedName = settings.username
@@ -73,7 +75,7 @@ export const sendTestNotification = async () => {
                     title: "ISEN Orbit",
                     message: "Notification backend de test",
                     date: new Date(),
-                }
+                },
             );
         }
     } catch (error) {
@@ -102,7 +104,7 @@ export const cancelAllScheduledNotifications = async () => {
             if (userId === undefined) {
                 console.error("L'utilisateur n'a pas été trouvé");
                 const response = await axios.post(
-                    `${API_BASE_URL}/users/${email}`
+                    `${API_BASE_URL}/users/${email}`,
                 );
                 userId = response.data.message.user_id;
             }
@@ -110,18 +112,18 @@ export const cancelAllScheduledNotifications = async () => {
             if (userId) {
                 await deleteNotifications(userId);
                 console.log(
-                    "Toutes les notifications planifiées du backend ont été annulées"
+                    "Toutes les notifications planifiées du backend ont été annulées",
                 );
             }
         }
         await Notifications.cancelAllScheduledNotificationsAsync();
         console.log(
-            "Toutes les notifications planifiées en local ont été annulées"
+            "Toutes les notifications planifiées en local ont été annulées",
         );
     } catch (error) {
         console.error(
             "Erreur lors de l'annulation des notifications planifiées:",
-            error
+            error,
         );
     }
 };
@@ -179,50 +181,88 @@ export const scheduleCourseNotification = async (
     const { settings } = useSettingsStore.getState();
     const notificationTime = new Date(
         courseTime.getTime() -
-            getDelayInMilliseconds(settings.notificationsDelay)
+            getDelayInMilliseconds(settings.notificationsDelay),
     );
 
     try {
         const notifMessage = `Votre cours de ${courseName}${
             courseRoom ? " en " + courseRoom : ""
         } commence dans ${settings.notificationsDelay}.`;
-        //Plannification en local
+
         if (settings.localNotifications) {
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: "Rappel de cours",
-                    body: notifMessage,
-                },
-                trigger: {
-                    type: Notifications.SchedulableTriggerInputTypes.DATE,
-                    date: notificationTime,
-                },
-            });
-        }
-        //Plannification via le backend
-        else {
+            // Check for existing notifications
+            const existingNotifications =
+                await Notifications.getAllScheduledNotificationsAsync();
+            const receivedNotifications =
+                await Notifications.getAllDeliveredNotificationsAsync();
+
+            // Check both scheduled and received notifications
+            const notificationExists =
+                existingNotifications.some(
+                    (notification) =>
+                        notification.content.body === notifMessage,
+                ) ||
+                receivedNotifications.some(
+                    (notification) =>
+                        notification.request.content.body === notifMessage,
+                );
+
+            if (!notificationExists) {
+                await Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: "Rappel de cours",
+                        body: notifMessage,
+                    },
+                    trigger: {
+                        type: Notifications.SchedulableTriggerInputTypes.DATE,
+                        date: notificationTime,
+                    },
+                });
+                console.log(
+                    `Nouvelle notification planifiée pour ${courseName} à ${notificationTime}`,
+                );
+            } else {
+                console.log(`Une notification existe déjà pour ${courseName}`);
+            }
+        } else {
             const deviceId = await registerForPushNotificationsAsync();
             const userId = await getUserIdByEmail(email);
 
-            await axios.post(
-                `${API_BASE_URL}/notifications/add-notifications`,
-                {
-                    user_id: userId,
-                    device_id: deviceId,
-                    title: "Rappel de cours",
-                    message: notifMessage,
-                    date: notificationTime,
-                }
+            // Get existing notifications from backend
+            const response = await axios.get(
+                `${API_BASE_URL}/notifications/${userId}`,
             );
-        }
+            const existingNotifications = response.data.message || [];
+            console.log(existingNotifications);
 
-        console.log(
-            `Notification planifiée pour ${courseName} à ${notificationTime}`
-        );
+            const notificationExists = existingNotifications.some(
+                (notification) => notification.message === notifMessage,
+            );
+
+            if (!notificationExists) {
+                await axios.post(
+                    `${API_BASE_URL}/notifications/add-notifications`,
+                    {
+                        user_id: userId,
+                        device_id: deviceId,
+                        title: "Rappel de cours",
+                        message: notifMessage,
+                        date: notificationTime,
+                    },
+                );
+                console.log(
+                    `Nouvelle notification backend planifiée pour ${courseName}`,
+                );
+            } else {
+                console.log(
+                    `Une notification backend existe déjà pour ${courseName}`,
+                );
+            }
+        }
     } catch (error) {
         console.error(
             "Erreur lors de la planification de la notification:",
-            error
+            error,
         );
     }
 };
@@ -230,7 +270,7 @@ export const scheduleCourseNotification = async (
 export const deleteNotifications = async (userId: string) => {
     try {
         const response = await axios.delete(
-            `${API_BASE_URL}/notifications/delete-notifications/${userId}`
+            `${API_BASE_URL}/notifications/delete-notifications/${userId}`,
         );
     } catch (error) {
         console.error("Error deleting notifications:", error);
@@ -251,3 +291,21 @@ const getDelayInMilliseconds = (delay: string): number => {
             return 15 * 60 * 1000;
     }
 };
+
+// Set up notification received listener
+Notifications.addNotificationReceivedListener((notification) => {
+    console.log("Notification reçue:", {
+        title: notification.request.content.title,
+        body: notification.request.content.body,
+        date: new Date(notification.date).toLocaleString(),
+    });
+});
+
+// Set up notification response listener (when user taps the notification)
+Notifications.addNotificationResponseReceivedListener((response) => {
+    console.log("Notification interagit:", {
+        title: response.notification.request.content.title,
+        body: response.notification.request.content.body,
+        date: new Date(response.notification.date).toLocaleString(),
+    });
+});

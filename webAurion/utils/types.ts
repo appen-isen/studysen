@@ -4,22 +4,8 @@ export type PlanningEvent = {
     subject: string;
     room: string;
     instructors: string;
-    learners: string;
+    description: string;
     start: string;
     end: string;
     className: string;
-};
-export type Note = {
-    date: string;
-    code: string;
-    subject: string;
-    note: string;
-    absence: string;
-    description: string;
-    instructor: string;
-    [key: string]: string;
-};
-export type NotesList = {
-    code: string;
-    notes: Note[];
 };
