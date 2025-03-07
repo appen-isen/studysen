@@ -14,6 +14,9 @@ type EventModalProps = {
     event: PlanningEvent;
 };
 export default function EventModal(props: EventModalProps) {
+    const hasDescription =
+        !!props.event.description && props.event.description.trim() !== "";
+
     const { event, visible, setVisible } = props;
     return (
         <Sheet
@@ -67,8 +70,8 @@ export default function EventModal(props: EventModalProps) {
                 <Text style={popupStyles.fieldValue}>{event.instructors}</Text>
             </View>
             <View>
-                <Text style={popupStyles.fieldTitle}>Pour les groupes</Text>
-                <Text style={popupStyles.fieldValue}>{event.learners}</Text>
+                <Text style={popupStyles.fieldTitle}>Description</Text>
+                <Text style={popupStyles.fieldValue}>{event.description}</Text>
             </View>
         </Sheet>
     );

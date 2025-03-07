@@ -6,6 +6,8 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import "react-native-reanimated";
+import { startPingMonitoring, stopPingMonitoring } from "@/utils/ping";
+
 
 //Layout par défaut de l'application
 export { ErrorBoundary } from "expo-router";
@@ -45,6 +47,12 @@ export default function RootLayout() {
         initStores().then(() => setStoreLoaded(true));
     }, []);
 
+    // Add ping monitoring effect
+    useEffect(() => {
+        startPingMonitoring();
+        return () => stopPingMonitoring();
+    }, []);
+
     if (!loaded || !storeLoaded) {
         return null;
     }
@@ -64,8 +72,10 @@ function RootLayoutNav() {
             }}
         >
             <Stack.Screen name="login" />
-            {/* Les parenthèrese permettent de faire comme si les routes étaient directement à la racine de /app 
-            Par exemple, <Link href="notes-help" /> est possible au lieu de <Link href="(modals)/notes-help" /> 
+
+            <Stack.Screen name="register" />
+            {/* Les parenthèrese permettent de faire comme si les routes étaient directement à la racine de /app
+            Par exemple, <Link href="notes-help" /> est possible au lieu de <Link href="(modals)/notes-help" />
             */}
             <Stack.Screen name="(tabs)" />
             {/* //On définit ici les modales */}

@@ -1,53 +1,107 @@
-import { getJSFFormParams } from "../utils/AurionUtils";
-import { generateDemoPlanning } from "../utils/demo";
-import {
-    getScheduleDates,
-    planningResponseToEvents,
-} from "../utils/PlanningUtils";
+import ICAL from "ical.js";
 import { PlanningEvent } from "../utils/types";
 import Session from "./Session";
+import { getScheduleDates } from "../utils/PlanningUtils";
+import useSettingsStore from "../../stores/settingsStore";
+
+const generateDemoPlanning = (): PlanningEvent[] => {
+    return [];
+};
 
 class PlanningApi {
     private session: Session;
+    private readonly BASE_URL = "https://web.isen-ouest.fr/ICS/";
+
     constructor(session: Session) {
         this.session = session;
     }
 
-    // Récupération de l'emploi du temps en fonction de la date de début et de fin (timestamps en millisecondes)
-    public fetchPlanning(weeksFromNow?: number): Promise<PlanningEvent[]> {
-        return new Promise<PlanningEvent[]>(async (resolve, reject) => {
-            //Mode démo
-            if (this.session.isDemo()) {
-                return resolve(generateDemoPlanning());
-            }
-            try {
-                // On récupère le ViewState pour effectuer la requête
-                // Ici 1_4 correspond au sous-menu 'Emploi du temps' dans la sidebar
-                let viewState = await this.session.getViewState("1_4");
-                // On envoie enfin la requête pour obtenir l'emploi du temps
-                const params = getJSFFormParams(
-                    "j_idt118",
-                    "j_idt118",
-                    viewState,
-                );
+    private getIcsUrl(): string {
+        const { settings } = useSettingsStore.getState();
+        return `${this.BASE_URL}${settings.userISENId}.ics`;
+    }
 
-                //On récupère les dates de début et de fin de l'emploi du temps
-                let { startTimestamp, endTimestamp } =
+    private async fetchICS(): Promise<string> {
+        const url = this.getIcsUrl();
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.log(response);
+            throw new Error(`Failed to fetch ICS: ${response.statusText}`);
+        }
+        return response.text();
+    }
+
+    private convertICSEventToPlanningEvent(vevent: ICAL.Event): PlanningEvent {
+        const { settings } = useSettingsStore.getState();
+        const description = vevent.description || "";
+        const descriptionLines = description.split("\n");
+
+        const subject =
+            descriptionLines
+                .find((line) => line.includes("Matière"))
+                ?.split(":")[1]
+                ?.trim() || "";
+        const instructorsLine =
+            descriptionLines
+                .find((line) => line.includes("Intervenant"))
+                ?.split(":")[1]
+                ?.trim() || "";
+
+        const descriptionClass =
+            descriptionLines
+                .find((line) => line.includes("Description"))
+                ?.split(":")[1]
+                ?.trim() || "";
+
+        const NomClasse = `${settings.className} ${settings.year}`;
+
+        return {
+            id: vevent.uid || "",
+            start: vevent.startDate.toJSDate().toISOString(),
+            end: vevent.endDate.toJSDate().toISOString(),
+            title: vevent.summary || "",
+            subject: subject,
+            room: (vevent.location || "").split("\n")[0],
+            instructors: instructorsLine,
+            description: descriptionClass,
+            className: NomClasse,
+        };
+    }
+
+    public async fetchPlanning(
+        weeksFromNow?: number,
+    ): Promise<PlanningEvent[]> {
+        if (this.session.isDemo()) {
+            return generateDemoPlanning();
+        }
+
+        try {
+            const icsData = await this.fetchICS();
+            const jcalData = ICAL.parse(icsData);
+            const comp = new ICAL.Component(jcalData);
+            const vevents = comp.getAllSubcomponents("vevent");
+
+            const events = vevents.map((vevent) => {
+                const icalEvent = new ICAL.Event(vevent);
+                return this.convertICSEventToPlanningEvent(icalEvent);
+            });
+
+            if (weeksFromNow !== undefined) {
+                const { startTimestamp, endTimestamp } =
                     getScheduleDates(weeksFromNow);
-                params.append("form:j_idt118_start", startTimestamp.toString());
-                params.append("form:j_idt118_end", endTimestamp.toString());
-
-                const response = await this.session.sendPOST<string>(
-                    "faces/Planning.xhtml",
-                    params,
-                );
-                resolve(planningResponseToEvents(response));
-            } catch (error) {
-                // En cas d'erreur, on supprime le cache de ViewState
-                this.session.clearViewStateCache();
-                reject(error);
+                return events.filter((event) => {
+                    const eventDate = new Date(event.start).getTime();
+                    return (
+                        eventDate >= startTimestamp && eventDate <= endTimestamp
+                    );
+                });
             }
-        });
+
+            return events;
+        } catch (error) {
+            console.error(error);
+            throw new Error(`Failed to fetch planning: ${error}`);
+        }
     }
 }
 
