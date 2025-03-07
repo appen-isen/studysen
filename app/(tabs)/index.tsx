@@ -13,7 +13,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
     useNotesStore,
     usePlanningStore,
-    useSyncedPlanningStore,
+    useSyncedPlanningStore
 } from "@/stores/webaurionStore";
 import useSessionStore from "@/stores/sessionStore";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
@@ -23,7 +23,7 @@ import {
     getCurrentEvent,
     getNextEventToday,
     mergePlanning,
-    updatePlanningForListMode,
+    updatePlanningForListMode
 } from "@/utils/planning";
 import { ListEvent } from "@/components/planning/PlanningList";
 import EventModal from "@/components/modals/EventModal";
@@ -33,7 +33,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
     cancelAllScheduledNotifications,
     requestPermissions,
-    scheduleCourseNotification,
+    scheduleCourseNotification
 } from "@/utils/notificationConfig";
 import useSettingsStore from "@/stores/settingsStore";
 import { getSemester } from "@/utils/date";
@@ -44,7 +44,7 @@ export default function HomeScreen() {
     const { notes, setNotes } = useNotesStore();
     const { settings } = useSettingsStore();
     const [noteAverageValue, setNoteAverageValue] = useState<string>(
-        calculateAverage(notes),
+        calculateAverage(notes)
     );
     // Gestion du planning
     const { planning, setPlanning } = usePlanningStore();
@@ -90,7 +90,7 @@ export default function HomeScreen() {
                 .replace(/[\u0300-\u036f]/g, "")
                 .toLowerCase();
             setEmail(
-                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr",
+                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
             );
         }
     }, [settings]);
@@ -122,7 +122,7 @@ export default function HomeScreen() {
         const isWeekInPlanning = planning.some(
             (event) =>
                 new Date(event.start).getTime() >= startTimestamp &&
-                new Date(event.end).getTime() <= endTimestamp,
+                new Date(event.end).getTime() <= endTimestamp
         );
         // Pas besoin de retélécharger les événements si la semaine est déjà chargée
         if (isWeekInPlanning) {
@@ -140,8 +140,8 @@ export default function HomeScreen() {
                         // On met à jour le planning en fusionnant les événements
                         mergePlanning(
                             usePlanningStore.getState().planning,
-                            currentWeekPlanning,
-                        ),
+                            currentWeekPlanning
+                        )
                     );
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé
@@ -149,8 +149,8 @@ export default function HomeScreen() {
                         // On met à jour le planning synchronisé en fusionnant les événements
                         mergePlanning(
                             useSyncedPlanningStore.getState().syncedPlanning,
-                            currentWeekPlanning,
-                        ),
+                            currentWeekPlanning
+                        )
                     );
                     // On met à jour la date de la dernière mise à jour
                     setLastUpdateTime(new Date());
@@ -169,7 +169,7 @@ export default function HomeScreen() {
                                         event.title || event.subject,
                                         event.room,
                                         new Date(event.start),
-                                        email,
+                                        email
                                     );
                                 }
                             });
@@ -232,8 +232,8 @@ export default function HomeScreen() {
                                             setSelectedEvent(
                                                 findEvent(
                                                     planning,
-                                                    planningEvent,
-                                                ),
+                                                    planningEvent
+                                                )
                                             );
                                         }
                                         setEventModalInfoVisible(true);
@@ -287,8 +287,8 @@ export default function HomeScreen() {
                                             setSelectedEvent(
                                                 findEvent(
                                                     planning,
-                                                    planningEvent,
-                                                ),
+                                                    planningEvent
+                                                )
                                             );
                                         }
                                         setEventModalInfoVisible(true);
@@ -348,36 +348,36 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "flex-start",
-        backgroundColor: "white",
+        backgroundColor: "white"
     },
     scrollView: {
-        width: "100%",
+        width: "100%"
     },
     scrollContainer: {
         alignItems: "center",
         justifyContent: "flex-start",
-        paddingBottom: 20,
+        paddingBottom: 20
     },
     title: {
         fontSize: 25,
         fontWeight: "bold",
         color: Colors.primary,
-        marginTop: 20,
+        marginTop: 20
     },
     noEventText: {
         fontSize: 16,
-        textAlign: "center",
+        textAlign: "center"
     },
     noteTitle: {
         fontSize: 16,
-        fontWeight: "bold",
+        fontWeight: "bold"
     },
     noteValue: {
         color: Colors.primary,
         fontWeight: "bold",
         fontSize: 30,
-        marginTop: 10,
-    },
+        marginTop: 10
+    }
 });
 
 // Styles pour les sections
@@ -389,23 +389,23 @@ const sectionStyles = StyleSheet.create({
         justifyContent: "center",
         width: "90%",
         maxWidth: 600,
-        marginTop: 35,
+        marginTop: 35
     },
     titleBox: {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "flex-start",
-        width: "100%",
+        width: "100%"
     },
     icon: {
         fontSize: 35,
         color: Colors.primary,
-        marginRight: 15,
+        marginRight: 15
     },
     titleText: {
         fontSize: 20,
-        fontWeight: "bold",
+        fontWeight: "bold"
     },
     content: {
         display: "flex",
@@ -414,6 +414,6 @@ const sectionStyles = StyleSheet.create({
         justifyContent: "center",
         minHeight: 140,
         width: "100%",
-        marginTop: 20,
-    },
+        marginTop: 20
+    }
 });
