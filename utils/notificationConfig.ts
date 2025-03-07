@@ -294,7 +294,6 @@ export const scheduleCourseNotification = async (
                     "Backend notification failed, using local fallback:",
                     backendError
                 );
-
                 const existingLocalNotifications =
                     await Notifications.getAllScheduledNotificationsAsync();
                 const localExists = existingLocalNotifications.some(
