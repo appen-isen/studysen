@@ -8,8 +8,8 @@ import {
     GestureResponderEvent,
     StyleProp,
     ViewStyle,
-    View,
     Platform,
+    PressableProps,
 } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
@@ -49,11 +49,7 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
             {/* Contenu JSX ou texte */}
             {JSX && JSX}
             {!JSX && isLoading && (
-                <ActivityIndicator
-                    animating={true}
-                    color="white"
-                    size={"large"}
-                />
+                <ActivityIndicator animating={true} color="white" size={25} />
             )}
             {/* Si le bouton n'a pas de composant custom et ne charge pas alors on affiche le texte*/}
             {!JSX && !isLoading && (
@@ -65,19 +61,21 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
     );
 };
 
-interface AnimatedPressableProps {
+interface AnimatedPressableProps extends PressableProps {
     onPress?: (event: GestureResponderEvent) => void;
     style?: StyleProp<ViewStyle>;
     children: React.ReactNode;
     scale?: number;
 }
+
 const AnimatedPressableComp = Animated.createAnimatedComponent(Pressable);
-// Pressable animé (scale)
+
 export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
     onPress,
     style,
     children,
     scale = 0.8,
+    ...rest // Capture any additional Pressable props
 }) => {
     const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -101,12 +99,12 @@ export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
             style={[style, { transform: [{ scale: scaleAnim }] }]}
+            {...rest} // Spread additional Pressable props here
         >
             {children}
         </AnimatedPressableComp>
     );
 };
-
 interface ToggleProps {
     state: number;
     stateList: { label: string; icon: keyof typeof MaterialIcons.glyphMap }[];
@@ -114,11 +112,19 @@ interface ToggleProps {
 }
 
 export function Toggle(props: ToggleProps) {
-    return <Pressable style={toggleStyles.container} onPress={() => props.setState(props.state)}>
-        <Text style={toggleStyles.label}>{props.stateList[props.state].label}</Text>
-        <MaterialIcons name={props.stateList[props.state].icon} size={24} />
-    </Pressable>;
-};
+    return (
+        <AnimatedPressable
+            style={toggleStyles.container}
+            onPress={() => props.setState(props.state)}
+            scale={0.95}
+        >
+            <Text style={toggleStyles.label}>
+                {props.stateList[props.state].label}
+            </Text>
+            <MaterialIcons name={props.stateList[props.state].icon} size={24} />
+        </AnimatedPressable>
+    );
+}
 
 // Switch avec les couleurs de l'application
 export const ISENSwitch: React.FC<SwitchProps> = (props) => {
@@ -164,6 +170,7 @@ const toggleStyles = StyleSheet.create({
     container: {
         flexDirection: "row",
         alignItems: "center",
+
         gap: 5,
         paddingBlock: 10,
         paddingInline: 15,

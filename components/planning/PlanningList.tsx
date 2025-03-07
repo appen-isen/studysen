@@ -1,11 +1,24 @@
 import Colors from "@/constants/Colors";
 import { PlanningEvent } from "@/webAurion/utils/types";
-import { FlatList, LayoutChangeEvent, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import {
+    FlatList,
+    LayoutChangeEvent,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View,
+} from "react-native";
 import { Text } from "@/components/Texts";
-import { getSubjectColor, getSubjectIcon, groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
+import {
+    getSubjectColor,
+    getSubjectIcon,
+    groupEventsByDay,
+    updatePlanningForListMode,
+} from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useState } from "react";
+import { AnimatedPressable } from "../Buttons";
 
 export default function PlanningList(props: {
     events: PlanningEvent[];
@@ -17,7 +30,10 @@ export default function PlanningList(props: {
     const planning = groupEventsByDay(updatePlanningForListMode(props.events));
 
     // Calcul de la date cible au format ISO (local)
-    const selectedDateISO = getWorkdayFromOffset(props.startDate, props.selectedDay);
+    const selectedDateISO = getWorkdayFromOffset(
+        props.startDate,
+        props.selectedDay,
+    );
 
     // Liste contenant les hauteurs des éléments "ListEvent", handleLayout permet de les mettre à jour
     const [eventSizes, setEventSizes] = useState<{ [key: string]: number }>({});
@@ -38,71 +54,122 @@ export default function PlanningList(props: {
             // Si l'événement n'a pas encore commencé
             if (now < new Date(event.start)) {
                 break;
-            // Si l'événement est terminé
+                // Si l'événement est terminé
             } else if (now > new Date(event.end)) {
                 height += eventSizes[event.id];
-                const nextEvent = planning[selectedDateISO][i+1];
+                const nextEvent = planning[selectedDateISO][i + 1];
                 if (!nextEvent) break;
                 // Si l'événement suivant a déjà commencé
                 if (now >= new Date(nextEvent.start)) {
                     height += 15;
-                // Si l'événement suivant n'a pas encore commencé
-                } else  {
-                    height += 15 * ((now.getTime() - new Date(event.end).getTime()) / (new Date(nextEvent.start).getTime() - new Date(event.end).getTime()));
+                    // Si l'événement suivant n'a pas encore commencé
+                } else {
+                    height +=
+                        15 *
+                        ((now.getTime() - new Date(event.end).getTime()) /
+                            (new Date(nextEvent.start).getTime() -
+                                new Date(event.end).getTime()));
                 }
-            // Si l'événement est en cours
+                // Si l'événement est en cours
             } else {
-                height += eventSizes[event.id] * ((now.getTime() - new Date(event.start).getTime()) / (new Date(event.end).getTime() - new Date(event.start).getTime()));
+                height +=
+                    eventSizes[event.id] *
+                    ((now.getTime() - new Date(event.start).getTime()) /
+                        (new Date(event.end).getTime() -
+                            new Date(event.start).getTime()));
                 break;
             }
         }
         return height;
-    }
+    };
 
-    return <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
-    >
-        {!planning[selectedDateISO] ? (
-            <Text style={styles.noData}>Aucun événement à afficher</Text>
-        ) : <>
-            <View style={styles.timeBar}>
-                <View style={[styles.timeBarProgress, { height: getProgressBarHeight() }]} />
-            </View>
-            <FlatList
-                data={planning[selectedDateISO]}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <ListEvent
-                        event={item}
-                        onPress={props.setSelectedEvent}
-                        handleLayout={(e: LayoutChangeEvent) => handleLayout(e, item.id)}
+    return (
+        <ScrollView
+            contentContainerStyle={styles.container}
+            showsVerticalScrollIndicator={false}
+        >
+            {!planning[selectedDateISO] ? (
+                <Text style={styles.noData}>Aucun événement à afficher</Text>
+            ) : (
+                <>
+                    <View style={styles.timeBar}>
+                        <View
+                            style={[
+                                styles.timeBarProgress,
+                                { height: getProgressBarHeight() },
+                            ]}
+                        />
+                    </View>
+                    <FlatList
+                        data={planning[selectedDateISO]}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <ListEvent
+                                event={item}
+                                onPress={props.setSelectedEvent}
+                                handleLayout={(e: LayoutChangeEvent) =>
+                                    handleLayout(e, item.id)
+                                }
+                            />
+                        )}
+                        ItemSeparatorComponent={() => (
+                            <View style={{ height: 15 }} />
+                        )}
+                        scrollEnabled={false}
                     />
-                )}
-                ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
-                scrollEnabled={false}
-            />
-        </>}
-    </ScrollView>;
+                </>
+            )}
+        </ScrollView>
+    );
 }
 
-export function ListEvent(props: { event: PlanningEvent, onPress: (event: PlanningEvent) => void, handleLayout: (event: LayoutChangeEvent) => void }) {
-    return <Pressable style={styles.eventBox} onPress={() => props.onPress(props.event)} onLayout={props.handleLayout}>
-        <View style={styles.headerBox}>
-            <Text style={styles.headerTitle}>{props.event.subject}</Text>
-            <View style={[styles.headerIcon, { backgroundColor: getSubjectColor(props.event.subject) }]}>
-                <MaterialIcons name={getSubjectIcon(props.event.subject)} size={12} />
+export function ListEvent(props: {
+    event: PlanningEvent;
+    onPress: (event: PlanningEvent) => void;
+    handleLayout: (event: LayoutChangeEvent) => void;
+}) {
+    return (
+        <AnimatedPressable
+            style={styles.eventBox}
+            onPress={() => props.onPress(props.event)}
+            onLayout={props.handleLayout}
+            scale={0.9}
+        >
+            <View style={styles.headerBox}>
+                <Text style={styles.headerTitle}>
+                    {props.event.title || props.event.subject}
+                </Text>
+                <View
+                    style={[
+                        styles.headerIcon,
+                        {
+                            backgroundColor: getSubjectColor(
+                                props.event.subject,
+                            ),
+                        },
+                    ]}
+                >
+                    <MaterialIcons
+                        name={getSubjectIcon(props.event.subject)}
+                        size={12}
+                    />
+                </View>
             </View>
-        </View>
-        <View>
-            <Text style={styles.fieldTitle}>Assuré par</Text>
-            <Text style={styles.fieldValue}>{props.event.instructors}</Text>
-        </View>
-        <View style={styles.tagsBox}>
-            <Text style={[styles.tag, styles.tagWhite]}>{formatDateToLocalTime(props.event.start)} — {formatDateToLocalTime(props.event.end)}</Text>
-            <Text style={[styles.tag, styles.tagBlack]}>{props.event.room}</Text>
-        </View>
-    </Pressable>;
+            <View>
+                <Text style={styles.fieldTitle}>Assuré par</Text>
+                <Text style={styles.fieldValue}>{props.event.instructors}</Text>
+            </View>
+            <View style={styles.tagsBox}>
+                <Text style={[styles.tag, styles.tagWhite]}>
+                    {formatDateToLocalTime(props.event.start)} —{" "}
+                    {formatDateToLocalTime(props.event.end)}
+                </Text>
+                <Text style={[styles.tag, styles.tagBlack]}>
+                    {props.event.room}
+                </Text>
+            </View>
+        </AnimatedPressable>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -188,4 +255,4 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.primary,
         color: Colors.white,
     },
-})
+});
