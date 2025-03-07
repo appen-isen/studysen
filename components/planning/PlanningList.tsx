@@ -17,7 +17,7 @@ import {
 } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatedPressable } from "../Buttons";
 
 export default function PlanningList(props: {
@@ -128,9 +128,49 @@ export function ListEvent(props: {
     onPress: (event: PlanningEvent) => void;
     handleLayout: (event: LayoutChangeEvent) => void;
 }) {
+    const [timeText, setTimeText] = useState("");
+
+    useEffect(() => {
+        // On met à jour le texte de l'heure de l'événement
+        const updateEventTime = () => {
+            const now = new Date();
+            const start = new Date(props.event.start);
+            const end = new Date(props.event.end);
+
+            if (now >= start && now <= end) {
+                // L'événement est en cours
+                setTimeText("EN COURS");
+            } else if (start > now) {
+                const diffMinutes = Math.floor(
+                    (start.getTime() - now.getTime()) / 60000
+                );
+                // L'événement n'a pas encore commencé mais débute dans moins d'une heure
+                if (diffMinutes < 60) {
+                    setTimeText(`DANS ${diffMinutes} MINUTES`);
+                } else {
+                    setTimeText("");
+                }
+            } else {
+                setTimeText("");
+            }
+        };
+
+        // Mise à jour du temps
+        updateEventTime();
+
+        // Mise à jour réuglière du temps toutes les minutes
+        const interval = setInterval(updateEventTime, 10000);
+
+        // Nettoyage de l'intervalle
+        return () => clearInterval(interval);
+    }, [props.event]);
     return (
         <AnimatedPressable
-            style={styles.eventBox}
+            //On applique une bordure à gauche de la carte si l'événement est en cours
+            style={[
+                styles.eventBox,
+                timeText === "EN COURS" ? styles.currentEventBorder : {},
+            ]}
             onPress={() => props.onPress(props.event)}
             onLayout={props.handleLayout}
             scale={0.9}
@@ -155,6 +195,8 @@ export function ListEvent(props: {
                     />
                 </View>
             </View>
+            {/* Affichage du temps restant avant le début de l'événement */}
+            {timeText !== "" && <Text style={styles.timeText}>{timeText}</Text>}
             <View>
                 <Text style={styles.fieldTitle}>Assuré par</Text>
                 <Text style={styles.fieldValue}>{props.event.instructors}</Text>
@@ -206,6 +248,10 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         gap: 20,
     },
+    currentEventBorder: {
+        borderLeftColor: Colors.primary,
+        borderLeftWidth: 4,
+    },
     headerBox: {
         flexDirection: "row",
         alignItems: "center",
@@ -222,6 +268,14 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
+    // Affichage du temps restant avant le début de l'événement
+    timeText: {
+        fontSize: 12,
+
+        fontWeight: 600,
+        color: Colors.primary,
+    },
+    // Affichage des informations de l'événement
     fieldTitle: {
         fontSize: 10,
         fontWeight: "bold",
