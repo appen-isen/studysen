@@ -1,5 +1,11 @@
 import { PlanningEvent } from "@/webAurion/utils/types";
-import { ActivityIndicator, Dimensions, StyleSheet, View } from "react-native";
+import {
+    ActivityIndicator,
+    Dimensions,
+    Pressable,
+    StyleSheet,
+    View,
+} from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
 import {
@@ -15,152 +21,45 @@ import { AnimatedPressable } from "../Buttons";
 export default function PlanningWeek(props: {
     events: PlanningEvent[];
     startDate: Date;
-    isPlanningLoaded: boolean;
     setSelectedEvent: (event: PlanningEvent) => void;
 }) {
     const planning = fillDayWithBlankEvents(
-        groupEventsByDay(updatePlanningForListMode(props.events)),
+        groupEventsByDay(updatePlanningForListMode(props.events))
     );
 
-    //Jours au format JOUR/MOIS
-    const daysDate: string[] = [];
-    for (let i = 0; i < 5; i++) {
-        const targetDate = new Date(getWorkdayFromOffset(props.startDate, i));
-        daysDate.push(
-            `${targetDate.getDate().toString().padStart(2, "0")}/${(
-                targetDate.getMonth() + 1
-            )
-                .toString()
-                .padStart(2, "0")}`,
-        );
-    }
-
-    // On affiche un chargement si l'emploi du temps n'est pas encore chargé
-    if (!props.isPlanningLoaded) {
-        return (
-            <ActivityIndicator
-                animating={true}
-                color={Colors.primaryColor}
-                size={50}
-            />
-        );
-    }
-
     return (
-        <View style={styles.container}>
-            {/* Jours de la semaine */}
-            <View style={styles.dayView}>
-                <View style={styles.dayBox}>
-                    <Text style={styles.dayText}>Lun</Text>
-                    <Text style={styles.dateText}>{daysDate[0]}</Text>
-                </View>
-                <View style={styles.dayBox}>
-                    <Text style={styles.dayText}>Mar</Text>
-                    <Text style={styles.dateText}>{daysDate[1]}</Text>
-                </View>
-                <View style={styles.dayBox}>
-                    <Text style={styles.dayText}>Mer</Text>
-                    <Text style={styles.dateText}>{daysDate[2]}</Text>
-                </View>
-                <View style={styles.dayBox}>
-                    <Text style={styles.dayText}>Jeu</Text>
-                    <Text style={styles.dateText}>{daysDate[3]}</Text>
-                </View>
-                <View style={styles.dayBox}>
-                    <Text style={styles.dayText}>Ven</Text>
-                    <Text style={styles.dateText}>{daysDate[4]}</Text>
-                </View>
+        <View style={calendarStyles.container}>
+            <View style={calendarStyles.hoursBox}>
+                <Text style={calendarStyles.hourLabel}>08</Text>
+                <Text style={calendarStyles.hourLabel}>09</Text>
+                <Text style={calendarStyles.hourLabel}>10</Text>
+                <Text style={calendarStyles.hourLabel}>11</Text>
+                <Text style={calendarStyles.hourLabel}>12</Text>
+                <Text style={calendarStyles.hourLabel}>13</Text>
+                <Text style={calendarStyles.hourLabel}>14</Text>
+                <Text style={calendarStyles.hourLabel}>15</Text>
+                <Text style={calendarStyles.hourLabel}>16</Text>
+                <Text style={calendarStyles.hourLabel}>17</Text>
+                <Text style={calendarStyles.hourLabel}>18</Text>
+                <Text style={calendarStyles.hourLabel}>19</Text>
             </View>
-            <View style={styles.weekView}>
-                {/* Les heures */}
-
-                {/* Tableau des événements */}
-                {/* On affiche les événements du jour sélectionné */}
-                {props.isPlanningLoaded && (
-                    <View style={styles.table}>
-                        <View style={styles.hoursView}>
-                            <Text style={styles.hourText}>8h</Text>
-                            <Text style={styles.hourText}>9h</Text>
-                            <Text style={styles.hourText}>10h</Text>
-                            <Text style={styles.hourText}>11h</Text>
-                            <Text style={styles.hourText}>12h</Text>
-                            <Text style={styles.hourText}>13h</Text>
-                            <Text style={styles.hourText}>14h</Text>
-                            <Text style={styles.hourText}>15h</Text>
-                            <Text style={styles.hourText}>16h</Text>
-                            <Text style={styles.hourText}>17h</Text>
-                            <Text style={styles.hourText}>18h</Text>
-                            <Text style={styles.hourText}>19h</Text>
-                        </View>
-                        {/* On affiche les événements de chaque jour dynamiquement */}
-                        <View style={styles.dayCol}>
-                            {planning[
-                                getWorkdayFromOffset(props.startDate, 0)
-                            ]?.map((event, index) => {
-                                return (
-                                    <WeekEvent
-                                        key={index}
-                                        event={event}
-                                        onPress={props.setSelectedEvent}
-                                    />
-                                );
-                            })}
-                        </View>
-                        <View style={styles.dayCol}>
-                            {planning[
-                                getWorkdayFromOffset(props.startDate, 1)
-                            ]?.map((event, index) => {
-                                return (
-                                    <WeekEvent
-                                        key={index}
-                                        event={event}
-                                        onPress={props.setSelectedEvent}
-                                    />
-                                );
-                            })}
-                        </View>
-                        <View style={styles.dayCol}>
-                            {planning[
-                                getWorkdayFromOffset(props.startDate, 2)
-                            ]?.map((event, index) => {
-                                return (
-                                    <WeekEvent
-                                        key={index}
-                                        event={event}
-                                        onPress={props.setSelectedEvent}
-                                    />
-                                );
-                            })}
-                        </View>
-                        <View style={styles.dayCol}>
-                            {planning[
-                                getWorkdayFromOffset(props.startDate, 3)
-                            ]?.map((event, index) => {
-                                return (
-                                    <WeekEvent
-                                        key={index}
-                                        event={event}
-                                        onPress={props.setSelectedEvent}
-                                    />
-                                );
-                            })}
-                        </View>
-                        <View style={styles.dayCol}>
-                            {planning[
-                                getWorkdayFromOffset(props.startDate, 4)
-                            ]?.map((event, index) => {
-                                return (
-                                    <WeekEvent
-                                        key={index}
-                                        event={event}
-                                        onPress={props.setSelectedEvent}
-                                    />
-                                );
-                            })}
-                        </View>
-                    </View>
-                )}
-            </View>
+            {/* For each days of the week */}
+            {[0, 1, 2, 3, 4].map((offset, dayIndex) => (
+                <View style={calendarStyles.dayColumn} key={dayIndex}>
+                    {/* For each events of the day */}
+                    {planning[
+                        getWorkdayFromOffset(props.startDate, offset)
+                    ]?.map((event, eventIndex) => {
+                        return (
+                            <WeekEvent
+                                key={eventIndex}
+                                event={event}
+                                onPress={props.setSelectedEvent}
+                            />
+                        );
+                    })}
+                </View>
+            ))}
         </View>
     );
 }
@@ -169,7 +68,7 @@ const PIXEL_PER_HOUR = Dimensions.get("window").height / 20;
 
 export function WeekEvent(props: {
     event: PlanningEvent;
-    onPress?: (event: PlanningEvent) => void;
+    onPress: (event: PlanningEvent) => void;
 }) {
     const startHour = formatDateToLocalTime(props.event.start);
     const endHour = formatDateToLocalTime(props.event.end);
@@ -183,9 +82,7 @@ export function WeekEvent(props: {
     //Si l'événement est vide alors on affiche une case vide
     if (props.event.id === "blank") {
         return (
-            <View
-                style={[eventStyles.blankEvent, { height: eventHeight }]}
-            ></View>
+            <View style={[eventStyles.blankEvent, { height: eventHeight }]} />
         );
     }
     //On n'affiche pas les congés
@@ -195,149 +92,118 @@ export function WeekEvent(props: {
     return (
         <AnimatedPressable
             style={[eventStyles.container, { height: eventHeight }]}
-            scale={0.95}
             onPress={() => props.onPress && props.onPress(props.event)}
+            scale={0.9}
         >
-            {/* Si la hauteur de l'événement est suffisante alors on affiche l'heure de début et de fin */}
-            {eventHeight > PIXEL_PER_HOUR * 0.99 && (
-                <View style={eventStyles.timeView}>
-                    <Text style={eventStyles.hour}>
-                        {startHour} - {endHour}
-                    </Text>
-                    <View
-                        style={[
-                            eventStyles.separator,
-                            {
-                                backgroundColor: getSubjectColor(
-                                    props.event.subject,
-                                ),
-                            },
-                        ]}
-                    ></View>
-                </View>
-            )}
-            <Text style={eventStyles.subject}>{props.event.subject}</Text>
-
-            {/* Si la hauteur de l'événement est suffisante alors on affiche la salle */}
-            {eventHeight >= PIXEL_PER_HOUR * 1.5 && (
-                <View style={eventStyles.room}>
-                    <Text style={eventStyles.roomText}>
-                        {truncateString(props.event.room, 6)}
-                    </Text>
-                </View>
-            )}
+            <View
+                style={[
+                    eventStyles.colorBar,
+                    { backgroundColor: getSubjectColor(props.event.subject) },
+                ]}
+            />
+            <Text style={eventStyles.subject} numberOfLines={1}>
+                {props.event.subject}
+            </Text>
+            <View style={eventStyles.tags}>
+                <Text
+                    style={[eventStyles.tag, eventStyles.tagWhite]}
+                    numberOfLines={1}
+                >
+                    {startHour}
+                </Text>
+                <Text
+                    style={[eventStyles.tag, eventStyles.tagWhite]}
+                    numberOfLines={1}
+                >
+                    {endHour}
+                </Text>
+            </View>
+            <View style={eventStyles.tags}>
+                <Text
+                    style={[eventStyles.tag, eventStyles.tagBlack]}
+                    numberOfLines={1}
+                >
+                    {props.event.room}
+                </Text>
+            </View>
         </AnimatedPressable>
     );
 }
 
-const styles = StyleSheet.create({
+const calendarStyles = StyleSheet.create({
     container: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-    },
-    // Cases des jours de la semaine
-    dayView: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignSelf: "center",
-        width: "90%",
-        marginTop: 10,
-    },
-    dayBox: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 10,
-        width: "15%",
-        maxWidth: 100,
-        height: 50,
-        backgroundColor: Colors.primaryColor,
-    },
-    dayText: {
-        color: "white",
-        fontWeight: "bold",
-        fontSize: 13,
-    },
-    dateText: {
-        color: "white",
-        fontSize: 10,
-    },
-    weekView: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 20,
-        width: "100%",
-        height: PIXEL_PER_HOUR * 2 * 5.8,
-    },
-    //Partie des heures
-    hoursView: {
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        maxWidth: 35,
-    },
-    hourText: {
-        fontSize: 15,
-        fontWeight: "bold",
-    },
-    //Tableau des événements
-    table: {
-        flex: 6, // Nombre de colonnes
+        flex: 6,
         marginHorizontal: "auto",
         flexDirection: "row",
-        marginTop: 20,
+        gap: 2,
+        width: "100%",
     },
-    dayCol: {
+    dayColumn: {
         flex: 1,
-        borderColor: "black",
     },
-    dayRow: {
-        backgroundColor: "white",
-        height: 120,
-        borderRadius: 10,
-        margin: 1,
+    hoursBox: {
+        position: "absolute",
+        transform: [{ translateX: "-105%" }],
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+    hourLabel: {
+        borderTopWidth: 2,
+        borderColor: Colors.darkGray,
+        color: Colors.darkGray,
+        width: "100%",
+        boxSizing: "border-box",
+        height: PIXEL_PER_HOUR,
+        paddingTop: 5,
+        fontSize: 15,
+        fontWeight: 400,
     },
 });
 
 const eventStyles = StyleSheet.create({
     container: {
-        display: "flex",
-        justifyContent: "space-between",
         alignItems: "center",
         borderRadius: 10,
-        width: "98%",
-        backgroundColor: "white",
-        boxShadow: "0 0 10px rgba(0, 0, 0, 0.15)",
-    },
-    timeView: {
-        display: "flex",
         width: "100%",
-        justifyContent: "center",
+        backgroundColor: Colors.light,
+        overflow: "hidden",
+        paddingBlock: 10,
+        paddingInline: 4,
+        gap: 5,
+    },
+    colorBar: {
+        position: "absolute",
+        width: 32,
+        height: 8,
+        transform: [{ translateY: "-50%" }],
+        borderRadius: 999,
+    },
+    subject: {
+        fontSize: 10,
+        fontWeight: "bold",
+        textAlign: "center",
+    },
+    tags: {
+        flexDirection: "row",
         alignItems: "center",
-        marginTop: 5,
+        gap: 2,
+    },
+    tag: {
+        fontSize: 10,
+        borderRadius: 2,
+        flex: 1,
+        textAlign: "center",
+    },
+    tagWhite: {
+        backgroundColor: Colors.white,
+    },
+    tagBlack: {
+        backgroundColor: Colors.black,
+        color: Colors.white,
     },
     blankEvent: {
         width: "100%",
         backgroundColor: "transparent",
-    },
-    subject: {
-        fontSize: Dimensions.get("window").width < 500 ? 8 : 12,
-        fontWeight: "bold",
-        textAlign: "center",
-    },
-    separator: {
-        width: "90%",
-        maxWidth: 100,
-        height: 3,
-        backgroundColor: Colors.primaryColor,
-        borderRadius: 10,
     },
     hour: {
         fontSize: Dimensions.get("window").width < 500 ? 9 : 11,
@@ -351,7 +217,7 @@ const eventStyles = StyleSheet.create({
         height: 13,
         marginBottom: 2,
         borderRadius: 10,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
     },
     roomText: {
         color: "white",

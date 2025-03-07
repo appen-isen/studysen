@@ -1,13 +1,4 @@
-import {
-    Modal,
-    View,
-    StyleSheet,
-    Image,
-    TouchableWithoutFeedback,
-    FlatList,
-    TouchableOpacity,
-    Animated,
-} from "react-native";
+import { Modal, View, StyleSheet, Image, TouchableWithoutFeedback, FlatList, TouchableOpacity, Animated } from "react-native";
 import { Text } from "@/components/Texts";
 import { AnimatedPressable, Button } from "@/components/Buttons";
 import { ReactNode, useEffect, useRef } from "react";
@@ -290,7 +281,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     dropdownSelectedIcon: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontSize: 20,
         alignSelf: "flex-end",
     },
@@ -317,6 +308,6 @@ const bottomModalStyles = StyleSheet.create({
     },
     closeIcon: {
         fontSize: 40,
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
 });

@@ -1,5 +1,5 @@
-import { initializeSettingsStore } from "@/store/settingsStore";
-import { initializeWebaurionStores } from "@/store/webaurionStore";
+import { initializeSettingsStore } from "@/stores/settingsStore";
+import { initializeWebaurionStores } from "@/stores/webaurionStore";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -8,19 +8,17 @@ import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 //Layout par défaut de l'application
-
-export {
-    // Catch any errors thrown by the Layout component.
-    ErrorBoundary,
-} from "expo-router";
+export { ErrorBoundary } from "expo-router";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-    //On charge les polices de caractères
     const [loaded, error] = useFonts({
-        OpenSans: require("../assets/fonts/OpenSans.ttf"),
+        "OpenSans-300": require("../assets/fonts/OpenSans-300.ttf"),
+        "OpenSans-400": require("../assets/fonts/OpenSans-400.ttf"),
+        "OpenSans-600": require("../assets/fonts/OpenSans-600.ttf"),
+        "OpenSans-700": require("../assets/fonts/OpenSans-700.ttf"),
         ...FontAwesome.font,
     });
 
@@ -67,20 +65,11 @@ function RootLayoutNav() {
         >
             <Stack.Screen name="login" />
             {/* Les parenthèrese permettent de faire comme si les routes étaient directement à la racine de /app 
-            Par exemple, <Link href="login-help" /> est possible au lieu de <Link href="(modals)/login-help" /> 
+            Par exemple, <Link href="notes-help" /> est possible au lieu de <Link href="(modals)/notes-help" /> 
             */}
             <Stack.Screen name="(tabs)" />
             {/* //On définit ici les modales */}
 
-            <Stack.Screen
-                name="(modals)/login-help"
-                options={{
-                    presentation: "modal",
-                    animation: "slide_from_bottom",
-                    headerTitle: "Aide à la connexion",
-                    headerShown: true,
-                }}
-            />
             <Stack.Screen
                 name="(modals)/notes-help"
                 options={{

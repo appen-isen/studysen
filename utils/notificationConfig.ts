@@ -1,4 +1,4 @@
-import useSettingsStore from "@/store/settingsStore";
+import useSettingsStore from "@/stores/settingsStore";
 import * as Notifications from "expo-notifications";
 import axios from "axios";
 

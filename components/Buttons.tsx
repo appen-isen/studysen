@@ -8,12 +8,13 @@ import {
     GestureResponderEvent,
     StyleProp,
     ViewStyle,
-    View,
     Platform,
+    PressableProps,
 } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { Switch, SwitchProps } from "react-native-paper";
+import { MaterialIcons } from "@expo/vector-icons";
 interface StyledButtonProps {
     textStyle?: object;
     style?: object;
@@ -48,11 +49,7 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
             {/* Contenu JSX ou texte */}
             {JSX && JSX}
             {!JSX && isLoading && (
-                <ActivityIndicator
-                    animating={true}
-                    color="white"
-                    size={"large"}
-                />
+                <ActivityIndicator animating={true} color="white" size={25} />
             )}
             {/* Si le bouton n'a pas de composant custom et ne charge pas alors on affiche le texte*/}
             {!JSX && !isLoading && (
@@ -64,19 +61,21 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
     );
 };
 
-interface AnimatedPressableProps {
+interface AnimatedPressableProps extends PressableProps {
     onPress?: (event: GestureResponderEvent) => void;
     style?: StyleProp<ViewStyle>;
     children: React.ReactNode;
     scale?: number;
 }
+
 const AnimatedPressableComp = Animated.createAnimatedComponent(Pressable);
-// Pressable animé (scale)
+
 export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
     onPress,
     style,
     children,
     scale = 0.8,
+    ...rest // Capture any additional Pressable props
 }) => {
     const scaleAnim = useRef(new Animated.Value(1)).current;
 
@@ -100,63 +99,38 @@ export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
             style={[style, { transform: [{ scale: scaleAnim }] }]}
+            {...rest} // Spread additional Pressable props here
         >
             {children}
         </AnimatedPressableComp>
     );
 };
-
-interface DoubleSelectorProps {
-    containerStyle?: StyleProp<ViewStyle>;
-    selected: 0 | 1;
-    setSelected: (selected: 0 | 1) => void;
-    firstSelector: React.ReactNode;
-    secondSelector: React.ReactNode;
+interface ToggleProps {
+    state: number;
+    stateList: { label: string; icon: keyof typeof MaterialIcons.glyphMap }[];
+    setState: (currentState: number) => void;
 }
 
-export const DoubleSelector: React.FC<DoubleSelectorProps> = ({
-    containerStyle,
-    selected,
-    setSelected,
-    firstSelector,
-    secondSelector,
-}) => {
+export function Toggle(props: ToggleProps) {
     return (
-        <View style={[doubleSelectorStyles.container, containerStyle]}>
-            {/* Boutons pour change l'affichage de l'emploi du temps (mode liste ou mode semaine) */}
-            <AnimatedPressable
-                style={[
-                    doubleSelectorStyles.selectorItem1,
-                    selected === 0 && {
-                        backgroundColor: Colors.primaryColor,
-                    },
-                ]}
-                onPress={() => setSelected(0)}
-                scale={0.95}
-            >
-                {firstSelector}
-            </AnimatedPressable>
-            <AnimatedPressable
-                style={[
-                    doubleSelectorStyles.selectorItem2,
-                    selected === 1 && {
-                        backgroundColor: Colors.primaryColor,
-                    },
-                ]}
-                onPress={() => setSelected(1)}
-                scale={0.95}
-            >
-                {secondSelector}
-            </AnimatedPressable>
-        </View>
+        <AnimatedPressable
+            style={toggleStyles.container}
+            onPress={() => props.setState(props.state)}
+            scale={0.95}
+        >
+            <Text style={toggleStyles.label}>
+                {props.stateList[props.state].label}
+            </Text>
+            <MaterialIcons name={props.stateList[props.state].icon} size={24} />
+        </AnimatedPressable>
     );
-};
+}
 
 // Switch avec les couleurs de l'application
 export const ISENSwitch: React.FC<SwitchProps> = (props) => {
     return (
         <Switch
-            color={Colors.primaryColor}
+            color={Colors.primary}
             style={Platform.OS !== "ios" ? { transform: [{ scale: 1.2 }] } : {}}
             onValueChange={props.onValueChange}
             value={props.value}
@@ -166,53 +140,45 @@ export const ISENSwitch: React.FC<SwitchProps> = (props) => {
 
 const styles = StyleSheet.create({
     button: {
-        margin: 15,
         justifyContent: "center",
         alignItems: "center",
-        paddingLeft: 25,
-        paddingRight: 25,
-        height: 50,
-        borderRadius: 15,
-        backgroundColor: Colors.primaryColor,
+        paddingInline: 20,
+        paddingBlock: 10,
+        borderRadius: 10,
+        backgroundColor: Colors.primary,
     },
     pressedButton: {
-        backgroundColor: Colors.secondaryColor,
+        backgroundColor: Colors.secondary,
     },
     buttonText: {
-        fontSize: 22,
+        fontSize: 18,
         fontWeight: "bold",
         letterSpacing: 0.25,
-        color: "white",
+        color: Colors.white,
         textAlign: "center",
     },
     buttonIssueText: {
         fontSize: 20,
         fontWeight: "bold",
         letterSpacing: 0.25,
-        color: "white",
+        color: Colors.white,
         textAlign: "center",
     },
 });
 
-const doubleSelectorStyles = StyleSheet.create({
-    // Style du sélecteur double
+const toggleStyles = StyleSheet.create({
     container: {
-        display: "flex",
         flexDirection: "row",
-        backgroundColor: "white",
+        alignItems: "center",
+
+        gap: 5,
+        paddingBlock: 10,
+        paddingInline: 15,
+        backgroundColor: Colors.light,
         borderRadius: 10,
-        boxShadow: "0px 2px 5px 0px rgba(0,0,0,0.25)",
     },
-    selectorItem1: {
-        borderTopLeftRadius: 10,
-        borderBottomLeftRadius: 10,
-        paddingHorizontal: 15,
-        paddingVertical: 2,
-    },
-    selectorItem2: {
-        borderTopRightRadius: 10,
-        borderBottomRightRadius: 10,
-        paddingHorizontal: 15,
-        paddingVertical: 2,
+    label: {
+        fontSize: 14,
+        fontWeight: 600,
     },
 });

@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/Buttons";
 import { Input } from "@/components/Inputs";
 import axios from "axios";
-import useSettingsStore from "@/store/settingsStore";
+import useSettingsStore from "@/stores/settingsStore";
 import { Bold } from "../Texts";
 import Colors from "@/constants/Colors";
 
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     title: {
         alignSelf: "center",
         fontSize: 25,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         marginBottom: 20,
     },
     scrollContainer: {

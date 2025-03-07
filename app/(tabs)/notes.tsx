@@ -1,16 +1,10 @@
-import { AnimatedPressable, DoubleSelector } from "@/components/Buttons";
+import { AnimatedPressable, Toggle } from "@/components/Buttons";
 import NoteModal from "@/components/modals/NoteModal";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
-import { useNotesStore } from "@/store/webaurionStore";
+import { useNotesStore } from "@/stores/webaurionStore";
 import { getSemester } from "@/utils/date";
-import {
-    calculateAverage,
-    filterNotesBySemester,
-    getDSNumber,
-    getSubjectNameFromGroup,
-    groupNotesBySubject,
-} from "@/utils/notes";
+import { calculateAverage, filterNotesBySemester, getDSNumber, getSubjectNameFromGroup, groupNotesBySubject } from "@/utils/notes";
 import { Note, NotesList } from "@/webAurion/utils/types";
 import { Octicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -50,36 +44,14 @@ export default function NotesScreen() {
             </View>
             <View style={styles.contentView}>
                 {/* Sélecteur de semestre */}
-                <DoubleSelector
-                    selected={selectedSemester}
-                    setSelected={setSelectedSemester}
-                    firstSelector={
-                        <Text
-                            style={[
-                                styles.selectorText,
-                                selectedSemester === 0 && {
-                                    color: Colors.white,
-                                },
-                            ]}
-                        >
-                            Semestre 1
-                        </Text>
-                    }
-                    secondSelector={
-                        <Text
-                            style={[
-                                styles.selectorText,
-                                selectedSemester === 1 && {
-                                    color: Colors.white,
-                                },
-                            ]}
-                        >
-                            Semestre 2
-                        </Text>
-                    }
-                    containerStyle={styles.semesterSelector}
-                ></DoubleSelector>
-
+                <Toggle
+                    stateList={[
+                        { label: "Semestre 1", icon: "switch-left" },
+                        { label: "Semestre 2", icon: "switch-right" },
+                    ]}
+                    state={selectedSemester}
+                    setState={(currentState) => setSelectedSemester(currentState === 0 ? 1 : 0)}
+                />
                 {selectedNotes.length > 0 && (
                     // Moyenne générale s'il y a des notes
                     <View style={styles.noteAverageView}>
@@ -201,7 +173,7 @@ const styles = StyleSheet.create({
     backIcon: {
         fontSize: 40,
         margin: 20,
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     contentView: {
         flex: 1,
@@ -211,7 +183,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 25,
         fontWeight: "bold",
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     // Sélecteur de semestre
     semesterSelector: {
@@ -219,7 +191,7 @@ const styles = StyleSheet.create({
     },
     selectorText: {
         fontSize: 18,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontWeight: "bold",
         marginVertical: 5,
     },
@@ -242,13 +214,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     noteAverageInfo: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontSize: 25,
         textAlign: "center",
         marginLeft: 10,
     },
     noteAverageValue: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontWeight: "bold",
         fontSize: 30,
         marginRight: 10,
@@ -280,7 +252,7 @@ const notesGroupStyles = StyleSheet.create({
     container: {
         width: "90%",
         maxWidth: 500,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
         borderRadius: 10,
         boxShadow: "0px 0px 8px 2px rgba(0,0,0,0.1)",
         marginTop: 30,
@@ -323,7 +295,7 @@ const notesGroupStyles = StyleSheet.create({
     headerAverageText: {
         fontSize: 18,
         fontWeight: "bold",
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     // Contenu du groupe de notes
     content: {
@@ -344,16 +316,16 @@ const notesGroupStyles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 20,
         paddingVertical: 10,
-        backgroundColor: Colors.secondaryColor,
+        backgroundColor: Colors.secondary,
         borderRadius: 10,
         margin: "4%", // Adds spacing between items
         boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)",
     },
     noteNumber: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     noteValue: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontSize: 16,
         fontWeight: "bold",
     },

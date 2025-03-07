@@ -1,11 +1,12 @@
 import { PlanningEvent } from "@/webAurion/utils/types";
 import { View, StyleSheet, ScrollView } from "react-native";
-import { Bold, Text } from "../Texts";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
-import { getSubjectColor } from "@/utils/planning";
-import { formatDate, formatDateToLocalTime } from "@/utils/date";
-import { BottomModal } from "../Modals";
+import { getSubjectColor, getSubjectIcon } from "@/utils/planning";
+
+import { Sheet } from "../Sheet";
+import { MaterialIcons } from "@expo/vector-icons";
+import { formatFullDate } from "@/utils/date";
 
 type EventModalProps = {
     visible: boolean;
@@ -13,176 +14,119 @@ type EventModalProps = {
     event: PlanningEvent;
 };
 export default function EventModal(props: EventModalProps) {
+    const { event, visible, setVisible } = props;
     return (
-        <BottomModal setVisible={props.setVisible} visible={props.visible}>
-            {/* Info sur la matière */}
-            <Text style={styles.title}>
-                {props.event.title || props.event.subject}
-            </Text>
-            <Text style={styles.subject}>{props.event.subject}</Text>
-            {/* Info sur les dates */}
-            <View style={styles.timeBox}>
-                {/* Date de début */}
-                <View style={styles.dateBox}>
-                    <Bold style={styles.dateTitle}>Début</Bold>
-                    <Text style={styles.dateText}>
-                        {formatDate(new Date(props.event.start))} à{" "}
-                        {formatDateToLocalTime(props.event.start)}
-                    </Text>
-                </View>
-                {/* Séparateur */}
+        <Sheet
+            sheetStyle={popupStyles.container}
+            visible={visible}
+            setVisible={setVisible}
+        >
+            <View style={popupStyles.headerBox}>
                 <View
                     style={[
-                        styles.separator,
+                        popupStyles.headerIcon,
                         {
-                            backgroundColor: getSubjectColor(
-                                props.event.subject,
-                            ),
+                            backgroundColor: getSubjectColor(event.subject),
                         },
                     ]}
-                ></View>
-                {/* Date de fin */}
-                <View style={styles.dateBox}>
-                    <Bold style={styles.dateTitle}>Fin</Bold>
-                    <Text style={styles.dateText}>
-                        {formatDate(new Date(props.event.end))} à{" "}
-                        {formatDateToLocalTime(props.event.end)}
+                >
+                    <MaterialIcons
+                        name={getSubjectIcon(event.subject)}
+                        size={14}
+                    />
+                </View>
+                <View>
+                    <Text style={popupStyles.headerTitle}>
+                        {event.title || event.subject}
+                    </Text>
+                    <Text style={popupStyles.headerSubtitle}>
+                        {event.className}
                     </Text>
                 </View>
             </View>
-            {/* Salle de classe */}
-            <View style={styles.roomBox}>
-                <FontAwesome6 name="location-dot" style={styles.roomIcon} />
-                <Text style={styles.roomText}>
-                    {props.event.room || "Salle inconnue"}
+            <View style={popupStyles.fieldBox}>
+                <Text style={popupStyles.fieldTitle}>Date de début</Text>
+                <Text style={[popupStyles.fieldTag, popupStyles.fieldTagLight]}>
+                    {formatFullDate(new Date(event.start))}
                 </Text>
             </View>
-            {/* Intervenants */}
-            <Text style={styles.peopleInfoTitle}>Intervenants</Text>
-            <ScrollView style={styles.infoScrollView}>
-                <Text style={styles.peopleInfo}>{props.event.instructors}</Text>
-            </ScrollView>
-
-            {/* Etudiants */}
-            <Text style={styles.peopleInfoTitle}>Étudiants</Text>
-            <ScrollView style={styles.infoScrollView}>
-                <Text style={styles.peopleInfo}>{props.event.learners}</Text>
-            </ScrollView>
-        </BottomModal>
+            <View style={popupStyles.fieldBox}>
+                <Text style={popupStyles.fieldTitle}>Date de fin</Text>
+                <Text style={[popupStyles.fieldTag, popupStyles.fieldTagLight]}>
+                    {formatFullDate(new Date(event.end))}
+                </Text>
+            </View>
+            <View style={popupStyles.fieldBox}>
+                <Text style={popupStyles.fieldTitle}>Salle</Text>
+                <Text style={[popupStyles.fieldTag, popupStyles.fieldTagBlack]}>
+                    {event.room || "?"}
+                </Text>
+            </View>
+            <View>
+                <Text style={popupStyles.fieldTitle}>Assuré par</Text>
+                <Text style={popupStyles.fieldValue}>{event.instructors}</Text>
+            </View>
+            <View>
+                <Text style={popupStyles.fieldTitle}>Pour les groupes</Text>
+                <Text style={popupStyles.fieldValue}>{event.learners}</Text>
+            </View>
+        </Sheet>
     );
 }
 
-const styles = StyleSheet.create({
-    //ModalBase
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        justifyContent: "flex-end",
+const popupStyles = StyleSheet.create({
+    container: {
+        padding: 20,
+        gap: 20,
+    },
+    headerBox: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+    },
+    headerIcon: {
+        width: 22,
+        height: 22,
+        borderRadius: 999,
+        justifyContent: "center",
         alignItems: "center",
     },
-    modalContent: {
-        display: "flex",
-        justifyContent: "flex-start",
+    headerTitle: {
+        fontSize: 18,
+        fontWeight: 400,
+    },
+    headerSubtitle: {
+        fontSize: 12,
+        fontWeight: 400,
+        color: Colors.gray,
+    },
+    fieldTitle: {
+        fontSize: 10,
+        fontWeight: 700,
+        color: Colors.gray,
+        textTransform: "uppercase",
+    },
+    fieldBox: {
+        gap: 4,
         alignItems: "flex-start",
-        width: "100%",
-        backgroundColor: "white",
-        borderTopRightRadius: 10,
-        borderTopLeftRadius: 10,
-        elevation: 10,
-        padding: 10,
-        flex: 0.7,
     },
-    modalBackground: {
-        ...StyleSheet.absoluteFillObject,
+    fieldValue: {
+        fontSize: 14,
+        fontWeight: 400,
     },
-    //Contenu de la modal
-
-    //Titre de la matière
-    title: {
-        fontSize: 25,
-        color: Colors.primaryColor,
-        fontWeight: "bold",
-        alignSelf: "center",
+    fieldTag: {
+        paddingBlock: 5,
+        paddingInline: 10,
+        borderRadius: 5,
         textAlign: "center",
+        fontSize: 12,
+        fontWeight: 600,
     },
-    subject: {
-        fontSize: 20,
-        color: "black",
-        fontWeight: "bold",
-        alignSelf: "center",
-        marginTop: 20,
-        textAlign: "center",
+    fieldTagLight: {
+        backgroundColor: Colors.light,
     },
-    //Affichage de l'heure de début et de fin
-    timeBox: {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-around",
-        alignSelf: "center",
-        width: "100%",
-        marginVertical: 40,
-    },
-    separator: {
-        width: 4,
-        height: 40,
-        borderRadius: 10,
-    },
-    dateBox: {
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    dateTitle: {
-        fontSize: 20,
-        color: Colors.primaryColor,
-    },
-    dateText: {
-        fontSize: 18,
-    },
-    //Salle de classe
-    roomBox: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignSelf: "center",
-        alignItems: "center",
-        paddingHorizontal: 20,
-        paddingVertical: 2,
-        backgroundColor: Colors.primaryColor,
-        borderRadius: 20,
-    },
-    roomIcon: {
-        color: "white",
-        fontSize: 20,
-        marginRight: 5,
-    },
-    roomText: {
-        color: "white",
-        fontSize: 20,
-        fontWeight: "bold",
-        textAlign: "center",
-        marginLeft: 5,
-    },
-    //Intervenants et Etudiants
-    peopleInfoTitle: {
-        color: Colors.primaryColor,
-        textDecorationLine: "underline",
-        fontWeight: "bold",
-        fontSize: 20,
-        marginTop: 20,
-    },
-    peopleInfo: {
-        alignSelf: "center",
-        textAlign: "center",
-        width: "90%",
-        fontSize: 18,
-        color: "black",
-        marginTop: 5,
-    },
-    infoScrollView: {
-        width: "100%",
-        height: 30,
+    fieldTagBlack: {
+        backgroundColor: Colors.black,
+        color: Colors.white,
     },
 });

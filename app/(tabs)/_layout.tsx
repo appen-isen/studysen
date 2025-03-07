@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Tabs, useRouter } from "expo-router";
 import Colors from "@/constants/Colors";
 import { AppState, AppStateStatus } from "react-native";
@@ -8,13 +8,12 @@ import { AppState, AppStateStatus } from "react-native";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
-    name: React.ComponentProps<typeof MaterialCommunityIcons>["name"];
+    name: keyof typeof MaterialIcons.glyphMap;
     color: string;
 }) {
     return (
-        <MaterialCommunityIcons
+        <MaterialIcons
             size={28}
-            style={{ marginBottom: -3 }}
             {...props}
         />
     );
@@ -68,52 +67,37 @@ export default function TabLayout() {
         return <RestartApp />;
     }
     return (
-        <Tabs
-            screenOptions={{
-                tabBarActiveTintColor: Colors.primaryColor,
-                headerShown: false,
-            }}
-        >
+        <Tabs screenOptions={{
+            tabBarActiveTintColor: Colors.primary,
+            tabBarInactiveTintColor: Colors.darkGray,
+            headerShown: false,
+        }}>
             <Tabs.Screen
                 name="index"
                 options={{
                     title: "Accueil",
-                    tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="home-outline" color={color} />
-                    ),
+                    tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="planning"
                 options={{
-                    title: "Planning",
-                    tabBarIcon: ({ color }) => (
-                        <TabBarIcon
-                            name="calendar-month-outline"
-                            color={color}
-                        />
-                    ),
+                    title: "Cours",
+                    tabBarIcon: ({ color }) => <TabBarIcon name="calendar-month" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="clubs"
                 options={{
-                    title: "Vie Associative",
-                    tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="party-popper" color={color} />
-                    ),
+                    title: "Clubs",
+                    tabBarIcon: ({ color }) => <TabBarIcon name="celebration" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="settings"
                 options={{
-                    title: "Mon compte",
-                    tabBarIcon: ({ color }) => (
-                        <TabBarIcon
-                            name="account-circle-outline"
-                            color={color}
-                        />
-                    ),
+                    title: "Profil",
+                    tabBarIcon: ({ color }) => <TabBarIcon name="account-circle" color={color} />,
                 }}
             />
             <Tabs.Screen name="notes" options={{ href: null }} />

@@ -12,7 +12,7 @@ import {
 import axios from "axios";
 import { Button } from "@/components/Buttons";
 import { Input } from "@/components/Inputs";
-import useSettingsStore from "@/store/settingsStore";
+import useSettingsStore from "@/stores/settingsStore";
 import { Bold, Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import * as ImagePicker from "expo-image-picker";
@@ -38,7 +38,7 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
             if (status !== "granted") {
                 Alert.alert(
                     "Permission refusée",
-                    "L'accès à la galerie est nécessaire pour sélectionner une image",
+                    "L'accès à la galerie est nécessaire pour sélectionner une image"
                 );
                 return;
             }
@@ -79,7 +79,7 @@ export default function IssueModal({ visible, onClose }: IssueModalProps) {
             if (!title || !problemDescription) {
                 Alert.alert(
                     "Erreur",
-                    "Le titre et la description sont obligatoires",
+                    "Le titre et la description sont obligatoires"
                 );
                 return;
             }
@@ -114,7 +114,7 @@ ${username}`;
                     image: imageContent,
                     labels: ["bug"],
                     assignees: ["dd060606", "BreizhHardware"],
-                },
+                }
             );
 
             Alert.alert("Succès", "Votre signalement a bien été créé");
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     title: {
         alignSelf: "center",
         fontSize: 25,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         marginBottom: 20,
     },
     scrollContainer: {

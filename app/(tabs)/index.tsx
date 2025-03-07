@@ -8,8 +8,8 @@ import {
     useNotesStore,
     usePlanningStore,
     useSyncedPlanningStore,
-} from "@/store/webaurionStore";
-import useSessionStore from "@/store/sessionStore";
+} from "@/stores/webaurionStore";
+import useSessionStore from "@/stores/sessionStore";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import { PlanningEvent } from "@/webAurion/utils/types";
 import {
@@ -29,7 +29,7 @@ import {
     requestPermissions,
     scheduleCourseNotification,
 } from "@/utils/notificationConfig";
-import useSettingsStore from "@/store/settingsStore";
+import useSettingsStore from "@/stores/settingsStore";
 import { getSemester } from "@/utils/date";
 
 export default function HomeScreen() {
@@ -262,7 +262,7 @@ export default function HomeScreen() {
                             //Sinon on affiche un loader
                             <ActivityIndicator
                                 animating={true}
-                                color={Colors.primaryColor}
+                                color={Colors.primary}
                                 size={50}
                             />
                         )}
@@ -316,7 +316,7 @@ export default function HomeScreen() {
                             //Sinon on affiche un loader
                             <ActivityIndicator
                                 animating={true}
-                                color={Colors.primaryColor}
+                                color={Colors.primary}
                                 size={50}
                             />
                         )}
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 25,
         fontWeight: "bold",
-        color: Colors.primaryColor,
+        color: Colors.primary,
         marginTop: 20,
     },
     noEventText: {
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     noteValue: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontWeight: "bold",
         fontSize: 30,
         marginTop: 10,
@@ -417,7 +417,7 @@ const sectionStyles = StyleSheet.create({
     },
     icon: {
         fontSize: 35,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         marginRight: 15,
     },
     titleText: {

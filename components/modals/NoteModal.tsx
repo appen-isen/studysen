@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     //Titre de la matière
     title: {
         fontSize: 25,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontWeight: "bold",
         alignSelf: "center",
         textAlign: "center",
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
         width: 4,
         height: 40,
         borderRadius: 10,
-        backgroundColor: Colors.primaryColor,
+        backgroundColor: Colors.primary,
     },
     infoBox: {
         display: "flex",
@@ -103,14 +103,14 @@ const styles = StyleSheet.create({
     },
     infoTitle: {
         fontSize: 20,
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     infoText: {
         fontSize: 18,
     },
     //Intervenants et Etudiants
     peopleInfoTitle: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         textDecorationLine: "underline",
         fontWeight: "bold",
         fontSize: 20,

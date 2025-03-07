@@ -1,8 +1,8 @@
 import {
     ActivityIndicator,
-    Dimensions,
     KeyboardAvoidingView,
     Platform,
+    Pressable,
     StyleSheet,
     View,
 } from "react-native";
@@ -12,16 +12,15 @@ import { Bold, Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
 import { Link, useRouter } from "expo-router";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Dropdown, ErrorModal } from "@/components/Modals";
 
-import useSessionStore from "@/store/sessionStore";
+import useSessionStore from "@/stores/sessionStore";
 import Session from "@/webAurion/api/Session";
-import { getSecureStoreItem, setSecureStoreItem } from "@/store/secureStore";
-import useSettingsStore, { CAMPUS } from "@/store/settingsStore";
+import { getSecureStoreItem, setSecureStoreItem } from "@/stores/secureStore";
+import useSettingsStore, { CAMPUS } from "@/stores/settingsStore";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Sheet } from "@/components/Sheet";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -78,6 +77,8 @@ export default function LoginScreen() {
     const [errorVisible, setErrorVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
+    const [helpVisible, setHelpVisible] = useState(false);
+
     //Gestion de la connexion
     const handleLogin = async () => {
         if (username === "" || password === "") {
@@ -129,7 +130,7 @@ export default function LoginScreen() {
             <View style={styles.container}>
                 <ActivityIndicator
                     animating={true}
-                    color={Colors.primaryColor}
+                    color={Colors.primary}
                     size={50}
                 />
             </View>
@@ -145,15 +146,14 @@ export default function LoginScreen() {
                 <AnimatedPressable
                     style={styles.campusSelect}
                     onPress={() => setCampusMenuVisible(true)}
-                    scale={0.95}
                 >
                     <Text style={styles.campusSelectText}>
                         Campus de <Bold>{settings.campus}</Bold>
                     </Text>
-                    <FontAwesome6
+                    <MaterialIcons
                         style={styles.campusSelectText}
-                        name="chevron-down"
-                        size={24}
+                        name="keyboard-arrow-down"
+                        size={20}
                     />
                 </AnimatedPressable>
                 <Dropdown
@@ -171,33 +171,25 @@ export default function LoginScreen() {
                 ></Dropdown>
 
                 {/* Haut de la page */}
-                <View style={styles.titleBox}>
-                    <MaterialIcons name="login" style={styles.loginIcon} />
-                    <Text style={styles.title}>Connexion</Text>
-                    <Text>Utilisez les identifiants de l'ENT</Text>
+                <View style={styles.headerBox}>
+                    <MaterialIcons name="login" style={styles.headerIcon} />
+                    <Text style={styles.headerTitle}>Connexion</Text>
+                    <Text style={styles.headerLabel}>
+                        Utilisez les identifiants de l'ENT
+                    </Text>
                 </View>
                 {/* Champs */}
-                <View style={styles.fieldsView}>
+                <View style={styles.fieldsBox}>
                     <Input
                         placeholder="Nom d'utilisateur"
-                        icon={
-                            <FontAwesome6
-                                style={styles.inputIcon}
-                                name="user-circle"
-                            />
-                        }
+                        icon="account-circle"
                         onChangeText={(text) => setUsername(text)}
                         value={username}
                         autoComplete="username"
                     ></Input>
                     <Input
                         placeholder="Mot de passe"
-                        icon={
-                            <MaterialCommunityIcons
-                                name="key-outline"
-                                style={styles.inputIcon}
-                            />
-                        }
+                        icon="key"
                         onChangeText={(text) => setPassword(text)}
                         value={password}
                         autoComplete="password"
@@ -205,25 +197,68 @@ export default function LoginScreen() {
                     ></Input>
                     <Checkbox
                         status={rememberMe ? "checked" : "unchecked"}
-                        onPress={() => {
-                            setRememberMe(!rememberMe);
-                        }}
-                        color={Colors.primaryColor}
-                        text="Se souvenir de moi"
+                        onPress={() => setRememberMe(!rememberMe)}
+                        color={Colors.primary}
+                        text="Rester connecté"
                     />
                 </View>
                 {/* Boutons du bas */}
-                <View style={styles.bottomContainer}>
+                <View style={styles.actionBox}>
                     <Button
                         title="Se connecter"
                         onPress={handleLogin}
-                        style={styles.loginBtn}
+                        style={styles.actionLogin}
                         isLoading={authenticating}
                     ></Button>
-                    <Link href={"/login-help"} style={styles.helpLink}>
-                        J'ai besoin d'aide
-                    </Link>
+                    <Pressable
+                        onPress={() => setHelpVisible(true)}
+                        style={styles.actionHelp}
+                    >
+                        <Text>J'ai besoin d'aide</Text>
+                    </Pressable>
                 </View>
+
+                {/* Modal d'aide */}
+                <Sheet
+                    visible={helpVisible}
+                    setVisible={setHelpVisible}
+                    sheetStyle={helpStyles.container}
+                >
+                    <Text style={helpStyles.subtitle}>
+                        Comment se connecter ?
+                    </Text>
+                    <Text style={helpStyles.paragraph}>
+                        Utilisez votre{" "}
+                        <Text style={helpStyles.important}>
+                            identifiant d'ENT
+                        </Text>{" "}
+                        de l'<Bold>ISEN</Bold> qui vous permet l'accès à{" "}
+                        <Bold>WebAurion</Bold> et <Bold>Moodle</Bold>.
+                    </Text>
+                    <Text style={helpStyles.paragraph}>
+                        L'identifiant est de la forme{" "}
+                        <Text style={helpStyles.important}>p_nom</Text>. La
+                        première lettre de votre <Bold>prénom</Bold> suivie de
+                        votre <Bold>nom de famille</Bold>.
+                    </Text>
+                    <Text style={helpStyles.subtitle}>
+                        Encore des problèmes ?
+                    </Text>
+                    <Text style={helpStyles.paragraph}>
+                        Vous n'arrivez toujours pas à vous connecter ? Essayer
+                        de <Bold>changer votre mot de passe</Bold>.
+                    </Text>
+                    <Link
+                        href={
+                            "https://web.isen-ouest.fr/password/index.php?action=sendtoken"
+                        }
+                    >
+                        <View style={helpStyles.link}>
+                            <MaterialIcons name="open-in-new" size={20} />
+                            <Text>Mot de passe oublié</Text>
+                        </View>
+                    </Link>
+                </Sheet>
 
                 {/* Modal d'erreur */}
                 <ErrorModal
@@ -237,34 +272,36 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+    //
+    // Containers
+    //
     container: {
         flex: 1,
-        alignItems: "center",
         justifyContent: "space-around",
-        backgroundColor: "white",
+        backgroundColor: Colors.white,
     },
     containerView: {
-        flex: 1,
-        justifyContent: "space-around",
-        alignItems: "center",
         width: "100%",
+        flex: 1,
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: 20,
     },
+    //
+    // Campus selection
+    //
     campusSelect: {
-        display: "flex",
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        padding: 10,
-        width: "60%",
-        maxWidth: 300,
-        backgroundColor: Colors.primaryColor,
-        borderRadius: 50,
-        marginTop: 10,
+        paddingBlock: 10,
+        paddingInline: 25,
+        backgroundColor: Colors.primary,
+        borderRadius: 999,
+        gap: 5,
     },
     campusSelectText: {
-        color: "white",
-        marginLeft: 5,
-        marginRight: 5,
+        color: Colors.white,
     },
     dropdownBoxStyle: {
         width: 250,
@@ -272,46 +309,83 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         alignItems: "flex-start",
     },
-    titleBox: {
-        alignSelf: "center",
-        //Si l'écran est grand, on centre le texte
-        alignItems:
-            Dimensions.get("window").width > 600 ? "center" : "flex-start",
-        width: "100%",
-        paddingHorizontal: 20,
-    },
-    title: {
-        fontSize: 45,
-    },
-    loginIcon: {
-        fontSize: 60,
-        marginBottom: 10,
-        color: Colors.primaryColor,
-    },
-    //Les champs
-    fieldsView: {
-        justifyContent: "center",
-        alignItems: "center",
-        width: "80%",
-        maxWidth: 600,
-    },
-    inputIcon: {
-        marginLeft: 5,
-        fontSize: 30,
-    },
-    bottomContainer: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+    //
+    // Header section
+    //
+    headerBox: {
         width: "100%",
     },
-    loginBtn: {
-        width: "80%",
-        maxWidth: 600,
+    headerTitle: {
+        fontSize: 40,
     },
-    helpLink: {
+    headerIcon: {
+        fontSize: 52,
+        color: Colors.primary,
+    },
+    headerLabel: {
+        color: Colors.darkGray,
+        marginLeft: 3,
+    },
+    //
+    // Fields section
+    //
+    fieldsBox: {
+        alignItems: "flex-start",
+        width: "100%",
+        gap: 25,
+    },
+    //
+    // Actions section
+    //
+    actionBox: {
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+    },
+    actionLogin: {
+        width: "100%",
+    },
+    actionHelp: {
+        alignItems: "center",
+        gap: 10,
+        color: Colors.darkGray,
         fontWeight: 600,
-        marginTop: 15,
-        textDecorationLine: "underline",
+        padding: 20,
+    },
+});
+
+const helpStyles = StyleSheet.create({
+    //
+    // Help styles
+    //
+    container: {
+        alignItems: "flex-start",
+        padding: 20,
+        gap: 20,
+    },
+    subtitle: {
+        fontSize: 14,
+        fontWeight: "bold",
+        backgroundColor: Colors.primary,
+        color: Colors.white,
+        paddingBlock: 5,
+        paddingInline: 10,
+        borderRadius: 5,
+    },
+    paragraph: {
+        color: Colors.darkGray,
+    },
+    important: {
+        color: Colors.primary,
+        fontWeight: "bold",
+    },
+    link: {
+        flexDirection: "row",
+        gap: 5,
+        alignItems: "center",
+        backgroundColor: Colors.light,
+        paddingBlock: 5,
+        paddingInline: 10,
+        borderRadius: 5,
     },
 });

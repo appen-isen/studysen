@@ -5,14 +5,14 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
-import useSettingsStore from "@/store/settingsStore";
-import useSessionStore from "@/store/sessionStore";
+import useSettingsStore from "@/stores/settingsStore";
+import useSessionStore from "@/stores/sessionStore";
 import {
     useNotesStore,
     usePlanningStore,
     useSyncedPlanningStore,
-} from "@/store/webaurionStore";
-import { removeSecureStoreItem } from "@/store/secureStore";
+} from "@/stores/webaurionStore";
+import { removeSecureStoreItem } from "@/stores/secureStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     backIcon: {
         fontSize: 40,
         margin: 20,
-        color: Colors.primaryColor,
+        color: Colors.primary,
     },
     //Contenu
     contentView: {
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: {
-        color: Colors.primaryColor,
+        color: Colors.primary,
         fontSize: 25,
         textAlign: "center",
         marginBottom: 20,
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         fontSize: 18,
-        color: Colors.primaryColor,
+        color: Colors.primary,
         marginBottom: 10,
     },
     btn: {
