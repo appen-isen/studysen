@@ -9,10 +9,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
     cancelAllScheduledNotifications,
     deleteNotifications,
-    getUserIdByEmail,
     requestPermissions,
-    scheduleCourseNotification,
-    sendTestNotification,
+    sendTestNotification
 } from "@/utils/notificationConfig";
 import { Dropdown } from "@/components/Modals";
 import useSettingsStore, { NotificationDelay } from "@/stores/settingsStore";
@@ -49,16 +47,10 @@ export default function NotifSettings() {
             const { settings } = useSettingsStore.getState();
 
             if (settings.username) {
-                // Normalize email
-                const normalizedName = settings.username
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "")
-                    .toLowerCase();
-                const email =
-                    normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
+                const email = settings.email;
 
                 // Get user ID
-                const userId = await getUserIdByEmail(email);
+                const userId = settings.userId;
 
                 // Delete all existing notifications
                 await deleteNotifications(userId);
@@ -162,42 +154,42 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: "100%",
-        backgroundColor: "white",
+        backgroundColor: "white"
     },
     backIcon: {
         fontSize: 40,
         margin: 20,
-        color: Colors.primary,
+        color: Colors.primary
     },
     contentView: {
         flex: 1,
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     title: {
         color: Colors.primary,
         fontSize: 25,
         textAlign: "center",
-        marginBottom: 20,
+        marginBottom: 20
     },
     switchContainer: {
         flexDirection: "row",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     buttonText: {
-        fontSize: 16,
+        fontSize: 16
     },
     switchLabel: {
         fontSize: 18,
-        marginRight: 10,
+        marginRight: 10
     },
     // Sélecteur de délai
     dropdownBoxStyle: {
         width: 250,
         display: "flex",
         justifyContent: "flex-start",
-        alignItems: "flex-start",
+        alignItems: "flex-start"
     },
     delaySelect: {
         display: "flex",
@@ -208,17 +200,17 @@ const styles = StyleSheet.create({
         width: 250,
         backgroundColor: Colors.primary,
         borderRadius: 50,
-        marginVertical: 20,
+        marginVertical: 20
     },
     delaySelectText: {
         color: "white",
         marginLeft: 5,
-        marginRight: 5,
+        marginRight: 5
     },
     infoText: {
         width: "90%",
         alignSelf: "center",
         textAlign: "center",
-        fontSize: 15,
-    },
+        fontSize: 15
+    }
 });

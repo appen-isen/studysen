@@ -3,7 +3,7 @@ import {
     Platform,
     StyleSheet,
     View,
-    TouchableOpacity,
+    TouchableOpacity
 } from "react-native";
 import { Button } from "@/components/Buttons";
 import { Input } from "@/components/Inputs";
@@ -16,19 +16,20 @@ import { Dropdown, ErrorModal } from "@/components/Modals";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Session from "@/webAurion/api/Session";
 import useSessionStore from "@/stores/sessionStore";
-import {
+import useSettingsStore, {
     CAMPUS,
     Campus,
     className,
     classNameValues,
     year,
-    yearValues,
+    yearValues
 } from "@/stores/settingsStore";
 import { Tooltip } from "@/components/Tooltip";
 
 export default function RegisterScreen() {
     const router = useRouter();
     const { setSession } = useSessionStore();
+    const { settings, setSettings } = useSettingsStore();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -79,17 +80,20 @@ export default function RegisterScreen() {
                 username,
                 promo,
                 selectedCampus,
-                isenId,
+                isenId
             );
             setSession(session);
+
+            setSettings("username", session.getUsername());
+            setSettings("userISENId", session.getIsenId());
+            setSettings("userId", session.getUserId());
+
             router.replace("/(tabs)");
         } catch (error) {
             console.log(error);
             setErrorMessage(
                 "Une erreur est survenue lors de l'inscription: " +
-                    (error instanceof Error
-                        ? error.message
-                        : "Erreur inconnue"),
+                    (error instanceof Error ? error.message : "Erreur inconnue")
             );
             setErrorVisible(true);
         } finally {
@@ -241,68 +245,68 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "white",
+        backgroundColor: "white"
     },
     containerView: {
         flex: 1,
         justifyContent: "space-around",
         alignItems: "center",
         width: "100%",
-        padding: 20,
+        padding: 20
     },
     titleBox: {
         alignSelf: "center",
         alignItems: "center",
-        width: "100%",
+        width: "100%"
     },
     title: {
-        fontSize: 45,
+        fontSize: 45
     },
     registerIcon: {
         fontSize: 60,
         marginBottom: 10,
-        color: Colors.primary,
+        color: Colors.primary
     },
     fieldsView: {
         width: "100%",
         maxWidth: 600,
-        gap: 15,
+        gap: 15
     },
     inputIcon: {
         marginLeft: 5,
-        fontSize: 30,
+        fontSize: 30
     },
     promoContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
-        gap: 10,
+        gap: 10
     },
     promoSelect: {
         flex: 1,
         padding: 15,
         borderRadius: 10,
         backgroundColor: Colors.lightGray,
-        alignItems: "center",
+        alignItems: "center"
     },
     isenIdContainer: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 10,
+        gap: 10
     },
     tooltip: {
-        padding: 5,
+        padding: 5
     },
     bottomContainer: {
         width: "100%",
         alignItems: "center",
-        gap: 15,
+        gap: 15
     },
     registerBtn: {
         width: "100%",
-        maxWidth: 600,
+        maxWidth: 600
     },
     loginLink: {
         color: Colors.primary,
-        textDecorationLine: "underline",
-    },
+        textDecorationLine: "underline"
+    }
 });

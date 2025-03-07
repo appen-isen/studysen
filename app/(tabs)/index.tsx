@@ -4,7 +4,7 @@ import {
     StyleSheet,
     View,
     ScrollView,
-    Linking,
+    Linking
 } from "react-native";
 import { Text } from "@/components/Texts";
 import { Button } from "@/components/Buttons";
@@ -115,7 +115,8 @@ export default function HomeScreen() {
     // Fonction pour mettre à jour l'emploi du temps
     const updatePlanning = (weekOffset: number = 0) => {
         setPlanningLoaded(false);
-        // Calcul de la plage de dates pour la semaine
+
+        // Calcul de la plage de dates pour la semaine actuelle
         const { startTimestamp, endTimestamp } = getScheduleDates(weekOffset);
 
         // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
@@ -124,69 +125,148 @@ export default function HomeScreen() {
                 new Date(event.start).getTime() >= startTimestamp &&
                 new Date(event.end).getTime() <= endTimestamp
         );
+
         // Pas besoin de retélécharger les événements si la semaine est déjà chargée
         if (isWeekInPlanning) {
             setPlanningLoaded(true);
         }
 
         if (session) {
-            // Requête pour charger les événements de la semaine
+            // Requête pour charger les événements de la semaine actuelle
             session
                 .getPlanningApi()
                 .fetchPlanning(weekOffset)
-                .then((currentWeekPlanning: PlanningEvent[]) => {
-                    // Concaténer le nouveau planning avec l'existant sans doublons
-                    setPlanning(
-                        // On met à jour le planning en fusionnant les événements
-                        mergePlanning(
-                            usePlanningStore.getState().planning,
-                            currentWeekPlanning
-                        )
-                    );
-                    setPlanningLoaded(true);
-                    // Mettre à jour le planning synchronisé
-                    setSyncedPlanning(
-                        // On met à jour le planning synchronisé en fusionnant les événements
-                        mergePlanning(
-                            useSyncedPlanningStore.getState().syncedPlanning,
-                            currentWeekPlanning
-                        )
-                    );
-                    // On met à jour la date de la dernière mise à jour
-                    setLastUpdateTime(new Date());
-                    //On planifie les notifications pour les cours
-                    //On les supprime d'abord puis on les recrée avec le planning
-                    cancelAllScheduledNotifications().then(() => {
-                        if (settings.notificationsEnabled) {
-                            const date = new Date();
-                            currentWeekPlanning.forEach((event) => {
-                                //Si l'événement n'est pas un congé et qu'il n'est pas déjà passé, on planifie une notification silencieuse
-                                if (
-                                    event.className !== "CONGES" &&
-                                    new Date(event.start) > date
-                                ) {
-                                    scheduleCourseNotification(
-                                        event.title || event.subject,
-                                        event.room,
-                                        new Date(event.start),
-                                        email
-                                    );
-                                }
-                            });
-                        }
-                    });
-                })
                 .catch((error) => {
                     console.error(error);
                     setPlanningLoaded(true);
                 });
+
+            // Si on est sur la semaine actuelle, on charge aussi la semaine prochaine pour les notifications
+            if (weekOffset === 0) {
+                session
+                    .getPlanningApi()
+                    .fetchPlanning(1)
+                    .catch((error) => {
+                        console.error(
+                            "Erreur lors du chargement de la semaine prochaine:",
+                            error
+                        );
+                    });
+            }
+
+            // Pour les notifications, on veut les événements de cette semaine ET de la semaine prochaine
+            const currentWeekEvents = planning.filter((event) => {
+                const eventDate = new Date(event.start);
+                return eventDate.getTime() >= startTimestamp;
+            });
+
+            // Planifier les notifications pour les deux semaines
+            scheduleNotificationsForEvents(currentWeekEvents, email, settings);
         }
+    };
+
+    // Fonction pour planifier les notifications
+    const scheduleNotificationsForEvents = (
+        events: PlanningEvent[],
+        userEmail: string,
+        settings: any
+    ) => {
+        cancelAllScheduledNotifications()
+            .then(() => {
+                if (settings.notificationsEnabled) {
+                    console.log(
+                        "Notifications enabled, scheduling new notifications..."
+                    );
+                    const date = new Date();
+                    let scheduledCount = 0;
+
+                    console.log(`Total events found: ${events.length}`);
+                    let eligibleCount = 0;
+
+                    // Use Promise.all to properly handle all notification scheduling
+                    const notificationPromises = events
+                        .filter((event) => {
+                            const eventDate = new Date(event.start);
+                            const isInFuture = eventDate > date;
+                            const isNotHoliday = event.className !== "CONGES";
+
+                            if (isNotHoliday && isInFuture) {
+                                eligibleCount++;
+                                console.log(
+                                    `✓ Eligible for notification: ${event.title || event.subject}`
+                                );
+                                return true;
+                            }
+                            return false;
+                        })
+                        .map((event) => {
+                            // Add a try-catch block for each individual promise
+                            return new Promise((resolve) => {
+                                try {
+                                    // Safely handle each notification scheduling
+                                    scheduleCourseNotification(
+                                        event.title || event.subject,
+                                        event.room,
+                                        new Date(event.start),
+                                        userEmail
+                                    )
+                                        .then((result) => {
+                                            if (result) {
+                                                scheduledCount++;
+                                                console.log(
+                                                    `✓ Notification scheduled: ${event.title || event.subject}`
+                                                );
+                                            } else {
+                                                console.log(
+                                                    `- Notification skipped: ${event.title || event.subject}`
+                                                );
+                                            }
+                                            resolve(true);
+                                        })
+                                        .catch((error) => {
+                                            console.error(
+                                                `× Error scheduling individual notification: ${error.message || error}`
+                                            );
+                                            resolve(false);
+                                        });
+                                } catch (error) {
+                                    console.error(
+                                        `× Exception in notification scheduling: ${error}`
+                                    );
+                                    resolve(false);
+                                }
+                            });
+                        });
+
+                    // Wait for all notifications to be processed
+                    Promise.all(notificationPromises)
+                        .then(() => {
+                            console.log(
+                                `Successfully scheduled ${scheduledCount}/${eligibleCount} notifications`
+                            );
+                        })
+                        .catch((error) => {
+                            console.error(
+                                `Error in notification batch processing: ${error}`
+                            );
+                        });
+
+                    console.log(
+                        `Attempted to schedule notifications for ${eligibleCount} events`
+                    );
+                } else {
+                    console.log("Notifications are disabled in settings");
+                }
+            })
+            .catch((error) => {
+                console.error(`Error in notification process: ${error}`);
+            });
     };
 
     // Action lors de l'appui sur le bouton pour afficher les notes
     const handleViewNotes = () => {
         Linking.openURL(
-            "https://web.isen-ouest.fr/webAurion/faces/LearnerNotationListPage.xhtml",
+            "https://web.isen-ouest.fr/webAurion/faces/LearnerNotationListPage.xhtml"
         );
     };
 

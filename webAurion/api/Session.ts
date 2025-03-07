@@ -25,7 +25,7 @@ export class Session {
     constructor() {
         this.client = axios.create({
             baseURL: this.backendURL,
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" }
         });
     }
 
@@ -35,7 +35,7 @@ export class Session {
         username: string,
         promo: string,
         campus: string,
-        isenId: string,
+        isenId: string
     ): Promise<boolean> {
         try {
             const hashedPassword = await hashPassword(password);
@@ -45,7 +45,7 @@ export class Session {
                 username,
                 promo,
                 campus,
-                isenId,
+                isenId
             });
 
             this.user = response.data.user;
@@ -57,7 +57,7 @@ export class Session {
             console.error(error);
             if (axios.isAxiosError(error)) {
                 throw new Error(
-                    `Registration failed: ${error.response?.data?.message || error.message}`,
+                    `Registration failed: ${error.response?.data?.message || error.message}`
                 );
             }
             throw error;
@@ -67,7 +67,7 @@ export class Session {
     public async login(
         email: string,
         password: string,
-        token?: string,
+        token?: string
     ): Promise<boolean> {
         try {
             if (email === "demo" && password === "demo") {
@@ -77,7 +77,7 @@ export class Session {
                     email: "demo@demo.com",
                     username: "Demo User",
                     promo: "DEMO",
-                    isenId: "0000",
+                    isenId: "0000"
                 };
                 return true;
             }
@@ -85,13 +85,13 @@ export class Session {
             let response;
             if (token) {
                 response = await this.client.post<AuthResponse>("/login", {
-                    token,
+                    token
                 });
             } else {
                 const hashedPassword = await hashPassword(password);
                 response = await this.client.post<AuthResponse>("/login", {
                     email,
-                    password: hashedPassword,
+                    password: hashedPassword
                 });
             }
 
@@ -103,7 +103,7 @@ export class Session {
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 throw new Error(
-                    `Login failed: ${error.response?.data?.message || error.message}`,
+                    `Login failed: ${error.response?.data?.message || error.message}`
                 );
             }
             throw error;
@@ -129,6 +129,10 @@ export class Session {
 
     public getIsenId(): string {
         return this.user?.isenId || "";
+    }
+
+    public getUserId(): number {
+        return this.user?.user_id || 0;
     }
 
     public getToken(): string {
