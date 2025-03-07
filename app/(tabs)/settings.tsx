@@ -38,18 +38,11 @@ export default function SettingsScreen() {
         if (settings.username) {
             const username = settings.username;
             setUsername(username);
+            const email = settings.email;
+            setEmail(email);
             //Initiales du prénom et du nom
             const firstLetters = username.split(" ");
             setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
-
-            //On convertit le Prénom Nom en email valide
-            const normalizedName = username
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toLowerCase();
-            setEmail(
-                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr",
-            );
         }
     }, [settings]);
     return (
@@ -141,8 +134,7 @@ export default function SettingsScreen() {
                     clearPlanning();
                     clearSyncedPlanning();
                     clearNotes();
-                    removeSecureStoreItem("username");
-                    removeSecureStoreItem("password");
+                    removeSecureStoreItem("jwt_token");
                     router.replace("/login");
                 }}
             />
