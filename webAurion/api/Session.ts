@@ -132,6 +132,7 @@ export class Session {
     }
 
     public getToken(): string {
+        // @ts-ignore
         return this.client.defaults.headers.common["Authorization"] || "";
     }
 

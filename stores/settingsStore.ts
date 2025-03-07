@@ -25,6 +25,7 @@ type Settings = {
     localNotifications: boolean;
     deviceId: string;
     userISENId: string;
+    email: string;
     className?: (typeof classNameValues)[number];
     year?: (typeof yearValues)[number];
 };
@@ -44,9 +45,10 @@ function getDefaultSettings(): Settings {
         notificationsDelay: "15min",
         localNotifications: false,
         deviceId: "",
+        userISENId: "",
+        email: "",
         className: undefined,
         year: undefined,
-        userISENId: "",
     };
 }
 
