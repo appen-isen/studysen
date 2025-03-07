@@ -52,7 +52,7 @@ export function groupEventsByDay(events: PlanningEvent[]): DayEvents {
 
 // Fonction qui remplace les champs de l'emploi du temps pour le mode liste
 export function updatePlanningForListMode(
-    planning: PlanningEvent[]
+    planning: PlanningEvent[],
 ): PlanningEvent[] {
     return sortPlanningByDate(
         planning.map((event) => {
@@ -75,7 +75,7 @@ export function updatePlanningForListMode(
                 room: room,
                 instructors: event.instructors.split("/")[0], // On remplace par le premier enseignant
             };
-        })
+        }),
     );
 }
 
@@ -90,7 +90,7 @@ export function fillDayWithBlankEvents(dayEvents: DayEvents): DayEvents {
 
         // Trier les événements existants par heure de début
         const sortedEvents = events.sort(
-            (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+            (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
         );
 
         const filledEvents: PlanningEvent[] = [];
@@ -196,7 +196,7 @@ export function getSubjectIcon(subject: string): keyof typeof MaterialIcons.glyp
 export function findEvent(planning: PlanningEvent[], event: PlanningEvent) {
     return planning.find(
         (e) =>
-            e.id === event.id && e.start === event.start && e.end === event.end
+            e.id === event.id && e.start === event.start && e.end === event.end,
     );
 }
 
@@ -218,7 +218,7 @@ export function getCurrentEvent(events: PlanningEvent[]): PlanningEvent | null {
 
 // Fonction pour obtenir le prochain événement de la journée
 export function getNextEventToday(
-    events: PlanningEvent[]
+    events: PlanningEvent[],
 ): PlanningEvent | null {
     const now = new Date();
 
@@ -230,7 +230,7 @@ export function getNextEventToday(
 
     // Trie les événements par date de début (croissant)
     upcomingEvents.sort(
-        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
     );
 
     // Retourne le premier événement du tableau trié, ou null s'il n'y en a pas
@@ -239,7 +239,7 @@ export function getNextEventToday(
 
 export function mergePlanning(
     currentPlanning: PlanningEvent[],
-    newPlanning: PlanningEvent[]
+    newPlanning: PlanningEvent[],
 ): PlanningEvent[] {
     // Si newPlanning est vide, retourner le planning actuel
     if (newPlanning.length === 0) return currentPlanning;
@@ -269,6 +269,6 @@ export function truncateString(str: string, maxLength: number): string {
 // Fonction pour trier les événements par date de début
 export function sortPlanningByDate(planning: PlanningEvent[]): PlanningEvent[] {
     return planning.sort(
-        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
     );
 }

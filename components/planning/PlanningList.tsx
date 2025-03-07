@@ -32,7 +32,7 @@ export default function PlanningList(props: {
     // Calcul de la date cible au format ISO (local)
     const selectedDateISO = getWorkdayFromOffset(
         props.startDate,
-        props.selectedDay,
+        props.selectedDay
     );
 
     // Liste contenant les hauteurs des éléments "ListEvent", handleLayout permet de les mettre à jour
@@ -145,6 +145,7 @@ export function ListEvent(props: {
                         {
                             backgroundColor: getSubjectColor(
                                 props.event.subject,
+                                props.event.subject
                             ),
                         },
                     ]}

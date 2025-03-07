@@ -24,7 +24,7 @@ export default function PlanningWeek(props: {
     setSelectedEvent: (event: PlanningEvent) => void;
 }) {
     const planning = fillDayWithBlankEvents(
-        groupEventsByDay(updatePlanningForListMode(props.events)),
+        groupEventsByDay(updatePlanningForListMode(props.events))
     );
 
     return (
@@ -63,7 +63,9 @@ export default function PlanningWeek(props: {
         </View>
     );
 }
-const PIXEL_PER_HOUR = 45;
+// On définit la hauteur d'une heure en pixels en fonction de la hauteur de l'écran
+const PIXEL_PER_HOUR = Dimensions.get("window").height / 20;
+
 export function WeekEvent(props: {
     event: PlanningEvent;
     onPress: (event: PlanningEvent) => void;

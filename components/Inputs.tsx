@@ -1,4 +1,12 @@
-import { TextInput, StyleSheet, TextInputProps, View, TouchableOpacity, Pressable, Keyboard } from "react-native";
+import {
+    TextInput,
+    StyleSheet,
+    TextInputProps,
+    View,
+    TouchableOpacity,
+    Pressable,
+    Keyboard,
+} from "react-native";
 import { useEffect, useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Colors from "@/constants/Colors";
@@ -15,35 +23,30 @@ export type InputProps = {
 
 export function Input(props: TextInputProps & InputProps) {
     const [textVisible, setTextVisible] = useState(
-        props.password === undefined
+        props.password === undefined,
     );
-    const {
-        icon,
-        password,
-        autoComplete,
-        textInputStyle,
-        containerStyle,
-    } = props;
-    
+    const { icon, password, autoComplete, textInputStyle, containerStyle } =
+        props;
+
     useEffect(() => {
-      const keyboardHideListener = Keyboard.addListener("keyboardDidHide", () => {
-        Keyboard.dismiss();
-      });
-  
-      return () => {
-        keyboardHideListener.remove();
-      };
+        const keyboardHideListener = Keyboard.addListener(
+            "keyboardDidHide",
+            () => {
+                Keyboard.dismiss();
+            },
+        );
+
+        return () => {
+            keyboardHideListener.remove();
+        };
     }, []);
 
     return (
-        <View
-            style={[
-                inputStyles.container,
-                containerStyle,
-            ]}
-        >
+        <View style={[inputStyles.container, containerStyle]}>
             {/* On affiche l'icone si c'est un Input avec icone */}
-            {icon && <MaterialIcons name={icon} size={30} style={inputStyles.icon} />}
+            {icon && (
+                <MaterialIcons name={icon} size={30} style={inputStyles.icon} />
+            )}
             {/* Composant Input */}
             <TextInput
                 {...props}

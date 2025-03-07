@@ -5,6 +5,7 @@ import {
     KeyboardAvoidingView,
     Platform,
     ScrollView,
+    Alert,
 } from "react-native";
 import { Button } from "@/components/Buttons";
 import { Input } from "@/components/Inputs";
@@ -13,12 +14,12 @@ import useSettingsStore from "@/stores/settingsStore";
 import { Bold } from "../Texts";
 import Colors from "@/constants/Colors";
 
-type IssueModalProps = {
+type ContactModalProps = {
     visible: boolean;
     onClose: () => void;
 };
 
-export default function IssueModal({ visible, onClose }: IssueModalProps) {
+export default function ContactModal({ visible, onClose }: ContactModalProps) {
     const [title, setTitle] = useState("");
     const [problemDescription, setProblemDescription] = useState("");
     const { settings } = useSettingsStore();
@@ -50,14 +51,19 @@ ${username}
                     body,
                     labels: ["suggestion"],
                     assignees: ["dd060606", "BreizhHardware"],
-                }
+                },
             );
             console.log("Issue created:", response.data);
             // Fermer la modal et supprimer les champs
             setTitle("");
             setProblemDescription("");
+            Alert.alert(
+                "Issue créée",
+                "Votre issue a bien été créée sur GitHub",
+            );
             onClose();
         } catch (error) {
+            Alert.alert("Erreur", "Impossible de créer l'issue: " + error);
             console.error("Failed to create issue:", error);
         }
     };

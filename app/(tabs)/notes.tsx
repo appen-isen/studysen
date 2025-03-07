@@ -16,7 +16,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 export default function NotesScreen() {
     const router = useRouter();
     const [selectedSemester, setSelectedSemester] = useState<0 | 1>(
-        getSemester()
+        getSemester(),
     );
     // Récupération des notes
     const { notes } = useNotesStore();
@@ -24,7 +24,7 @@ export default function NotesScreen() {
     // Tableau des notes du semestre sélectionné
 
     const selectedNotes = groupNotesBySubject(
-        filterNotesBySemester(notes, selectedSemester)
+        filterNotesBySemester(notes, selectedSemester),
     )
         // Tri des matières par nombre de notes
         .sort((a, b) => b.notes.length - a.notes.length);

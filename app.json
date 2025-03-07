@@ -3,7 +3,7 @@
         "name": "ISEN Orbit",
         "slug": "isen-orbit",
         "version": "1.0.0",
-        "orientation": "portrait",
+        "orientation": "default",
         "icon": "./assets/images/icon.png",
         "scheme": "isen-orbit",
         "userInterfaceStyle": "automatic",
@@ -14,15 +14,24 @@
             "backgroundColor": "#FFFFFF"
         },
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "requireFullScreen": true,
+            "bundleIdentifier": "com.appenisen.isenorbit"
         },
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/images/adaptive-icon.png",
                 "backgroundColor": "#FFFFFF"
             },
-            "permissions": ["RECEIVE_BOOT_COMPLETED", "VIBRATE", "WAKE_LOCK"],
-            "package": "com.appenisen.isenorbit"
+            "permissions": [
+                "RECEIVE_BOOT_COMPLETED",
+                "VIBRATE",
+                "WAKE_LOCK",
+                "android.permission.SCHEDULE_EXACT_ALARM",
+                "android.permission.USE_EXACT_ALARM"
+            ],
+            "package": "com.appenisen.isenorbit",
+            "googleServicesFile": "./google-services.json"
         },
         "web": {
             "bundler": "metro",
@@ -36,7 +45,22 @@
                 "expo-notifications",
                 {
                     "icon": "./assets/images/notification_icon.png",
-                    "color": "#ffffff"
+                    "color": "#ffffff",
+                    "androidMode": "default",
+                    "androidCollapsedTitle": "ISEN Orbit",
+                    "allowsNotificationsEnabled": true
+                }
+            ],
+            [
+                "expo-screen-orientation",
+                {
+                    "initialOrientation": "DEFAULT"
+                }
+            ],
+            [
+                "expo-image-picker",
+                {
+                    "photosPermission": "L'application accède à vos photos pour les rapports de bug."
                 }
             ]
         ],

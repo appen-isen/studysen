@@ -89,6 +89,7 @@ export default function PlanningScreen() {
             (event) =>
                 new Date(event.start).getTime() >= startTimestamp &&
                 new Date(event.end).getTime() <= endTimestamp,
+                new Date(event.end).getTime() <= endTimestamp,
         );
         // On vérifie si les événements sont déjà synchronisés avec Internet
         // On récupère le store directement de cette manière pour éviter les problèmes d'attentes de rendu
@@ -97,6 +98,7 @@ export default function PlanningScreen() {
             .syncedPlanning.some(
                 (event) =>
                     new Date(event.start).getTime() >= startTimestamp &&
+                    new Date(event.end).getTime() <= endTimestamp,
                     new Date(event.end).getTime() <= endTimestamp,
             );
 
@@ -121,6 +123,8 @@ export default function PlanningScreen() {
                             usePlanningStore.getState().planning,
                             currentWeekPlanning,
                         ),
+                            currentWeekPlanning,
+                        ),
                     );
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé
@@ -128,6 +132,8 @@ export default function PlanningScreen() {
                         // On met à jour le planning synchronisé en fusionnant les événements
                         mergePlanning(
                             useSyncedPlanningStore.getState().syncedPlanning,
+                            currentWeekPlanning,
+                        ),
                             currentWeekPlanning,
                         ),
                     );
@@ -276,6 +282,7 @@ export default function PlanningScreen() {
                         } else {
                             //Sinon on affiche les informations complètes de l'événement
                             setSelectedEvent(
+                                findEvent(planning, planningEvent),
                                 findEvent(planning, planningEvent),
                             );
                         }

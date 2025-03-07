@@ -723,7 +723,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
         const adjustedDate = new Date(
             now.getFullYear(),
             now.getMonth(),
-            now.getDate() + (date.getDay() - now.getDay())
+            now.getDate() + (date.getDay() - now.getDay()),
         );
 
         // Copie des heures et minutes de la date originale

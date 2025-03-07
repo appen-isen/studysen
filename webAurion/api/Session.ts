@@ -36,7 +36,7 @@ export class Session {
     public login(
         username: string,
         password: string,
-        timeout?: number
+        timeout?: number,
     ): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             //Mode de démo
@@ -87,7 +87,7 @@ export class Session {
     // (1ère phase) Besoin de simuler le clic sur la sidebar pour obtenir le ViewState nécessaire aux fonctionnements des reqûetes
     public sendSidebarRequest(
         subMenuId: string,
-        viewState: string
+        viewState: string,
     ): Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
             try {
@@ -95,17 +95,17 @@ export class Session {
                 const params = getJSFFormParams(
                     "j_idt46",
                     "sidebar",
-                    viewState
+                    viewState,
                 );
                 // On ajoute l'ID du sous-menu qui correspond à la rubrique chosie (Scolarité, mon compte, divers, ...)
                 params.append(
                     "webscolaapp.Sidebar.ID_SUBMENU",
-                    `submenu_${subMenuId}`
+                    `submenu_${subMenuId}`,
                 );
                 // On envoie la requête POST
                 const response = await this.sendPOST<string>(
                     `faces/Planning.xhtml`,
-                    params
+                    params,
                 );
                 resolve(response);
             } catch (err) {
@@ -118,7 +118,7 @@ export class Session {
     // Cette fonction retourne un second ViewState qui sera utilisé pour effectuer les prochaines requêtes POST
     public sendSidebarSubmenuRequest(
         subMenuId: string,
-        viewState: string
+        viewState: string,
     ): Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
             try {
@@ -130,7 +130,7 @@ export class Session {
                 params.append("form:sidebar_menuid", subMenuId);
                 const response = await this.sendPOST<string>(
                     `faces/Planning.xhtml`,
-                    params
+                    params,
                 );
                 const secondViewState = getViewState(response);
                 if (secondViewState) {
@@ -153,7 +153,7 @@ export class Session {
             }
             try {
                 const schedulePage = await this.sendGET<string>(
-                    "/faces/Planning.xhtml"
+                    "/faces/Planning.xhtml",
                 );
                 let viewState = getViewState(schedulePage);
                 if (viewState) {
@@ -164,7 +164,7 @@ export class Session {
                     // On récupère le ViewState pour effectuer la prochaine requête
                     viewState = await this.sendSidebarSubmenuRequest(
                         subMenuId,
-                        viewState
+                        viewState,
                     );
                     if (viewState) {
                         this.viewStateCache = viewState;

@@ -22,7 +22,7 @@ class NotesApi {
                 // Ici 1_1 correspond au sous-menu 'Mes notes' dans la sidebar
                 await this.session.getViewState("1_1");
                 const response = await this.session.sendGET<string>(
-                    "faces/LearnerNotationListPage.xhtml"
+                    "faces/LearnerNotationListPage.xhtml",
                 );
                 resolve(getNotesFromResponse(response));
             } catch (error) {

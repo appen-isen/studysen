@@ -38,7 +38,7 @@ export default function HomeScreen() {
     const { notes, setNotes } = useNotesStore();
     const { settings } = useSettingsStore();
     const [noteAverageValue, setNoteAverageValue] = useState<string>(
-        calculateAverage(notes)
+        calculateAverage(notes),
     );
     // Gestion du planning
     const { planning, setPlanning } = usePlanningStore();
@@ -67,6 +67,29 @@ export default function HomeScreen() {
         return () => clearInterval(interval); // Cleanup interval on unmount
     }, [lastUpdateTime]);
 
+    //Nom de l'utilisateur et email
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [firstLetters, setFirstLetters] = useState("");
+    useEffect(() => {
+        if (settings.username) {
+            const username = settings.username;
+            setUsername(username);
+            //Initiales du prénom et du nom
+            const firstLetters = username.split(" ");
+            setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
+
+            //On convertit le Prénom Nom en email valide
+            const normalizedName = username
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase();
+            setEmail(
+                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr",
+            );
+        }
+    }, [settings]);
+
     // Mettre à jour le planning toutes les 10 minutes
     const autoUpdatePlanningIfNeeded = () => {
         if (lastUpdateTime) {
@@ -94,7 +117,7 @@ export default function HomeScreen() {
         const isWeekInPlanning = planning.some(
             (event) =>
                 new Date(event.start).getTime() >= startTimestamp &&
-                new Date(event.end).getTime() <= endTimestamp
+                new Date(event.end).getTime() <= endTimestamp,
         );
         // Pas besoin de retélécharger les événements si la semaine est déjà chargée
         if (isWeekInPlanning) {
@@ -112,8 +135,8 @@ export default function HomeScreen() {
                         // On met à jour le planning en fusionnant les événements
                         mergePlanning(
                             usePlanningStore.getState().planning,
-                            currentWeekPlanning
-                        )
+                            currentWeekPlanning,
+                        ),
                     );
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé
@@ -121,8 +144,8 @@ export default function HomeScreen() {
                         // On met à jour le planning synchronisé en fusionnant les événements
                         mergePlanning(
                             useSyncedPlanningStore.getState().syncedPlanning,
-                            currentWeekPlanning
-                        )
+                            currentWeekPlanning,
+                        ),
                     );
                     // On met à jour la date de la dernière mise à jour
                     setLastUpdateTime(new Date());
@@ -140,7 +163,8 @@ export default function HomeScreen() {
                                     scheduleCourseNotification(
                                         event.title || event.subject,
                                         event.room,
-                                        new Date(event.start)
+                                        new Date(event.start),
+                                        email,
                                     );
                                 }
                             });
@@ -166,7 +190,7 @@ export default function HomeScreen() {
                     // On affiche la moyenne du semestre actuel
                     const filteredNotes = filterNotesBySemester(
                         fetchedNotes,
-                        getSemester()
+                        getSemester(),
                     );
                     setNoteAverageValue(calculateAverage(filteredNotes));
                 })
@@ -222,8 +246,8 @@ export default function HomeScreen() {
                                             setSelectedEvent(
                                                 findEvent(
                                                     planning,
-                                                    planningEvent
-                                                )
+                                                    planningEvent,
+                                                ),
                                             );
                                         }
                                         setEventModalInfoVisible(true);
@@ -276,8 +300,8 @@ export default function HomeScreen() {
                                             setSelectedEvent(
                                                 findEvent(
                                                     planning,
-                                                    planningEvent
-                                                )
+                                                    planningEvent,
+                                                ),
                                             );
                                         }
                                         setEventModalInfoVisible(true);

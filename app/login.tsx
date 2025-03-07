@@ -1,4 +1,11 @@
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from "react-native";
+import {
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    StyleSheet,
+    View,
+} from "react-native";
 import { AnimatedPressable, Button } from "@/components/Buttons";
 import { Input, Checkbox } from "@/components/Inputs";
 import { Bold, Text } from "@/components/Texts";
@@ -100,7 +107,7 @@ export default function LoginScreen() {
                     router.replace("/(tabs)");
                 } else {
                     setErrorMessage(
-                        "Nom d'utilisateur ou mot de passe incorrect"
+                        "Nom d'utilisateur ou mot de passe incorrect",
                     );
                     setErrorVisible(true);
                 }
@@ -110,7 +117,8 @@ export default function LoginScreen() {
                 //Erreur de connexion
                 setAuthenticating(false);
                 setErrorMessage(
-                    "Une erreur est survenue lors de la connexion: " + e.message
+                    "Une erreur est survenue lors de la connexion: " +
+                        e.message,
                 );
                 setErrorVisible(true);
             });
@@ -130,115 +138,141 @@ export default function LoginScreen() {
     }
     return (
         <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.containerView}
-        >
-            {/* Bouton pour choisir le campus */}
-            <AnimatedPressable
-                style={styles.campusSelect}
-                onPress={() => setCampusMenuVisible(true)}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={styles.containerView}
             >
-                <Text style={styles.campusSelectText}>
-                    Campus de <Bold>{settings.campus}</Bold>
-                </Text>
-                <MaterialIcons
-                    style={styles.campusSelectText}
-                    name="keyboard-arrow-down"
-                    size={20}
+                {/* Bouton pour choisir le campus */}
+                <AnimatedPressable
+                    style={styles.campusSelect}
+                    onPress={() => setCampusMenuVisible(true)}
+                >
+                    <Text style={styles.campusSelectText}>
+                        Campus de <Bold>{settings.campus}</Bold>
+                    </Text>
+                    <MaterialIcons
+                        style={styles.campusSelectText}
+                        name="keyboard-arrow-down"
+                        size={20}
+                    />
+                </AnimatedPressable>
+                <Dropdown
+                    visible={campusMenuVisible}
+                    setVisible={setCampusMenuVisible}
+                    options={[...CAMPUS]}
+                    selectedItem={settings.campus}
+                    setSelectedItem={(newCampus) =>
+                        setSettings(
+                            "campus",
+                            newCampus as (typeof CAMPUS)[number],
+                        )
+                    }
+                    modalBoxStyle={styles.dropdownBoxStyle}
+                ></Dropdown>
+
+                {/* Haut de la page */}
+                <View style={styles.headerBox}>
+                    <MaterialIcons name="login" style={styles.headerIcon} />
+                    <Text style={styles.headerTitle}>Connexion</Text>
+                    <Text style={styles.headerLabel}>
+                        Utilisez les identifiants de l'ENT
+                    </Text>
+                </View>
+                {/* Champs */}
+                <View style={styles.fieldsBox}>
+                    <Input
+                        placeholder="Nom d'utilisateur"
+                        icon="account-circle"
+                        onChangeText={(text) => setUsername(text)}
+                        value={username}
+                        autoComplete="username"
+                    ></Input>
+                    <Input
+                        placeholder="Mot de passe"
+                        icon="key"
+                        onChangeText={(text) => setPassword(text)}
+                        value={password}
+                        autoComplete="password"
+                        password
+                    ></Input>
+                    <Checkbox
+                        status={rememberMe ? "checked" : "unchecked"}
+                        onPress={() => setRememberMe(!rememberMe)}
+                        color={Colors.primary}
+                        text="Rester connecté"
+                    />
+                </View>
+                {/* Boutons du bas */}
+                <View style={styles.actionBox}>
+                    <Button
+                        title="Se connecter"
+                        onPress={handleLogin}
+                        style={styles.actionLogin}
+                        isLoading={authenticating}
+                    ></Button>
+                    <Pressable
+                        onPress={() => setHelpVisible(true)}
+                        style={styles.actionHelp}
+                    >
+                        <Text>J'ai besoin d'aide</Text>
+                    </Pressable>
+                </View>
+
+                {/* Modal d'aide */}
+                <Sheet
+                    visible={helpVisible}
+                    setVisible={setHelpVisible}
+                    sheetStyle={helpStyles.container}
+                >
+                    <Text style={helpStyles.subtitle}>
+                        Comment se connecter ?
+                    </Text>
+                    <Text style={helpStyles.paragraph}>
+                        Utilisez votre{" "}
+                        <Text style={helpStyles.important}>
+                            identifiant d'ENT
+                        </Text>{" "}
+                        de l'<Bold>ISEN</Bold> qui vous permet l'accès à{" "}
+                        <Bold>WebAurion</Bold> et <Bold>Moodle</Bold>.
+                    </Text>
+                    <Text style={helpStyles.paragraph}>
+                        L'identifiant est de la forme{" "}
+                        <Text style={helpStyles.important}>p_nom</Text>. La
+                        première lettre de votre <Bold>prénom</Bold> suivie de
+                        votre <Bold>nom de famille</Bold>.
+                    </Text>
+                    <Text style={helpStyles.subtitle}>
+                        Encore des problèmes ?
+                    </Text>
+                    <Text style={helpStyles.paragraph}>
+                        Vous n'arrivez toujours pas à vous connecter ? Essayer
+                        de <Bold>changer votre mot de passe</Bold>.
+                    </Text>
+                    <Link
+                        href={
+                            "https://web.isen-ouest.fr/password/index.php?action=sendtoken"
+                        }
+                    >
+                        <View style={helpStyles.link}>
+                            <MaterialIcons name="open-in-new" size={20} />
+                            <Text>Mot de passe oublié</Text>
+                        </View>
+                    </Link>
+                </Sheet>
+
+                {/* Modal d'erreur */}
+                <ErrorModal
+                    visible={errorVisible}
+                    message={errorMessage}
+                    setVisible={(visible) => setErrorVisible(visible)}
                 />
-            </AnimatedPressable>
-            <Dropdown
-                visible={campusMenuVisible}
-                setVisible={setCampusMenuVisible}
-                options={[...CAMPUS]}
-                selectedItem={settings.campus}
-                setSelectedItem={(newCampus) =>
-                    setSettings(
-                        "campus",
-                        newCampus as (typeof CAMPUS)[number]
-                    )
-                }
-                modalBoxStyle={styles.dropdownBoxStyle}
-            ></Dropdown>
-
-            {/* Haut de la page */}
-            <View style={styles.headerBox}>
-                <MaterialIcons name="login" style={styles.headerIcon} />
-                <Text style={styles.headerTitle}>Connexion</Text>
-                <Text style={styles.headerLabel}>Utilisez les identifiants de l'ENT</Text>
-            </View>
-            {/* Champs */}
-            <View style={styles.fieldsBox}>
-                <Input
-                    placeholder="Nom d'utilisateur"
-                    icon="account-circle"
-                    onChangeText={(text) => setUsername(text)}
-                    value={username}
-                    autoComplete="username"
-                ></Input>
-                <Input
-                    placeholder="Mot de passe"
-                    icon="key"
-                    onChangeText={(text) => setPassword(text)}
-                    value={password}
-                    autoComplete="password"
-                    password
-                ></Input>
-                <Checkbox
-                    status={rememberMe ? "checked" : "unchecked"}
-                    onPress={() => setRememberMe(!rememberMe)}
-                    color={Colors.primary}
-                    text="Rester connecté"
-                />
-            </View>
-            {/* Boutons du bas */}
-            <View style={styles.actionBox}>
-                <Button
-                    title="Se connecter"
-                    onPress={handleLogin}
-                    style={styles.actionLogin}
-                    isLoading={authenticating}
-                ></Button>
-                <Pressable onPress={() => setHelpVisible(true)} style={styles.actionHelp}>
-                    <Text>J'ai besoin d'aide</Text>
-                </Pressable>
-            </View>
-
-            {/* Modal d'aide */}
-            <Sheet visible={helpVisible} setVisible={setHelpVisible} sheetStyle={helpStyles.container}>
-                <Text style={helpStyles.subtitle}>Comment se connecter ?</Text>
-                <Text style={helpStyles.paragraph}>
-                    Utilisez votre <Text style={helpStyles.important}>identifiant d'ENT</Text> de l'<Bold>ISEN</Bold> qui vous permet l'accès à <Bold>WebAurion</Bold> et <Bold>Moodle</Bold>.
-                </Text>
-                <Text style={helpStyles.paragraph}>
-                    L'identifiant est de la forme <Text style={helpStyles.important}>p_nom</Text>. La première lettre de votre <Bold>prénom</Bold> suivie de votre <Bold>nom de famille</Bold>.
-                </Text>
-                <Text style={helpStyles.subtitle}>Encore des problèmes ?</Text>
-                <Text style={helpStyles.paragraph}>
-                    Vous n'arrivez toujours pas à vous connecter ? Essayer de <Bold>changer votre mot de passe</Bold>.
-                </Text>
-                <Link href={"https://web.isen-ouest.fr/password/index.php?action=sendtoken"}>
-                    <View style={helpStyles.link}>
-                        <MaterialIcons name="open-in-new" size={20} />
-                        <Text>Mot de passe oublié</Text>
-                    </View>
-                </Link>
-            </Sheet>
-
-            {/* Modal d'erreur */}
-            <ErrorModal
-                visible={errorVisible}
-                message={errorMessage}
-                setVisible={(visible) => setErrorVisible(visible)}
-            />
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    // 
+    //
     // Containers
     //
     container: {
@@ -353,5 +387,5 @@ const helpStyles = StyleSheet.create({
         paddingBlock: 5,
         paddingInline: 10,
         borderRadius: 5,
-    }
+    },
 });
