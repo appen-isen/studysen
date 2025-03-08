@@ -2,7 +2,7 @@ import { create } from "zustand";
 import {
     clearStateFromStorage,
     loadStateFromStorage,
-    saveStateToStorage,
+    saveStateToStorage
 } from "./storage";
 
 // Liste des campus
@@ -26,6 +26,7 @@ type Settings = {
     deviceId: string;
     userISENId: string;
     email: string;
+    userId: number;
     className?: (typeof classNameValues)[number];
     year?: (typeof yearValues)[number];
 };
@@ -47,8 +48,9 @@ function getDefaultSettings(): Settings {
         deviceId: "",
         userISENId: "",
         email: "",
+        userId: -1,
         className: undefined,
-        year: undefined,
+        year: undefined
     };
 }
 
@@ -65,7 +67,7 @@ const useSettingsStore = create<SettingsState>()((set) => ({
     clearSettings: () => {
         set({ settings: getDefaultSettings() });
         clearStateFromStorage("settings");
-    }, // Réinitialise les réglages
+    } // Réinitialise les réglages
 }));
 
 // On charge les stores depuis le stockage
