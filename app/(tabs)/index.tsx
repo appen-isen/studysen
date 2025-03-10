@@ -11,7 +11,6 @@ import { Button } from "@/components/Buttons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
-    useNotesStore,
     usePlanningStore,
     useSyncedPlanningStore
 } from "@/stores/webaurionStore";
@@ -22,12 +21,10 @@ import {
     findEvent,
     getCurrentEvent,
     getNextEventToday,
-    mergePlanning,
     updatePlanningForListMode
 } from "@/utils/planning";
 import { ListEvent } from "@/components/planning/PlanningList";
 import EventModal from "@/components/modals/EventModal";
-import { calculateAverage, filterNotesBySemester } from "@/utils/notes";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -36,16 +33,11 @@ import {
     scheduleCourseNotification
 } from "@/utils/notificationConfig";
 import useSettingsStore from "@/stores/settingsStore";
-import { getSemester } from "@/utils/date";
 
 export default function HomeScreen() {
     const router = useRouter();
     const { session } = useSessionStore();
-    const { notes, setNotes } = useNotesStore();
     const { settings } = useSettingsStore();
-    const [noteAverageValue, setNoteAverageValue] = useState<string>(
-        calculateAverage(notes)
-    );
     // Gestion du planning
     const { planning, setPlanning } = usePlanningStore();
     const [isPlanningLoaded, setPlanningLoaded] = useState(false);
@@ -192,9 +184,6 @@ export default function HomeScreen() {
 
                             if (isNotHoliday && isInFuture) {
                                 eligibleCount++;
-                                console.log(
-                                    `✓ Eligible for notification: ${event.title || event.subject}`
-                                );
                                 return true;
                             }
                             return false;
@@ -207,19 +196,12 @@ export default function HomeScreen() {
                                     scheduleCourseNotification(
                                         event.title || event.subject,
                                         event.room,
-                                        new Date(event.start),
-                                        userEmail
+                                        new Date(event.start)
                                     )
                                         .then((result) => {
                                             if (result) {
                                                 scheduledCount++;
-                                                console.log(
-                                                    `✓ Notification scheduled: ${event.title || event.subject}`
-                                                );
                                             } else {
-                                                console.log(
-                                                    `- Notification skipped: ${event.title || event.subject}`
-                                                );
                                             }
                                             resolve(true);
                                         })
@@ -239,17 +221,11 @@ export default function HomeScreen() {
                         });
 
                     // Wait for all notifications to be processed
-                    Promise.all(notificationPromises)
-                        .then(() => {
-                            console.log(
-                                `Successfully scheduled ${scheduledCount}/${eligibleCount} notifications`
-                            );
-                        })
-                        .catch((error) => {
-                            console.error(
-                                `Error in notification batch processing: ${error}`
-                            );
-                        });
+                    Promise.all(notificationPromises).catch((error) => {
+                        console.error(
+                            `Error in notification batch processing: ${error}`
+                        );
+                    });
 
                     console.log(
                         `Attempted to schedule notifications for ${eligibleCount} events`
