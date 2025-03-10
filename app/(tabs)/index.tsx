@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View, ScrollView } from "react-native";
+import {
+    ActivityIndicator,
+    StyleSheet,
+    View,
+    ScrollView,
+    Linking
+} from "react-native";
 import { Text } from "@/components/Texts";
 import { Button } from "@/components/Buttons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
-    useNotesStore,
     usePlanningStore,
     useSyncedPlanningStore
 } from "@/stores/webaurionStore";
@@ -16,12 +21,10 @@ import {
     findEvent,
     getCurrentEvent,
     getNextEventToday,
-    mergePlanning,
     updatePlanningForListMode
 } from "@/utils/planning";
 import { ListEvent } from "@/components/planning/PlanningList";
 import EventModal from "@/components/modals/EventModal";
-import { calculateAverage, filterNotesBySemester } from "@/utils/notes";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -30,16 +33,11 @@ import {
     scheduleCourseNotification
 } from "@/utils/notificationConfig";
 import useSettingsStore from "@/stores/settingsStore";
-import { getSemester } from "@/utils/date";
 
 export default function HomeScreen() {
     const router = useRouter();
     const { session } = useSessionStore();
-    const { notes, setNotes } = useNotesStore();
     const { settings } = useSettingsStore();
-    const [noteAverageValue, setNoteAverageValue] = useState<string>(
-        calculateAverage(notes)
-    );
     // Gestion du planning
     const { planning, setPlanning } = usePlanningStore();
     const [isPlanningLoaded, setPlanningLoaded] = useState(false);
@@ -57,7 +55,6 @@ export default function HomeScreen() {
     //Lorsque la page est chargée
     useEffect(() => {
         requestPermissions();
-        updateNotes();
         autoUpdatePlanningIfNeeded();
 
         const interval = setInterval(() => {
@@ -79,14 +76,7 @@ export default function HomeScreen() {
             const firstLetters = username.split(" ");
             setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
 
-            //On convertit le Prénom Nom en email valide
-            const normalizedName = username
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toLowerCase();
-            setEmail(
-                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
-            );
+            setEmail(settings.email);
         }
     }, [settings]);
 
@@ -110,7 +100,8 @@ export default function HomeScreen() {
     // Fonction pour mettre à jour l'emploi du temps
     const updatePlanning = (weekOffset: number = 0) => {
         setPlanningLoaded(false);
-        // Calcul de la plage de dates pour la semaine
+
+        // Calcul de la plage de dates pour la semaine actuelle
         const { startTimestamp, endTimestamp } = getScheduleDates(weekOffset);
 
         // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
@@ -119,90 +110,132 @@ export default function HomeScreen() {
                 new Date(event.start).getTime() >= startTimestamp &&
                 new Date(event.end).getTime() <= endTimestamp
         );
+
         // Pas besoin de retélécharger les événements si la semaine est déjà chargée
         if (isWeekInPlanning) {
             setPlanningLoaded(true);
         }
 
         if (session) {
-            // Requête pour charger les événements de la semaine
+            // Requête pour charger les événements de la semaine actuelle
             session
                 .getPlanningApi()
                 .fetchPlanning(weekOffset)
-                .then((currentWeekPlanning: PlanningEvent[]) => {
-                    // Concaténer le nouveau planning avec l'existant sans doublons
-                    setPlanning(
-                        // On met à jour le planning en fusionnant les événements
-                        mergePlanning(
-                            usePlanningStore.getState().planning,
-                            currentWeekPlanning
-                        )
-                    );
-                    setPlanningLoaded(true);
-                    // Mettre à jour le planning synchronisé
-                    setSyncedPlanning(
-                        // On met à jour le planning synchronisé en fusionnant les événements
-                        mergePlanning(
-                            useSyncedPlanningStore.getState().syncedPlanning,
-                            currentWeekPlanning
-                        )
-                    );
-                    // On met à jour la date de la dernière mise à jour
-                    setLastUpdateTime(new Date());
-                    //On planifie les notifications pour les cours
-                    //On les supprime d'abord puis on les recrée avec le planning
-                    cancelAllScheduledNotifications().then(() => {
-                        if (settings.notificationsEnabled) {
-                            const date = new Date();
-                            currentWeekPlanning.forEach((event) => {
-                                //Si l'événement n'est pas un congé et qu'il n'est pas déjà passé, on planifie une notification silencieuse
-                                if (
-                                    event.className !== "CONGES" &&
-                                    new Date(event.start) > date
-                                ) {
-                                    scheduleCourseNotification(
-                                        event.title || event.subject,
-                                        event.room,
-                                        new Date(event.start),
-                                        email
-                                    );
-                                }
-                            });
-                        }
-                    });
-                })
                 .catch((error) => {
                     console.error(error);
                     setPlanningLoaded(true);
                 });
+
+            // Si on est sur la semaine actuelle, on charge aussi la semaine prochaine pour les notifications
+            if (weekOffset === 0) {
+                session
+                    .getPlanningApi()
+                    .fetchPlanning(1)
+                    .catch((error) => {
+                        console.error(
+                            "Erreur lors du chargement de la semaine prochaine:",
+                            error
+                        );
+                    });
+            }
+
+            // Pour les notifications, on veut les événements de cette semaine ET de la semaine prochaine
+            const currentWeekEvents = planning.filter((event) => {
+                const eventDate = new Date(event.start);
+                return eventDate.getTime() >= startTimestamp;
+            });
+
+            // Planifier les notifications pour les deux semaines
+            scheduleNotificationsForEvents(currentWeekEvents, settings);
         }
     };
 
-    // Fonction pour mettre à jour les notes
-    const updateNotes = () => {
-        if (session) {
-            // Requête pour charger les notes
-            session
-                .getNotesApi()
-                .fetchNotes()
-                .then((fetchedNotes) => {
-                    setNotes(fetchedNotes);
-                    // On affiche la moyenne du semestre actuel
-                    const filteredNotes = filterNotesBySemester(
-                        fetchedNotes,
-                        getSemester()
+    // Fonction pour planifier les notifications
+    const scheduleNotificationsForEvents = (
+        events: PlanningEvent[],
+        settings: any
+    ) => {
+        cancelAllScheduledNotifications()
+            .then(() => {
+                if (settings.notificationsEnabled) {
+                    console.log(
+                        "Notifications enabled, scheduling new notifications..."
                     );
-                    setNoteAverageValue(calculateAverage(filteredNotes));
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        }
+                    const date = new Date();
+                    let scheduledCount = 0;
+
+                    console.log(`Total events found: ${events.length}`);
+                    let eligibleCount = 0;
+
+                    // Use Promise.all to properly handle all notification scheduling
+                    const notificationPromises = events
+                        .filter((event) => {
+                            const eventDate = new Date(event.start);
+                            const isInFuture = eventDate > date;
+                            const isNotHoliday = event.className !== "CONGES";
+
+                            if (isNotHoliday && isInFuture) {
+                                eligibleCount++;
+                                return true;
+                            }
+                            return false;
+                        })
+                        .map((event) => {
+                            // Add a try-catch block for each individual promise
+                            return new Promise((resolve) => {
+                                try {
+                                    // Safely handle each notification scheduling
+                                    scheduleCourseNotification(
+                                        event.title || event.subject,
+                                        event.room,
+                                        new Date(event.start)
+                                    )
+                                        .then((result) => {
+                                            if (result) {
+                                                scheduledCount++;
+                                            } else {
+                                            }
+                                            resolve(true);
+                                        })
+                                        .catch((error) => {
+                                            console.error(
+                                                `× Error scheduling individual notification: ${error.message || error}`
+                                            );
+                                            resolve(false);
+                                        });
+                                } catch (error) {
+                                    console.error(
+                                        `× Exception in notification scheduling: ${error}`
+                                    );
+                                    resolve(false);
+                                }
+                            });
+                        });
+
+                    // Wait for all notifications to be processed
+                    Promise.all(notificationPromises).catch((error) => {
+                        console.error(
+                            `Error in notification batch processing: ${error}`
+                        );
+                    });
+
+                    console.log(
+                        `Attempted to schedule notifications for ${eligibleCount} events`
+                    );
+                } else {
+                    console.log("Notifications are disabled in settings");
+                }
+            })
+            .catch((error) => {
+                console.error(`Error in notification process: ${error}`);
+            });
     };
 
     // Action lors de l'appui sur le bouton pour afficher les notes
     const handleViewNotes = () => {
-        router.push("/notes");
+        Linking.openURL(
+            "https://web.isen-ouest.fr/webAurion/faces/LearnerNotationListPage.xhtml"
+        );
     };
 
     // Demande de permission pour les notifications
@@ -337,10 +370,6 @@ export default function HomeScreen() {
                     </View>
                     {/* Contenu de la section */}
                     <View style={sectionStyles.content}>
-                        <Text style={styles.noteTitle}>
-                            Moyenne du semestre
-                        </Text>
-                        <Text style={styles.noteValue}>{noteAverageValue}</Text>
                         <Button
                             title="Voir mes notes"
                             //On redirige vers l'onglet notes
