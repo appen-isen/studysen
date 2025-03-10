@@ -7,7 +7,11 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import "react-native-reanimated";
 import { startPingMonitoring, stopPingMonitoring } from "@/utils/ping";
-
+import {
+    registerBackgroundSync,
+    requestPermissions
+} from "@/utils/notificationConfig";
+import { initializePlanningStore } from "@/stores/planningStore";
 
 //Layout par défaut de l'application
 export { ErrorBoundary } from "expo-router";
@@ -21,7 +25,7 @@ export default function RootLayout() {
         "OpenSans-400": require("../assets/fonts/OpenSans-400.ttf"),
         "OpenSans-600": require("../assets/fonts/OpenSans-600.ttf"),
         "OpenSans-700": require("../assets/fonts/OpenSans-700.ttf"),
-        ...FontAwesome.font,
+        ...FontAwesome.font
     });
 
     //Etat de chargement des stores
@@ -42,6 +46,7 @@ export default function RootLayout() {
         const initStores = async () => {
             await initializeWebaurionStores();
             await initializeSettingsStore();
+            await initializePlanningStore();
         };
         //On initialise les stores
         initStores().then(() => setStoreLoaded(true));
@@ -51,6 +56,15 @@ export default function RootLayout() {
     useEffect(() => {
         startPingMonitoring();
         return () => stopPingMonitoring();
+    }, []);
+
+    useEffect(() => {
+        const setupSync = async () => {
+            await requestPermissions();
+            await registerBackgroundSync();
+        };
+
+        setupSync();
     }, []);
 
     if (!loaded || !storeLoaded) {
@@ -68,7 +82,7 @@ function RootLayoutNav() {
                 headerShown: false,
                 //Barre de status
                 statusBarBackgroundColor: "#fff",
-                statusBarStyle: "dark",
+                statusBarStyle: "dark"
             }}
         >
             <Stack.Screen name="login" />
@@ -86,14 +100,14 @@ function RootLayoutNav() {
                     presentation: "modal",
                     animation: "slide_from_bottom",
                     headerTitle: "Informations sur les notes",
-                    headerShown: true,
+                    headerShown: true
                 }}
             />
             <Stack.Screen
                 name="(settings)"
                 options={{
                     presentation: "modal",
-                    animation: "slide_from_right",
+                    animation: "slide_from_right"
                 }}
             />
         </Stack>
