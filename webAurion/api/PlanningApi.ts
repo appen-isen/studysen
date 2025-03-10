@@ -3,10 +3,7 @@ import { PlanningEvent } from "../utils/types";
 import Session from "./Session";
 import { getScheduleDates } from "../utils/PlanningUtils";
 import useSettingsStore from "../../stores/settingsStore";
-
-const generateDemoPlanning = (): PlanningEvent[] => {
-    return [];
-};
+import { generateDemoPlanning } from "@/webAurion/utils/demo";
 
 class PlanningApi {
     private session: Session;
@@ -64,12 +61,12 @@ class PlanningApi {
             room: (vevent.location || "").split("\n")[0],
             instructors: instructorsLine,
             description: descriptionClass,
-            className: NomClasse,
+            className: NomClasse
         };
     }
 
     public async fetchPlanning(
-        weeksFromNow?: number,
+        weeksFromNow?: number
     ): Promise<PlanningEvent[]> {
         if (this.session.isDemo()) {
             return generateDemoPlanning();

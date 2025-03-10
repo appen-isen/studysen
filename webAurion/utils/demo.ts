@@ -1,321 +1,5 @@
-import { getSemesterFromCode } from "@/utils/notes";
-import { NotesList, PlanningEvent } from "./types";
+import { PlanningEvent } from "./types";
 import { mergePlanning } from "@/utils/planning";
-
-export function generateDemoNotes(): NotesList[] {
-    let notes = [
-        {
-            code: "24_CIR1N_A1_S1_ALGO_C_DS1",
-            notes: [
-                {
-                    date: "18/10/2024",
-                    code: "24_CIR1N_A1_S1_ALGO_C_DS1",
-                    subject: "Algorithmique C DS1 S1",
-                    note: "17.83",
-                    absence: "",
-                    description: "",
-                    instructor: "MENEU Jean-Jacques",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_ALGO_C_DS2",
-            notes: [
-                {
-                    date: "29/11/2024",
-                    code: "24_CIR1N_A1_S1_ALGO_C_DS2",
-                    subject: "Algorithmique C DS2 S1",
-                    note: "19.50",
-                    absence: "",
-                    description: "",
-                    instructor: "BESCHER Florian",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_ANGLAIS_DS",
-            notes: [
-                {
-                    date: "08/10/2024",
-                    code: "24_CIR1N_A1_S1_ANGLAIS_DS",
-                    subject: "Anglais DS S1",
-                    note: "17.40",
-                    absence: "",
-                    description: "",
-                    instructor:
-                        "TURMERO MORIN Maria Virginia, BILES Karina, BODEN Nina",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_CULTURE_NUM_CC",
-            notes: [
-                {
-                    date: "10/01/2025",
-                    code: "24_CIR1N_A1_S1_CULTURE_NUM_CC",
-                    subject: "Culture numérique Contrôle continu S1",
-                    note: "19.00",
-                    absence: "",
-                    description: "",
-                    instructor: "OULD AMER Khadidja",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_LINUX_CC",
-            notes: [
-                {
-                    date: "26/11/2024",
-                    code: "24_CIR1N_A1_S1_LINUX_CC",
-                    subject: "Linux Contrôle continu S1",
-                    note: "18.96",
-                    absence: "",
-                    description: "",
-                    instructor: "BEAUSSÉ Nils",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_MATH_CC",
-            notes: [
-                {
-                    date: "10/01/2025",
-                    code: "24_CIR1N_A1_S1_MATH_CC",
-                    subject: "Mathématiques Contrôle continu S1",
-                    note: "18.80",
-                    absence: "",
-                    description: "",
-                    instructor: "RAIMBAULT Nathaniel",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_MATH_DS1",
-            notes: [
-                {
-                    date: "24/09/2024",
-                    code: "24_CIR1N_A1_S1_MATH_DS1",
-                    subject: "Mathématiques DS1 S1",
-                    note: "18.00",
-                    absence: "",
-                    description: "",
-                    instructor: "RAIMBAULT Nathaniel",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_MATH_DS2",
-            notes: [
-                {
-                    date: "05/11/2024",
-                    code: "24_CIR1N_A1_S1_MATH_DS2",
-                    subject: "Mathématiques DS2 S1",
-                    note: "17.00",
-                    absence: "",
-                    description: "",
-                    instructor: "RAIMBAULT Nathaniel",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_MATH_DS3",
-            notes: [
-                {
-                    date: "04/12/2024",
-                    code: "24_CIR1N_A1_S1_MATH_DS3",
-                    subject: "Mathématiques DS3 S1",
-                    note: "19.50",
-                    absence: "",
-                    description: "",
-                    instructor: "RAIMBAULT Nathaniel",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_PHYSIQUE_CC",
-            notes: [
-                {
-                    date: "10/01/2025",
-                    code: "24_CIR1N_A1_S1_PHYSIQUE_CC",
-                    subject: "Physique Contôle continu S1",
-                    note: "20.00",
-                    absence: "",
-                    description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_PHYSIQUE_DS1",
-            notes: [
-                {
-                    date: "02/10/2024",
-                    code: "24_CIR1N_A1_S1_PHYSIQUE_DS1",
-                    subject: "Physique DS1 S1",
-                    note: "20.00",
-                    absence: "",
-                    description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_PHYSIQUE_DS2",
-            notes: [
-                {
-                    date: "13/11/2024",
-                    code: "24_CIR1N_A1_S1_PHYSIQUE_DS2",
-                    subject: "Physique DS2 S1",
-                    note: "18.50",
-                    absence: "",
-                    description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_PHYSIQUE_DS3",
-            notes: [
-                {
-                    date: "11/12/2024",
-                    code: "24_CIR1N_A1_S1_PHYSIQUE_DS3",
-                    subject: "Physique DS3 S1",
-                    note: "20.00",
-                    absence: "",
-                    description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_PHYSIQUE_DSS",
-            notes: [
-                {
-                    date: "13/01/2025",
-                    code: "24_CIR1N_A1_S1_PHYSIQUE_DSS",
-                    subject: "Physique DS Synthèse S1",
-                    note: "16.25",
-                    absence: "",
-                    description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_PHYSIQUE_TP",
-            notes: [
-                {
-                    date: "10/01/2025",
-                    code: "24_CIR1N_A1_S1_PHYSIQUE_TP",
-                    subject: "Physique TP S1",
-                    note: "15.25",
-                    absence: "",
-                    description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_SI_DS",
-            notes: [
-                {
-                    date: "26/11/2024",
-                    code: "24_CIR1N_A1_S1_SI_DS",
-                    subject: "Sciences de l'Ingénieur DS S1",
-                    note: "20.00",
-                    absence: "",
-                    description: "",
-                    instructor: "BOUERY Charbel",
-                },
-            ],
-        },
-        {
-            code: "24_CIR1N_A1_S1_WEB_FRONT_DS",
-            notes: [
-                {
-                    date: "17/12/2024",
-                    code: "24_CIR1N_A1_S1_WEB_FRONT_DS",
-                    subject: "Web Frontend DS S1",
-                    note: "18.75",
-                    absence: "",
-                    description: "",
-                    instructor: "ABDALLAH SAAB Nadine",
-                },
-            ],
-        },
-        {
-            code: "24_CIPA3N_CARTO_S5",
-            notes: [
-                {
-                    date: "10/01/2025",
-                    code: "24_CIPA3N_CARTO_S5",
-                    subject: "Test semestre",
-                    note: "16.99",
-                    absence: "",
-                    description: "",
-                    instructor: "Mr TEST",
-                },
-            ],
-        },
-        {
-            code: "24_CIPA3N_ENTREPRENEURIAT_S6",
-            notes: [
-                {
-                    date: "10/01/2025",
-                    code: "24_CIPA3N_ENTREPRENEURIAT_S6",
-                    subject: "Entrepreneuriat S6",
-                    note: "15.99",
-                    absence: "",
-                    description: "",
-                    instructor: "Mr TEST",
-                },
-            ],
-        },
-        {
-            code: "24_CSI2N_A2_S3_INFO_DS",
-            notes: [
-                {
-                    date: "10/04/2025",
-                    subject: "Algorithmique Python DS S3",
-                    code: "24_CSI2N_A2_S3_INFO_DS",
-                    note: "15.99",
-                    absence: "",
-                    description: "",
-                    instructor: "Mr TEST",
-                },
-            ],
-        },
-        {
-            code: "24_CSI2N_A2_S3_MATH_DS1",
-            notes: [
-                {
-                    date: "10/04/2025",
-                    subject: "Mathématiques DS 1 S3",
-                    code: "24_CSI2N_A2_S3_MATH_DS1",
-                    note: "15.99",
-                    absence: "",
-                    description: "",
-                    instructor: "Mr TEST",
-                },
-            ],
-        },
-        {
-            code: "24_CSI2N_A2_S3_MATH_DS2",
-            notes: [
-                {
-                    date: "10/04/2025",
-                    subject: "Mathématiques DS 2 S4",
-                    code: "24_CSI2N_A2_S3_MATH_DS2",
-                    note: "15.99",
-                    absence: "",
-                    description: "",
-                    instructor: "Mr TEST",
-                },
-            ],
-        },
-    ];
-    return notes;
-}
 
 export function generateDemoPlanning(): PlanningEvent[] {
     let planning = [
@@ -325,10 +9,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Mathématiques",
             room: "A0_48 ISEN_EVENEMENTIELLE",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-06T08:00:00+0100",
             end: "2025-01-06T10:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15716705",
@@ -336,10 +20,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Physique",
             room: "A2_40 ISEN_ TD C3-01",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-06T10:15:00+0100",
             end: "2025-01-06T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689457",
@@ -347,10 +31,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Informatique",
             room: "A2_40 ISEN_ TD C3-01",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-06T13:30:00+0100",
             end: "2025-01-06T15:30:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "14676049",
@@ -358,10 +42,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Sciences de l'Ingénieur",
             room: "A0_48 ISEN_EVENEMENTIELLE",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-06T15:40:00+0100",
             end: "2025-01-06T17:40:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15836659",
@@ -369,10 +53,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Informatique",
             room: "A2_50 ISEN",
             instructors: "Mr TEST",
-            learners: "CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-07T08:00:00+0100",
             end: "2025-01-07T10:00:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15446586",
@@ -380,10 +64,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Mathématiques",
             room: "A0_48 ISEN_EVENEMENTIELLE",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-07T10:15:00+0100",
             end: "2025-01-07T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15447135",
@@ -391,10 +75,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Informatique",
             room: "A2_38 ISEN",
             instructors: "Mr TEST",
-            learners: "CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-07T13:30:00+0100",
             end: "2025-01-07T15:30:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15780828",
@@ -402,10 +86,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Informatique",
             room: "A3_34 ISEN_TD M1-02",
             instructors: "Mr TEST",
-            learners: "CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-08T08:00:00+0100",
             end: "2025-01-08T10:00:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "14997890",
@@ -413,10 +97,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Physique",
             room: "A2_40 ISEN_ TD C3-01",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-08T10:15:00+0100",
             end: "2025-01-08T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15062563",
@@ -424,10 +108,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Sciences de l'Ingénieur",
             room: "A0_48 ISEN_EVENEMENTIELLE",
             instructors: "Mr TEST",
-            learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
+            description: "",
             start: "2025-01-08T15:45:00+0100",
             end: "2025-01-08T17:45:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15448889",
@@ -435,11 +119,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Anglais",
             room: "A2_50 ISEN",
             instructors: "Mr TEST",
-            learners:
-                "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-09T08:00:00+0100",
             end: "2025-01-09T10:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15448937",
@@ -447,11 +130,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "FHS",
             room: "A2_32 ISEN_CO-DESIGN",
             instructors: "Mr TEST",
-            learners:
-                "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-09T10:15:00+0100",
             end: "2025-01-09T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15348524",
@@ -459,11 +141,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Sport",
             room: "",
             instructors: "Mr TEST",
-            learners:
-                "CENT1 Nantes 2024-2025 Groupe Sport / CENT2 Nantes 2024-2025 Groupe Sport / CEST1 Nantes 2024-2025 Groupe Sport / CEST2 Nantes 2024-2025 Groupe Sport / CIR1 Nantes 2024-2025 Groupe Sport / CIR2 Nantes 2024-2025 Groupe Sport / CSI1 Nantes 2024-2025 Groupe Sport / CSI2 Nantes 2024-2025 Groupe Sport",
+            description: "",
             start: "2025-01-09T16:00:00+0100",
             end: "2025-01-09T17:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689502",
@@ -471,10 +152,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Réunion",
             room: "A3_40 ISEN_PROJET/DS",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-10T08:30:00+0100",
             end: "2025-01-10T08:45:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689502",
@@ -482,10 +163,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Réunion 2",
             room: "A3_40 ISEN_PROJET/DS",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-10T09:00:00+0100",
             end: "2025-01-10T09:30:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15446630",
@@ -493,10 +174,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Mathématiques",
             room: "A0_48 ISEN_EVENEMENTIELLE",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-10T09:45:00+0100",
             end: "2025-01-10T11:45:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15062584",
@@ -504,10 +185,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Sciences de l'Ingénieur",
             room: "A2_42 ISEN",
             instructors: "Mr TEST",
-            learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
+            description: "",
             start: "2025-01-10T15:45:00+0100",
             end: "2025-01-10T17:45:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15062584",
@@ -515,11 +196,11 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Sciences de l'Ingénieur",
             room: "A2_TEST ISEN",
             instructors: "Mr TEST",
-            learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
+            description: "",
             start: "2025-01-10T15:45:00+0100",
             end: "2025-01-10T17:45:00+0100",
-            className: "TP",
-        },
+            className: "TP"
+        }
     ];
     let newPlanning = [
         {
@@ -528,10 +209,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Mathématiques N",
             room: "A0_48 ISEN_EVENEMENTIELLE",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-06T08:00:00+0100",
             end: "2025-01-06T10:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15716705",
@@ -539,10 +220,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Physique",
             room: "A2_40 ISEN_ TD C3-01",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-06T10:15:00+0100",
             end: "2025-01-06T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689457",
@@ -550,10 +231,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Informatique",
             room: "A2_40 ISEN_ TD C3-01",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-06T13:30:00+0100",
             end: "2025-01-06T15:30:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "14676049",
@@ -561,10 +242,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Sciences de l'Ingénieur",
             room: "A0_48 ISEN_EVENEMENTIELLE",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-06T15:40:00+0100",
             end: "2025-01-06T17:40:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15836659",
@@ -572,10 +253,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Informatique N",
             room: "A2_50 ISEN",
             instructors: "Mr TEST",
-            learners: "CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-07T08:00:00+0100",
             end: "2025-01-07T10:00:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15446586",
@@ -583,10 +264,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Mathématiques",
             room: "A0_48 ISEN_EVENEMENTIELLE",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-07T10:15:00+0100",
             end: "2025-01-07T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15447135",
@@ -594,10 +275,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Informatique",
             room: "A2_38 ISEN",
             instructors: "Mr TEST",
-            learners: "CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-07T13:30:00+0100",
             end: "2025-01-07T15:30:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15780828",
@@ -605,10 +286,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Informatique",
             room: "A3_34 ISEN_TD M1-02",
             instructors: "Mr TEST",
-            learners: "CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-08T08:00:00+0100",
             end: "2025-01-08T10:00:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "14997890",
@@ -616,10 +297,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Physique",
             room: "A2_40 ISEN_ TD C3-01",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-08T10:15:00+0100",
             end: "2025-01-08T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15062563",
@@ -627,10 +308,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Sciences de l'Ingénieur",
             room: "A0_48 ISEN_EVENEMENTIELLE",
             instructors: "Mr TEST",
-            learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
+            description: "",
             start: "2025-01-08T15:45:00+0100",
             end: "2025-01-08T17:45:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15448889",
@@ -638,11 +319,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Anglais",
             room: "A2_50 ISEN",
             instructors: "Mr TEST",
-            learners:
-                "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-09T08:00:00+0100",
             end: "2025-01-09T10:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15448937",
@@ -650,11 +330,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "FHS",
             room: "A2_32 ISEN_CO-DESIGN",
             instructors: "Mr TEST",
-            learners:
-                "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-09T10:15:00+0100",
             end: "2025-01-09T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15348524",
@@ -662,11 +341,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Sport  N",
             room: "",
             instructors: "Mr TEST",
-            learners:
-                "CENT1 Nantes 2024-2025 Groupe Sport / CENT2 Nantes 2024-2025 Groupe Sport / CEST1 Nantes 2024-2025 Groupe Sport / CEST2 Nantes 2024-2025 Groupe Sport / CIR1 Nantes 2024-2025 Groupe Sport / CIR2 Nantes 2024-2025 Groupe Sport / CSI1 Nantes 2024-2025 Groupe Sport / CSI2 Nantes 2024-2025 Groupe Sport",
+            description: "",
             start: "2025-01-09T16:00:00+0100",
             end: "2025-01-09T17:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689502",
@@ -674,10 +352,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Réunion",
             room: "A3_40 ISEN_PROJET/DS",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-10T08:30:00+0100",
             end: "2025-01-10T08:45:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689502",
@@ -685,10 +363,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Réunion 2",
             room: "A3_40 ISEN_PROJET/DS",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-10T09:00:00+0100",
             end: "2025-01-10T09:30:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15446630",
@@ -696,10 +374,10 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Mathématiques",
             room: "A0_48 ISEN_EVENEMENTIELLE",
             instructors: "Mr TEST",
-            learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
+            description: "",
             start: "2025-01-10T09:45:00+0100",
             end: "2025-01-10T11:45:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15062584",
@@ -707,11 +385,11 @@ export function generateDemoPlanning(): PlanningEvent[] {
             subject: "Sciences de l'Ingénieur",
             room: "A2_42 ISEN",
             instructors: "Mr TEST",
-            learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
             start: "2025-01-10T15:45:00+0100",
             end: "2025-01-10T17:45:00+0100",
             className: "TP",
-        },
+            description: ""
+        }
     ];
 
     // Fonction pour ajuster la date
@@ -723,7 +401,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
         const adjustedDate = new Date(
             now.getFullYear(),
             now.getMonth(),
-            now.getDate() + (date.getDay() - now.getDay()),
+            now.getDate() + (date.getDay() - now.getDay())
         );
 
         // Copie des heures et minutes de la date originale
@@ -734,12 +412,12 @@ export function generateDemoPlanning(): PlanningEvent[] {
     const adjustedPlanning = planning.map((event) => ({
         ...event,
         start: adjustDate(event.start),
-        end: adjustDate(event.end),
+        end: adjustDate(event.end)
     }));
     const newAdjustedPlanning = newPlanning.map((event) => ({
         ...event,
         start: adjustDate(event.start),
-        end: adjustDate(event.end),
+        end: adjustDate(event.end)
     }));
 
     return mergePlanning(adjustedPlanning, newAdjustedPlanning);

@@ -76,14 +76,7 @@ export default function HomeScreen() {
             const firstLetters = username.split(" ");
             setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
 
-            //On convertit le Prénom Nom en email valide
-            const normalizedName = username
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toLowerCase();
-            setEmail(
-                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
-            );
+            setEmail(settings.email);
         }
     }, [settings]);
 
@@ -153,14 +146,13 @@ export default function HomeScreen() {
             });
 
             // Planifier les notifications pour les deux semaines
-            scheduleNotificationsForEvents(currentWeekEvents, email, settings);
+            scheduleNotificationsForEvents(currentWeekEvents, settings);
         }
     };
 
     // Fonction pour planifier les notifications
     const scheduleNotificationsForEvents = (
         events: PlanningEvent[],
-        userEmail: string,
         settings: any
     ) => {
         cancelAllScheduledNotifications()
