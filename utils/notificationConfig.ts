@@ -219,11 +219,25 @@ export const scheduleCourseNotification = async (
         "Début de la planification de la notification pour",
         courseName
     );
+
+    const now = new Date();
+    if (courseTime <= now) {
+        console.log(`Cours ${courseName} déjà passé, notification ignorée`);
+        return null;
+    }
+
     const { settings } = useSettingsStore.getState();
     const notificationTime = new Date(
         courseTime.getTime() -
             getDelayInMilliseconds(settings.notificationsDelay)
     );
+
+    if (notificationTime <= now) {
+        console.log(
+            `Heure de notification pour ${courseName} déjà passée, notification ignorée`
+        );
+        return null;
+    }
 
     try {
         const notifMessage = `Votre cours de ${courseName}${
