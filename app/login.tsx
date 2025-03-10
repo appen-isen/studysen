@@ -45,6 +45,9 @@ export default function LoginScreen() {
                     await session.login("", "", cleanToken);
                     setSession(session);
                     setSettings("username", session.getUsername());
+                    setSettings("email", session.getEmail());
+                    setSettings("userISENId", session.getIsenId());
+                    setSettings("userId", session.getUserId());
                     router.replace("/(tabs)");
                 } catch (err) {
                     console.error(err);
@@ -92,6 +95,7 @@ export default function LoginScreen() {
 
             setSettings("username", session.getUsername());
             setSettings("userISENId", session.getIsenId());
+            setSettings("email", session.getEmail());
             setSettings("userId", session.getUserId());
             router.replace("/(tabs)");
         } catch (error) {

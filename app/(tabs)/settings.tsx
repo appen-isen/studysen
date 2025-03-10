@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
     useNotesStore,
     usePlanningStore,
-    useSyncedPlanningStore,
+    useSyncedPlanningStore
 } from "@/stores/webaurionStore";
 
 export default function SettingsScreen() {
@@ -36,10 +36,8 @@ export default function SettingsScreen() {
     const [firstLetters, setFirstLetters] = useState("");
     useEffect(() => {
         if (settings.username) {
-            const username = settings.username;
-            setUsername(username);
-            const email = settings.email;
-            setEmail(email);
+            setUsername(settings.username);
+            setEmail(settings.email);
             //Initiales du prénom et du nom
             const firstLetters = username.split(" ");
             setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
@@ -92,7 +90,7 @@ export default function SettingsScreen() {
                         setSelectedItem={(newCampus) =>
                             setSettings(
                                 "campus",
-                                newCampus as (typeof CAMPUS)[number],
+                                newCampus as (typeof CAMPUS)[number]
                             )
                         }
                         modalBoxStyle={styles.dropdownBoxStyle}
@@ -168,13 +166,13 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: Colors.primary,
+        backgroundColor: Colors.primary
     },
     title: {
         fontSize: 25,
         fontWeight: "bold",
         color: "white",
-        marginTop: 20,
+        marginTop: 20
     },
     settingsView: {
         display: "flex",
@@ -183,23 +181,23 @@ const styles = StyleSheet.create({
         height: "90%",
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
-        backgroundColor: "white",
+        backgroundColor: "white"
     },
     // Déconnexion
     logoutBtn: {
         alignSelf: "flex-end",
         marginTop: 20,
-        marginRight: 20,
+        marginRight: 20
     },
     logoutIcon: {
         fontSize: 30,
-        color: Colors.primary,
+        color: Colors.primary
     },
     // Profil
     profileView: {
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "center"
     },
     profileCircle: {
         alignItems: "center",
@@ -207,32 +205,32 @@ const styles = StyleSheet.create({
         width: 75,
         height: 75,
         borderRadius: 75,
-        backgroundColor: Colors.primary,
+        backgroundColor: Colors.primary
     },
     // Texte du profil
     profileCircleText: {
         color: "white",
         fontSize: 35,
         fontWeight: "bold",
-        textAlign: "center",
+        textAlign: "center"
     },
     profileName: {
         fontSize: 20,
         fontWeight: "bold",
         marginTop: 20,
-        textAlign: "center",
+        textAlign: "center"
     },
     profileEmail: {
         fontSize: 15,
         marginTop: 15,
-        textAlign: "center",
+        textAlign: "center"
     },
     // Sélecteur de campus
     dropdownBoxStyle: {
         width: 250,
         display: "flex",
         justifyContent: "flex-start",
-        alignItems: "flex-start",
+        alignItems: "flex-start"
     },
     campusSelect: {
         display: "flex",
@@ -243,20 +241,20 @@ const styles = StyleSheet.create({
         width: 250,
         backgroundColor: Colors.primary,
         borderRadius: 50,
-        marginTop: 20,
+        marginTop: 20
     },
     campusSelectText: {
         color: "white",
         marginLeft: 5,
-        marginRight: 5,
+        marginRight: 5
     },
     //Les paramètres
     settingsNav: {
         width: "100%",
         alignSelf: "center",
         maxWidth: 600,
-        marginTop: 40,
-    },
+        marginTop: 40
+    }
 });
 
 //Styles pour les boutons de navigation dans les paramètres
@@ -267,22 +265,22 @@ const navStyles = StyleSheet.create({
         alignSelf: "center",
         justifyContent: "space-between",
         alignItems: "center",
-        flexDirection: "row",
+        flexDirection: "row"
     },
     nameContainer: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "center"
     },
     name: {
         fontSize: 20,
         fontWeight: "bold",
-        marginLeft: 10,
+        marginLeft: 10
     },
     icon: {
         fontSize: 30,
         width: 40,
         textAlign: "center",
-        color: Colors.primary,
-    },
+        color: Colors.primary
+    }
 });
