@@ -39,7 +39,7 @@ export default function SettingsScreen() {
             setUsername(settings.username);
             setEmail(settings.email);
             //Initiales du prénom et du nom
-            const firstLetters = username.split(" ");
+            const firstLetters = settings.username.split(" ");
             setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
         }
     }, [settings]);
