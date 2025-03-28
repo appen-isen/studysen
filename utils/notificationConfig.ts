@@ -22,8 +22,8 @@ Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
         shouldPlaySound: true,
-        shouldSetBadge: true,
-    }),
+        shouldSetBadge: true
+    })
 });
 
 export const sendTestNotification = async () => {
@@ -39,7 +39,7 @@ export const sendTestNotification = async () => {
             lightColor: "#FF231F7C",
             enableLights: true,
             enableVibrate: true,
-            sound: "default",
+            sound: "default"
         });
 
         // Send a local notification
@@ -48,9 +48,9 @@ export const sendTestNotification = async () => {
                 title: "ISEN Orbit",
                 body: "Notification local de test",
                 sound: "default",
-                priority: "max",
+                priority: "max"
             },
-            trigger: null,
+            trigger: null
         });
 
         // Get user information for backend notification
@@ -72,7 +72,7 @@ export const sendTestNotification = async () => {
                     device_id: deviceId,
                     title: "ISEN Orbit",
                     message: "Notification backend de test",
-                    date: new Date(),
+                    date: new Date()
                 }
             );
         }
@@ -87,6 +87,10 @@ export const cancelAllScheduledNotifications = async () => {
     let userId = undefined;
 
     try {
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        console.log(
+            "Toutes les notifications planifiées en local ont été annulées"
+        );
         if (settings.username) {
             const normalizedName = settings.username
                 .normalize("NFD")
@@ -114,10 +118,6 @@ export const cancelAllScheduledNotifications = async () => {
                 );
             }
         }
-        await Notifications.cancelAllScheduledNotificationsAsync();
-        console.log(
-            "Toutes les notifications planifiées en local ont été annulées"
-        );
     } catch (error) {
         console.error(
             "Erreur lors de l'annulation des notifications planifiées:",
@@ -148,7 +148,7 @@ export const registerForPushNotificationsAsync = async () => {
         }
 
         const tokenData = await Notifications.getExpoPushTokenAsync({
-            projectId: "15623357-9e22-4071-b51c-e03f519d5492",
+            projectId: "15623357-9e22-4071-b51c-e03f519d5492"
         });
 
         const token = tokenData.data;
@@ -174,7 +174,7 @@ export const scheduleCourseNotification = async (
     courseName: string,
     courseRoom: string,
     courseTime: Date,
-    email: string,
+    email: string
 ) => {
     const { settings } = useSettingsStore.getState();
     const notificationTime = new Date(
@@ -191,12 +191,12 @@ export const scheduleCourseNotification = async (
             await Notifications.scheduleNotificationAsync({
                 content: {
                     title: "Rappel de cours",
-                    body: notifMessage,
+                    body: notifMessage
                 },
                 trigger: {
                     type: Notifications.SchedulableTriggerInputTypes.DATE,
-                    date: notificationTime,
-                },
+                    date: notificationTime
+                }
             });
         }
         //Plannification via le backend
@@ -211,7 +211,7 @@ export const scheduleCourseNotification = async (
                     device_id: deviceId,
                     title: "Rappel de cours",
                     message: notifMessage,
-                    date: notificationTime,
+                    date: notificationTime
                 }
             );
         }
