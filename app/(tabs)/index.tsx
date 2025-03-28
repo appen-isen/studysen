@@ -38,7 +38,8 @@ export default function HomeScreen() {
     const { notes, setNotes } = useNotesStore();
     const { settings } = useSettingsStore();
     const [noteAverageValue, setNoteAverageValue] = useState<string>(
-        calculateAverage(notes)
+        //On calcule la moyenne des notes du semestre actuel
+        calculateAverage(filterNotesBySemester(notes, getSemester()))
     );
     // Gestion du planning
     const { planning, setPlanning } = usePlanningStore();
