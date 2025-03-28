@@ -6,14 +6,14 @@ import {
     Pressable,
     ScrollView,
     StyleSheet,
-    View,
+    View
 } from "react-native";
 import { Text } from "@/components/Texts";
 import {
     getSubjectColor,
     getSubjectIcon,
     groupEventsByDay,
-    updatePlanningForListMode,
+    updatePlanningForListMode
 } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -41,7 +41,7 @@ export default function PlanningList(props: {
         const { height } = event.nativeEvent.layout;
         setEventSizes((prevSizes) => ({
             ...prevSizes,
-            [id]: height,
+            [id]: height
         }));
     };
 
@@ -96,7 +96,7 @@ export default function PlanningList(props: {
                         <View
                             style={[
                                 styles.timeBarProgress,
-                                { height: getProgressBarHeight() },
+                                { height: getProgressBarHeight() }
                             ]}
                         />
                     </View>
@@ -169,7 +169,7 @@ export function ListEvent(props: {
             //On applique une bordure à gauche de la carte si l'événement est en cours
             style={[
                 styles.eventBox,
-                timeText === "EN COURS" ? styles.currentEventBorder : {},
+                timeText === "EN COURS" ? styles.currentEventBorder : {}
             ]}
             onPress={() => props.onPress(props.event)}
             onLayout={props.handleLayout}
@@ -185,8 +185,8 @@ export function ListEvent(props: {
                         {
                             backgroundColor: getSubjectColor(
                                 props.event.subject
-                            ),
-                        },
+                            )
+                        }
                     ]}
                 >
                     <MaterialIcons
@@ -217,17 +217,17 @@ export function ListEvent(props: {
 const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
-        gap: 15,
+        gap: 15
     },
     timeBar: {
         width: 4,
         backgroundColor: Colors.light,
-        borderRadius: 999,
+        borderRadius: 999
     },
     timeBarProgress: {
         width: "100%",
         backgroundColor: Colors.primary,
-        borderRadius: 999,
+        borderRadius: 999
     },
     noData: {
         fontSize: 14,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.light,
         padding: 20,
         borderRadius: 5,
-        width: "100%",
+        width: "100%"
     },
     eventBox: {
         backgroundColor: Colors.light,
@@ -246,67 +246,67 @@ const styles = StyleSheet.create({
         width: "100%",
         flexDirection: "column",
         justifyContent: "center",
-        gap: 20,
+        gap: 20
     },
     currentEventBorder: {
         borderLeftColor: Colors.primary,
-        borderLeftWidth: 4,
+        borderLeftWidth: 4
     },
     headerBox: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 10,
+        gap: 10
     },
     headerTitle: {
         fontSize: 18,
-        fontWeight: 600,
+        fontWeight: 600
     },
     headerIcon: {
         width: 18,
         height: 18,
         borderRadius: 999,
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     // Affichage du temps restant avant le début de l'événement
     timeText: {
         fontSize: 12,
 
         fontWeight: 600,
-        color: Colors.primary,
+        color: Colors.primary
     },
     // Affichage des informations de l'événement
     fieldTitle: {
         fontSize: 10,
         fontWeight: "bold",
         color: Colors.gray,
-        textTransform: "uppercase",
+        textTransform: "uppercase"
     },
     fieldValue: {
-        fontSize: 14,
+        fontSize: 14
     },
     tagsBox: {
         flexDirection: "row",
         flexWrap: "wrap",
-        gap: 15,
+        gap: 15
     },
     tag: {
         paddingBlock: 5,
         paddingInline: 10,
         borderRadius: 5,
         fontSize: 14,
-        fontWeight: 600,
+        fontWeight: 600
     },
     tagWhite: {
         backgroundColor: Colors.white,
-        color: Colors.black,
+        color: Colors.black
     },
     tagBlack: {
         backgroundColor: Colors.black,
-        color: Colors.white,
+        color: Colors.white
     },
     tagPrimary: {
         backgroundColor: Colors.primary,
-        color: Colors.white,
-    },
+        color: Colors.white
+    }
 });

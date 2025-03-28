@@ -32,7 +32,7 @@ export function groupEventsByDay(events: PlanningEvent[]): DayEvents {
                 grouped[dateKey].push({
                     ...event,
                     start: new Date(currentDate).toISOString(),
-                    end: new Date(endDate).toISOString(),
+                    end: new Date(endDate).toISOString()
                 });
             }
         } else {
@@ -52,7 +52,7 @@ export function groupEventsByDay(events: PlanningEvent[]): DayEvents {
 
 // Fonction qui remplace les champs de l'emploi du temps pour le mode liste
 export function updatePlanningForListMode(
-    planning: PlanningEvent[],
+    planning: PlanningEvent[]
 ): PlanningEvent[] {
     return sortPlanningByDate(
         planning.map((event) => {
@@ -73,9 +73,9 @@ export function updatePlanningForListMode(
             return {
                 ...event, // On garde tous les autres champs
                 room: room,
-                instructors: event.instructors.split("/")[0], // On remplace par le premier enseignant
+                instructors: event.instructors.split("/")[0] // On remplace par le premier enseignant
             };
-        }),
+        })
     );
 }
 
@@ -90,7 +90,7 @@ export function fillDayWithBlankEvents(dayEvents: DayEvents): DayEvents {
 
         // Trier les événements existants par heure de début
         const sortedEvents = events.sort(
-            (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
+            (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
         );
 
         const filledEvents: PlanningEvent[] = [];
@@ -133,7 +133,7 @@ export function createBlankEvent(start: Date, end: Date): PlanningEvent {
         learners: "",
         start: formatDate(start),
         end: formatDate(end),
-        className: "",
+        className: ""
     };
 }
 
@@ -165,7 +165,9 @@ export function getSubjectColor(subject: string): string {
     return color;
 }
 
-export function getSubjectIcon(subject: string): keyof typeof MaterialIcons.glyphMap {
+export function getSubjectIcon(
+    subject: string
+): keyof typeof MaterialIcons.glyphMap {
     let icon: keyof typeof MaterialIcons.glyphMap;
     switch (subject) {
         case "Mathématiques":
@@ -196,7 +198,7 @@ export function getSubjectIcon(subject: string): keyof typeof MaterialIcons.glyp
 export function findEvent(planning: PlanningEvent[], event: PlanningEvent) {
     return planning.find(
         (e) =>
-            e.id === event.id && e.start === event.start && e.end === event.end,
+            e.id === event.id && e.start === event.start && e.end === event.end
     );
 }
 
@@ -218,7 +220,7 @@ export function getCurrentEvent(events: PlanningEvent[]): PlanningEvent | null {
 
 // Fonction pour obtenir le prochain événement de la journée
 export function getNextEventToday(
-    events: PlanningEvent[],
+    events: PlanningEvent[]
 ): PlanningEvent | null {
     const now = new Date();
 
@@ -230,7 +232,7 @@ export function getNextEventToday(
 
     // Trie les événements par date de début (croissant)
     upcomingEvents.sort(
-        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
     );
 
     // Retourne le premier événement du tableau trié, ou null s'il n'y en a pas
@@ -239,26 +241,29 @@ export function getNextEventToday(
 
 export function mergePlanning(
     currentPlanning: PlanningEvent[],
-    newPlanning: PlanningEvent[],
+    newPlanning: PlanningEvent[]
 ): PlanningEvent[] {
-    // Si newPlanning est vide, retourner le planning actuel
     if (newPlanning.length === 0) return currentPlanning;
 
-    //On trie le tableau par dates de début
     const sortedPlanning = sortPlanningByDate(newPlanning);
     const weekStart = getCloserMonday(new Date(sortedPlanning[0].start));
     const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 4); // Vendredi de la même semaine
-    weekEnd.setHours(23, 59, 59); // Fin de la journée
+    weekEnd.setDate(weekEnd.getDate() + 4);
+    weekEnd.setHours(23, 59, 59);
 
-    // Filtrer le planning actuel pour garder uniquement les événements hors de la semaine concernée
+    // Filtrer les événements existants pour exclure ceux qui sont mis à jour
     const filteredCurrentPlanning = currentPlanning.filter((event) => {
         const eventDateStart = new Date(event.start);
         return eventDateStart < weekStart || eventDateStart > weekEnd;
     });
 
-    // Combiner les événements filtrés avec le nouveau planning
-    return sortPlanningByDate([...newPlanning, ...filteredCurrentPlanning]);
+    // Fusionner les événements sans doublons (en remplaçant ceux mis à jour)
+    const mergedPlanning = new Map();
+    [...filteredCurrentPlanning, ...newPlanning].forEach((event) => {
+        mergedPlanning.set(event.id, event);
+    });
+
+    return sortPlanningByDate(Array.from(mergedPlanning.values()));
 }
 
 // Fonction pour tronquer les des chaînes de caractères trop longues
@@ -269,6 +274,6 @@ export function truncateString(str: string, maxLength: number): string {
 // Fonction pour trier les événements par date de début
 export function sortPlanningByDate(planning: PlanningEvent[]): PlanningEvent[] {
     return planning.sort(
-        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
     );
 }
