@@ -4,7 +4,7 @@ import {
     Dimensions,
     Pressable,
     StyleSheet,
-    View,
+    View
 } from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
@@ -12,8 +12,7 @@ import {
     fillDayWithBlankEvents,
     getSubjectColor,
     groupEventsByDay,
-    truncateString,
-    updatePlanningForListMode,
+    updatePlanningForListMode
 } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { AnimatedPressable } from "../Buttons";
@@ -98,7 +97,7 @@ export function WeekEvent(props: {
             <View
                 style={[
                     eventStyles.colorBar,
-                    { backgroundColor: getSubjectColor(props.event.subject) },
+                    { backgroundColor: getSubjectColor(props.event.subject) }
                 ]}
             />
             <Text style={eventStyles.subject} numberOfLines={1}>
@@ -136,16 +135,16 @@ const calendarStyles = StyleSheet.create({
         marginHorizontal: "auto",
         flexDirection: "row",
         gap: 2,
-        width: "100%",
+        width: "100%"
     },
     dayColumn: {
-        flex: 1,
+        flex: 1
     },
     hoursBox: {
         position: "absolute",
         transform: [{ translateX: "-105%" }],
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "space-between"
     },
     hourLabel: {
         borderTopWidth: 2,
@@ -156,8 +155,8 @@ const calendarStyles = StyleSheet.create({
         height: PIXEL_PER_HOUR,
         paddingTop: 5,
         fontSize: 15,
-        fontWeight: 400,
-    },
+        fontWeight: 400
+    }
 });
 
 const eventStyles = StyleSheet.create({
@@ -169,44 +168,44 @@ const eventStyles = StyleSheet.create({
         overflow: "hidden",
         paddingBlock: 10,
         paddingInline: 4,
-        gap: 5,
+        gap: 5
     },
     colorBar: {
         position: "absolute",
         width: 32,
         height: 8,
         transform: [{ translateY: "-50%" }],
-        borderRadius: 999,
+        borderRadius: 999
     },
     subject: {
         fontSize: 10,
         fontWeight: "bold",
-        textAlign: "center",
+        textAlign: "center"
     },
     tags: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 2,
+        gap: 2
     },
     tag: {
         fontSize: 10,
         borderRadius: 2,
         flex: 1,
-        textAlign: "center",
+        textAlign: "center"
     },
     tagWhite: {
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white
     },
     tagBlack: {
         backgroundColor: Colors.black,
-        color: Colors.white,
+        color: Colors.white
     },
     blankEvent: {
         width: "100%",
-        backgroundColor: "transparent",
+        backgroundColor: "transparent"
     },
     hour: {
-        fontSize: Dimensions.get("window").width < 500 ? 9 : 11,
+        fontSize: Dimensions.get("window").width < 500 ? 9 : 11
     },
     room: {
         display: "flex",
@@ -217,12 +216,12 @@ const eventStyles = StyleSheet.create({
         height: 13,
         marginBottom: 2,
         borderRadius: 10,
-        backgroundColor: Colors.primary,
+        backgroundColor: Colors.primary
     },
     roomText: {
         color: "white",
         textAlign: "center",
         fontWeight: "bold",
-        fontSize: 9,
-    },
+        fontSize: 9
+    }
 });

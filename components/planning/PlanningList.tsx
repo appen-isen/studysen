@@ -136,16 +136,14 @@ export function ListEvent(props: {
             const now = new Date();
             const start = new Date(props.event.start);
             const end = new Date(props.event.end);
-
             if (now >= start && now <= end) {
                 // L'événement est en cours
                 setTimeText("EN COURS");
             } else if (start > now) {
-                const diffMinutes = Math.floor(
-                    (start.getTime() - now.getTime()) / 60000
-                );
+                const diffMinutes =
+                    Math.floor((start.getTime() - now.getTime()) / 60000) + 1;
                 // L'événement n'a pas encore commencé mais débute dans moins d'une heure
-                if (diffMinutes < 60) {
+                if (diffMinutes <= 60) {
                     setTimeText(`DANS ${diffMinutes} MINUTES`);
                 } else {
                     setTimeText("");
@@ -164,6 +162,12 @@ export function ListEvent(props: {
         // Nettoyage de l'intervalle
         return () => clearInterval(interval);
     }, [props.event]);
+
+    // Style pour le badge de l'événement en cours ou à venir dans X minutes
+    const currentEventTextStyle = {
+        ...styles.currentTimeText,
+        ...(timeText.startsWith("DANS") ? styles.inXMinutesText : {})
+    };
     return (
         <AnimatedPressable
             //On applique une bordure à gauche de la carte si l'événement est en cours
@@ -175,10 +179,11 @@ export function ListEvent(props: {
             onLayout={props.handleLayout}
             scale={0.9}
         >
+            {/* Affichage du temps restant avant le début de l'événement */}
+            {timeText !== "" && (
+                <Text style={currentEventTextStyle}>{timeText}</Text>
+            )}
             <View style={styles.headerBox}>
-                <Text style={styles.headerTitle}>
-                    {props.event.title || props.event.subject}
-                </Text>
                 <View
                     style={[
                         styles.headerIcon,
@@ -191,12 +196,13 @@ export function ListEvent(props: {
                 >
                     <MaterialIcons
                         name={getSubjectIcon(props.event.subject)}
-                        size={12}
+                        size={13}
                     />
                 </View>
+                <Text style={styles.headerTitle}>
+                    {props.event.title || props.event.subject}
+                </Text>
             </View>
-            {/* Affichage du temps restant avant le début de l'événement */}
-            {timeText !== "" && <Text style={styles.timeText}>{timeText}</Text>}
             <View>
                 <Text style={styles.fieldTitle}>Assuré par</Text>
                 <Text style={styles.fieldValue}>{props.event.instructors}</Text>
@@ -249,8 +255,8 @@ const styles = StyleSheet.create({
         gap: 20
     },
     currentEventBorder: {
-        borderLeftColor: Colors.primary,
-        borderLeftWidth: 4
+        borderColor: Colors.lightGray,
+        borderWidth: 1
     },
     headerBox: {
         flexDirection: "row",
@@ -262,18 +268,27 @@ const styles = StyleSheet.create({
         fontWeight: 600
     },
     headerIcon: {
-        width: 18,
-        height: 18,
+        width: 20,
+        height: 20,
         borderRadius: 999,
         justifyContent: "center",
         alignItems: "center"
     },
     // Affichage du temps restant avant le début de l'événement
-    timeText: {
+    currentTimeText: {
+        backgroundColor: Colors.primary,
+        borderRadius: 15,
+        width: 120,
+        color: Colors.white,
+        textAlign: "center",
         fontSize: 12,
-
-        fontWeight: 600,
-        color: Colors.primary
+        padding: 2,
+        fontWeight: 900
+    },
+    inXMinutesText: {
+        color: Colors.black,
+        backgroundColor: Colors.lightGray,
+        fontSize: 10
     },
     // Affichage des informations de l'événement
     fieldTitle: {

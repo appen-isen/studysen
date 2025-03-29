@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
@@ -8,31 +8,24 @@ import useSessionStore from "@/stores/sessionStore";
 import { PlanningEvent } from "@/webAurion/utils/types";
 import {
     formatDate,
-    formatFullDate,
     getCloserMonday,
     getDayNumberInWeek,
     getEndDate,
     isSameWorkWeek,
     isToday,
-    weekFromNow,
+    weekFromNow
 } from "@/utils/date";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AnimatedPressable, Toggle } from "@/components/Buttons";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import EventModal from "@/components/modals/EventModal";
-import {
-    findEvent,
-    getSubjectColor,
-    getSubjectIcon,
-    mergePlanning,
-} from "@/utils/planning";
+import { findEvent, mergePlanning } from "@/utils/planning";
 import {
     usePlanningStore,
-    useSyncedPlanningStore,
+    useSyncedPlanningStore
 } from "@/stores/webaurionStore";
 import { SyncMessage } from "@/components/Sync";
 import { Page, PageHeader } from "@/components/Page";
-import { Sheet } from "@/components/Sheet";
 
 export default function PlanningScreen() {
     const { session } = useSessionStore();
@@ -173,12 +166,15 @@ export default function PlanningScreen() {
                 <Toggle
                     stateList={[
                         { label: "Journée", icon: "event-note" },
-                        { label: "Semaine", icon: "calendar-month" },
+                        { label: "Semaine", icon: "calendar-month" }
                     ]}
                     state={planningView === "list" ? 0 : 1}
-                    setState={(currentState) =>
-                        setPlanningView(currentState === 0 ? "week" : "list")
-                    }
+                    setState={(currentState) => {
+                        //On retourne à la semaine actuelle lors du clic sur le bouton
+                        setSelectedMonday(getCloserMonday(new Date()));
+                        //On met à jour la vue du planning
+                        setPlanningView(currentState === 0 ? "week" : "list");
+                    }}
                 />
             </PageHeader>
 
@@ -196,7 +192,7 @@ export default function PlanningScreen() {
                             style={[
                                 timeStyles.weekArrow,
                                 isSameWorkWeek(selectedMonday) &&
-                                    timeStyles.weekArrowDisabled,
+                                    timeStyles.weekArrowDisabled
                             ]}
                         />
                     </AnimatedPressable>
@@ -240,7 +236,7 @@ export default function PlanningScreen() {
                                             timeStyles.daysLabel,
                                             index === selectedDayIndex &&
                                                 planningView === "list" &&
-                                                timeStyles.daysLabelSelected,
+                                                timeStyles.daysLabelSelected
                                         ]}
                                     >
                                         {isToday(day)
@@ -306,13 +302,13 @@ export default function PlanningScreen() {
 
 const styles = StyleSheet.create({
     container: {
-        gap: 25,
-    },
+        gap: 25
+    }
 });
 
 const timeStyles = StyleSheet.create({
     container: {
-        gap: 10,
+        gap: 10
     },
     //
     // Week selector
@@ -321,7 +317,7 @@ const timeStyles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        width: "100%",
+        width: "100%"
     },
     weekArrow: {
         width: 36,
@@ -331,20 +327,20 @@ const timeStyles = StyleSheet.create({
         verticalAlign: "middle",
         borderRadius: 999,
         backgroundColor: Colors.black,
-        color: Colors.white,
+        color: Colors.white
     },
     weekArrowDisabled: {
-        backgroundColor: Colors.hexWithOpacity(Colors.black, 0.5),
+        backgroundColor: Colors.hexWithOpacity(Colors.black, 0.5)
     },
     weekText: {
         fontSize: 18,
         fontWeight: 600,
-        color: Colors.gray,
+        color: Colors.gray
     },
     weekImportant: {
         fontSize: 18,
         fontWeight: 600,
-        color: Colors.black,
+        color: Colors.black
     },
     //
     // Day selector
@@ -353,10 +349,10 @@ const timeStyles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         gap: 2,
-        width: "100%",
+        width: "100%"
     },
     daysButton: {
-        flex: 1,
+        flex: 1
     },
     daysLabel: {
         backgroundColor: Colors.light,
@@ -364,10 +360,10 @@ const timeStyles = StyleSheet.create({
         borderRadius: 5,
         textAlign: "center",
         fontSize: 12,
-        fontWeight: 600,
+        fontWeight: 600
     },
     daysLabelSelected: {
         backgroundColor: Colors.black,
-        color: Colors.white,
-    },
+        color: Colors.white
+    }
 });
