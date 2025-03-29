@@ -181,23 +181,17 @@ export const scheduleCourseNotification = async (
         courseTime.getTime() -
             getDelayInMilliseconds(settings.notificationsDelay)
     );
-
+    const notifMessage = `Votre cours de ${courseName}${
+        courseRoom ? " en " + courseRoom : ""
+    } commence dans ${settings.notificationsDelay}.`;
     try {
-        const notifMessage = `Votre cours de ${courseName}${
-            courseRoom ? " en " + courseRoom : ""
-        } commence dans ${settings.notificationsDelay}.`;
         //Plannification en local
         if (settings.localNotifications) {
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: "Rappel de cours",
-                    body: notifMessage
-                },
-                trigger: {
-                    type: Notifications.SchedulableTriggerInputTypes.DATE,
-                    date: notificationTime
-                }
-            });
+            await scheduleLocalNotification(
+                "Rappel de cours",
+                notifMessage,
+                notificationTime
+            );
         }
         //Plannification via le backend
         else {
@@ -224,6 +218,34 @@ export const scheduleCourseNotification = async (
             "Erreur lors de la planification de la notification:",
             error
         );
+        // S'il y a une erreur, on essaye de re-plannifier la notification en local
+        await scheduleLocalNotification(
+            "Rappel de cours",
+            notifMessage,
+            notificationTime
+        );
+    }
+};
+
+// Plannification de la notification locale
+export const scheduleLocalNotification = async (
+    title: string,
+    body: string,
+    date: Date
+) => {
+    try {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: title,
+                body: body
+            },
+            trigger: {
+                type: Notifications.SchedulableTriggerInputTypes.DATE,
+                date: date
+            }
+        });
+    } catch (error) {
+        throw error;
     }
 };
 
@@ -233,7 +255,10 @@ export const deleteNotifications = async (userId: string) => {
             `${API_BASE_URL}/notifications/delete-notifications/${userId}`
         );
     } catch (error) {
-        console.error("Error deleting notifications:", error);
+        console.error(
+            "Erreur lors de la suppression de la notification depuis le backend:",
+            error
+        );
     }
 };
 
