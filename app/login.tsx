@@ -4,7 +4,7 @@ import {
     Platform,
     Pressable,
     StyleSheet,
-    View,
+    View
 } from "react-native";
 import { AnimatedPressable, Button } from "@/components/Buttons";
 import { Input, Checkbox } from "@/components/Inputs";
@@ -54,7 +54,7 @@ export default function LoginScreen() {
                     console.error(err);
                     router.replace({
                         pathname: "/(tabs)",
-                        params: { offlineMode: 1 },
+                        params: { offlineMode: 1 }
                     });
                 }
             }
@@ -107,7 +107,7 @@ export default function LoginScreen() {
                     router.replace("/(tabs)");
                 } else {
                     setErrorMessage(
-                        "Nom d'utilisateur ou mot de passe incorrect",
+                        "Nom d'utilisateur ou mot de passe incorrect"
                     );
                     setErrorVisible(true);
                 }
@@ -117,8 +117,7 @@ export default function LoginScreen() {
                 //Erreur de connexion
                 setAuthenticating(false);
                 setErrorMessage(
-                    "Une erreur est survenue lors de la connexion: " +
-                        e.message,
+                    "Une erreur est survenue lors de la connexion: " + e.message
                 );
                 setErrorVisible(true);
             });
@@ -164,7 +163,7 @@ export default function LoginScreen() {
                     setSelectedItem={(newCampus) =>
                         setSettings(
                             "campus",
-                            newCampus as (typeof CAMPUS)[number],
+                            newCampus as (typeof CAMPUS)[number]
                         )
                     }
                     modalBoxStyle={styles.dropdownBoxStyle}
@@ -199,7 +198,7 @@ export default function LoginScreen() {
                         status={rememberMe ? "checked" : "unchecked"}
                         onPress={() => setRememberMe(!rememberMe)}
                         color={Colors.primary}
-                        text="Rester connecté"
+                        text="Se souvenir de moi"
                     />
                 </View>
                 {/* Boutons du bas */}
@@ -278,14 +277,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "space-around",
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white
     },
     containerView: {
         width: "100%",
         flex: 1,
         justifyContent: "space-between",
         alignItems: "center",
-        padding: 20,
+        padding: 20
     },
     //
     // Campus selection
@@ -298,33 +297,33 @@ const styles = StyleSheet.create({
         paddingInline: 25,
         backgroundColor: Colors.primary,
         borderRadius: 999,
-        gap: 5,
+        gap: 5
     },
     campusSelectText: {
-        color: Colors.white,
+        color: Colors.white
     },
     dropdownBoxStyle: {
         width: 250,
         display: "flex",
         justifyContent: "flex-start",
-        alignItems: "flex-start",
+        alignItems: "flex-start"
     },
     //
     // Header section
     //
     headerBox: {
-        width: "100%",
+        width: "100%"
     },
     headerTitle: {
-        fontSize: 40,
+        fontSize: 40
     },
     headerIcon: {
         fontSize: 52,
-        color: Colors.primary,
+        color: Colors.primary
     },
     headerLabel: {
         color: Colors.darkGray,
-        marginLeft: 3,
+        marginLeft: 3
     },
     //
     // Fields section
@@ -332,7 +331,7 @@ const styles = StyleSheet.create({
     fieldsBox: {
         alignItems: "flex-start",
         width: "100%",
-        gap: 25,
+        gap: 25
     },
     //
     // Actions section
@@ -340,18 +339,18 @@ const styles = StyleSheet.create({
     actionBox: {
         alignItems: "center",
         justifyContent: "center",
-        width: "100%",
+        width: "100%"
     },
     actionLogin: {
-        width: "100%",
+        width: "100%"
     },
     actionHelp: {
         alignItems: "center",
         gap: 10,
         color: Colors.darkGray,
         fontWeight: 600,
-        padding: 20,
-    },
+        padding: 20
+    }
 });
 
 const helpStyles = StyleSheet.create({
@@ -361,7 +360,7 @@ const helpStyles = StyleSheet.create({
     container: {
         alignItems: "flex-start",
         padding: 20,
-        gap: 20,
+        gap: 20
     },
     subtitle: {
         fontSize: 14,
@@ -370,14 +369,14 @@ const helpStyles = StyleSheet.create({
         color: Colors.white,
         paddingBlock: 5,
         paddingInline: 10,
-        borderRadius: 5,
+        borderRadius: 5
     },
     paragraph: {
-        color: Colors.darkGray,
+        color: Colors.darkGray
     },
     important: {
         color: Colors.primary,
-        fontWeight: "bold",
+        fontWeight: "bold"
     },
     link: {
         flexDirection: "row",
@@ -386,6 +385,6 @@ const helpStyles = StyleSheet.create({
         backgroundColor: Colors.light,
         paddingBlock: 5,
         paddingInline: 10,
-        borderRadius: 5,
-    },
+        borderRadius: 5
+    }
 });

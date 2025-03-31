@@ -5,7 +5,7 @@ import {
     View,
     TouchableOpacity,
     Pressable,
-    Keyboard,
+    Keyboard
 } from "react-native";
 import { useEffect, useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -23,7 +23,7 @@ export type InputProps = {
 
 export function Input(props: TextInputProps & InputProps) {
     const [textVisible, setTextVisible] = useState(
-        props.password === undefined,
+        props.password === undefined
     );
     const { icon, password, autoComplete, textInputStyle, containerStyle } =
         props;
@@ -33,7 +33,7 @@ export function Input(props: TextInputProps & InputProps) {
             "keyboardDidHide",
             () => {
                 Keyboard.dismiss();
-            },
+            }
         );
 
         return () => {
@@ -92,10 +92,10 @@ const inputStyles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: Colors.light,
         borderRadius: 15,
-        paddingInline: 15,
-        paddingBlock: 5,
+        paddingHorizontal: 15,
+        paddingVertical: 5,
         gap: 5,
-        width: "100%",
+        width: "100%"
     },
     //
     // Input
@@ -103,15 +103,15 @@ const inputStyles = StyleSheet.create({
     input: {
         flex: 1,
         fontSize: 18,
-        backgroundColor: "transparent",
+        backgroundColor: "transparent"
     },
     //
     // Icon
     //
     icon: {
         fontSize: 24,
-        color: Colors.gray,
-    },
+        color: Colors.gray
+    }
 });
 
 const checkboxStyles = StyleSheet.create({
@@ -122,13 +122,13 @@ const checkboxStyles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     //
     // Label
     //
     label: {
         color: Colors.darkGray,
-        fontSize: 16,
-    },
+        fontSize: 16
+    }
 });
