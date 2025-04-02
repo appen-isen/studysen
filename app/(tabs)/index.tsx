@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View, ScrollView } from "react-native";
 import { Text } from "@/components/Texts";
-import { Button } from "@/components/Buttons";
+import { AnimatedPressable, Button } from "@/components/Buttons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
@@ -21,7 +21,11 @@ import {
 } from "@/utils/planning";
 import { ListEvent } from "@/components/planning/PlanningList";
 import EventModal from "@/components/modals/EventModal";
-import { calculateAverage, filterNotesBySemester } from "@/utils/notes";
+import {
+    calculateAverage,
+    filterNotesBySemester,
+    getLatestNotes
+} from "@/utils/notes";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -31,6 +35,8 @@ import {
 } from "@/utils/notificationConfig";
 import useSettingsStore from "@/stores/settingsStore";
 import { getSemester } from "@/utils/date";
+import { Page, PageHeader } from "@/components/Page";
+import { NoteElement } from "@/components/Note";
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -210,29 +216,33 @@ export default function HomeScreen() {
     requestPermissions();
 
     return (
-        <SafeAreaView style={styles.container}>
+        <Page style={styles.container}>
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
                 style={styles.scrollView}
+                showsVerticalScrollIndicator={false}
+                overScrollMode="never"
             >
-                <Text style={styles.title}>Accueil</Text>
+                {/* En tête de la page */}
+                <PageHeader title="Accueil"></PageHeader>
+                {/* Affichage prénom */}
+                <View style={[sectionStyles.section, styles.welcomeBox]}>
+                    <Text style={styles.heyText}>
+                        Salut,{" "}
+                        <Text style={styles.firstnameText}>
+                            {settings.username.split(" ")[0]}
+                        </Text>
+                    </Text>
+                </View>
                 {/* événement en cours */}
                 <View style={sectionStyles.section}>
                     {/* Titre de la section */}
-                    <View style={sectionStyles.titleBox}>
-                        <MaterialCommunityIcons
-                            name="calendar-check"
-                            style={sectionStyles.icon}
-                        />
-                        <Text style={sectionStyles.titleText}>
-                            ACTUELLEMENT
-                        </Text>
-                    </View>
-                    {/* Contenu de la section */}
-                    <View style={sectionStyles.content}>
-                        {/* Si le planning est chargé, on affiche l'événement */}
-                        {isPlanningLoaded ? (
-                            getCurrentEvent(formattedPlanning) !== null ? (
+                    <Text style={sectionStyles.titleText}>EN CE MOMENT</Text>
+                    {/* Si le planning est chargé, on affiche l'événement */}
+                    {isPlanningLoaded ? (
+                        <View style={sectionStyles.content}>
+                            {/* Événement en cours */}
+                            {getCurrentEvent(formattedPlanning) !== null && (
                                 <ListEvent
                                     event={getCurrentEvent(formattedPlanning)!}
                                     handleLayout={() => {}}
@@ -255,37 +265,9 @@ export default function HomeScreen() {
                                         setEventModalInfoVisible(true);
                                     }}
                                 />
-                            ) : (
-                                <Text style={styles.noEventText}>
-                                    Aucun événement en cours
-                                </Text>
-                            )
-                        ) : (
-                            //Sinon on affiche un loader
-                            <ActivityIndicator
-                                animating={true}
-                                color={Colors.primary}
-                                size={50}
-                            />
-                        )}
-                    </View>
-                </View>
-
-                {/* événement à venir */}
-                <View style={sectionStyles.section}>
-                    {/* Titre de la section */}
-                    <View style={sectionStyles.titleBox}>
-                        <MaterialCommunityIcons
-                            name="calendar-start"
-                            style={sectionStyles.icon}
-                        />
-                        <Text style={sectionStyles.titleText}>À VENIR</Text>
-                    </View>
-                    {/* Contenu de la section */}
-                    <View style={sectionStyles.content}>
-                        {/* Si le planning est chargé, on affiche l'événement */}
-                        {isPlanningLoaded ? (
-                            getNextEventToday(formattedPlanning) !== null ? (
+                            )}
+                            {/* Événement à venir */}
+                            {getNextEventToday(formattedPlanning) !== null && (
                                 <ListEvent
                                     event={
                                         getNextEventToday(formattedPlanning)!
@@ -310,46 +292,60 @@ export default function HomeScreen() {
                                         setEventModalInfoVisible(true);
                                     }}
                                 />
-                            ) : (
-                                <Text style={styles.noEventText}>
-                                    Aucun événement à venir aujourd'hui
-                                </Text>
-                            )
-                        ) : (
-                            //Sinon on affiche un loader
-                            <ActivityIndicator
-                                animating={true}
-                                color={Colors.primary}
-                                size={50}
-                            />
-                        )}
-                    </View>
+                            )}
+                            {/* Si aucun événement n'est trouvé, on affiche un message */}
+                            {getCurrentEvent(formattedPlanning) === null &&
+                                getNextEventToday(formattedPlanning) ===
+                                    null && (
+                                    <Text style={styles.noEventText}>
+                                        Aucun événement à venir aujourd'hui
+                                    </Text>
+                                )}
+                        </View>
+                    ) : (
+                        //Sinon on affiche un loader
+                        <ActivityIndicator
+                            animating={true}
+                            color={Colors.primary}
+                            size={50}
+                        />
+                    )}
                 </View>
-
                 {/* Notes */}
                 <View style={sectionStyles.section}>
                     {/* Titre de la section */}
-                    <View style={sectionStyles.titleBox}>
-                        <MaterialCommunityIcons
-                            name="school-outline"
-                            style={sectionStyles.icon}
-                        />
-                        <Text style={sectionStyles.titleText}>MES NOTES</Text>
-                    </View>
+                    <Text style={sectionStyles.titleText}>NOTES RÉCENTES</Text>
                     {/* Contenu de la section */}
                     <View style={sectionStyles.content}>
-                        <Text style={styles.noteTitle}>
-                            Moyenne du semestre
-                        </Text>
-                        <Text style={styles.noteValue}>{noteAverageValue}</Text>
-                        <Button
-                            title="Voir mes notes"
+                        {/* On récupère et affiche les trois dernières notes */}
+                        <View>
+                            {getLatestNotes(notes, 3).map((note, index) => (
+                                <NoteElement
+                                    key={note.code + index}
+                                    note={note}
+                                />
+                            ))}
+                        </View>
+                        {/* Bouton pour voir toutes les notes */}
+                        <AnimatedPressable
+                            style={styles.allNotesButton}
                             //On redirige vers l'onglet notes
                             onPress={handleViewNotes}
-                        ></Button>
+                            scale={0.9}
+                        >
+                            <View style={styles.allNotesButtonContent}>
+                                <MaterialCommunityIcons
+                                    name="dots-horizontal"
+                                    size={20}
+                                    color={Colors.black}
+                                />
+                                <Text style={styles.allNotesButtonText}>
+                                    Voir plus
+                                </Text>
+                            </View>
+                        </AnimatedPressable>
                     </View>
                 </View>
-
                 {/* Modal pour afficher les informations d'un cours */}
                 {selectedEvent && (
                     <EventModal
@@ -359,16 +355,13 @@ export default function HomeScreen() {
                     ></EventModal>
                 )}
             </ScrollView>
-        </SafeAreaView>
+        </Page>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "flex-start",
-        backgroundColor: "white"
+        gap: 25
     },
     scrollView: {
         width: "100%"
@@ -384,19 +377,39 @@ const styles = StyleSheet.create({
         color: Colors.primary,
         marginTop: 20
     },
+    //Texte de bienvenue
+    welcomeBox: {
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+        width: "100%"
+    },
+    heyText: {
+        fontSize: 25
+    },
+    firstnameText: {
+        color: Colors.primary
+    },
+    // Texte quand il n'y a pas d'événement
     noEventText: {
         fontSize: 16,
         textAlign: "center"
     },
-    noteTitle: {
-        fontSize: 16,
-        fontWeight: "bold"
+    //Notes
+    allNotesButton: {
+        borderRadius: 5,
+        backgroundColor: Colors.light,
+        alignSelf: "flex-start",
+        paddingVertical: 5,
+        paddingHorizontal: 10
     },
-    noteValue: {
-        color: Colors.primary,
-        fontWeight: "bold",
-        fontSize: 30,
-        marginTop: 10
+    allNotesButtonContent: {
+        flexDirection: "row",
+        gap: 10
+    },
+    allNotesButtonText: {
+        fontSize: 14,
+        fontWeight: "normal",
+        color: Colors.black
     }
 });
 
@@ -407,25 +420,15 @@ const sectionStyles = StyleSheet.create({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        width: "90%",
+        width: "100%",
         maxWidth: 600,
         marginTop: 35
     },
-    titleBox: {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        width: "100%"
-    },
-    icon: {
-        fontSize: 35,
-        color: Colors.primary,
-        marginRight: 15
-    },
     titleText: {
-        fontSize: 20,
-        fontWeight: "bold"
+        fontSize: 16,
+        color: Colors.gray,
+        fontWeight: "bold",
+        alignSelf: "flex-start"
     },
     content: {
         display: "flex",
@@ -434,6 +437,7 @@ const sectionStyles = StyleSheet.create({
         justifyContent: "center",
         minHeight: 140,
         width: "100%",
-        marginTop: 20
+        gap: 15,
+        marginTop: 10
     }
 });

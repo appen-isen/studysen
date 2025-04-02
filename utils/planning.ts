@@ -137,34 +137,34 @@ export function createBlankEvent(start: Date, end: Date): PlanningEvent {
     };
 }
 
+const subjectMapping: Record<string, string> = {
+    "Algorithmique C": "Informatique",
+    "Formation humaine et sociale": "FHS",
+    Linux: "Informatique",
+    "Web Frontend": "Informatique",
+    "Culture numérique": "Informatique"
+};
 // Fonction pour obtenir la couleur d'un événement en fonction de la matière
 export function getSubjectColor(subject: string): string {
-    let color = "";
-    switch (subject) {
+    const mappedSubject = subjectMapping[subject] || subject; // Si pas de correspondance, on garde le nom original
+    switch (mappedSubject) {
         case "Mathématiques":
-            color = "#FFA99D";
-            break;
+            return "#FFA99D";
         case "Physique":
-            color = "#FFD970";
-            break;
+            return "#FFD970";
         case "Sciences de l'Ingénieur":
-            color = "#D296FF";
-            break;
+            return "#D296FF";
         case "Informatique":
-            color = "#8BD8FF";
-            break;
+            return "#8BD8FF";
         case "Anglais":
-            color = "#FFA3E3";
-            break;
+            return "#FFA3E3";
         case "FHS":
-            color = "#B1E8BB";
-            break;
+            return "#B1E8BB";
         default:
-            color = Colors.lightGray;
+            return Colors.lightGray;
     }
-    return color;
 }
-
+// Fonction pour obtenir l'icône d'un événement en fonction de la matière
 export function getSubjectIcon(
     subject: string
 ): keyof typeof MaterialIcons.glyphMap {
@@ -268,7 +268,7 @@ export function mergePlanning(
 
 // Fonction pour tronquer les des chaînes de caractères trop longues
 export function truncateString(str: string, maxLength: number): string {
-    return str.length > maxLength ? str.slice(0, maxLength) + "-" : str;
+    return str.length > maxLength ? str.slice(0, maxLength) + "..." : str;
 }
 
 // Fonction pour trier les événements par date de début

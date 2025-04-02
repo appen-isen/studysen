@@ -29,7 +29,7 @@ export function formatDate(date: Date, includeYear = false) {
     return date.toLocaleDateString("fr-FR", {
         day: "2-digit",
         month: "2-digit",
-        year: includeYear ? "2-digit" : undefined,
+        year: includeYear ? "2-digit" : undefined
     });
 }
 
@@ -38,11 +38,11 @@ export function formatFullDate(date: Date) {
     const formattedDate = date.toLocaleDateString("fr-FR", {
         day: "2-digit",
         month: "2-digit",
-        year: "numeric",
+        year: "numeric"
     });
     const formattedTime = date.toLocaleTimeString("fr-FR", {
         hour: "2-digit",
-        minute: "2-digit",
+        minute: "2-digit"
     });
     return `${formattedDate} — ${formattedTime}`;
 }
@@ -61,7 +61,7 @@ export function formatDateToLocalTime(dateISO: string): string {
         hour: "2-digit", // Format des heures avec 2 chiffres
         minute: "2-digit", // Format des minutes avec 2 chiffres
         hour12: false, // Utiliser un format 24 heures
-        timeZone: "Europe/Paris", // Forcer le fuseau horaire (UTC+1)
+        timeZone: "Europe/Paris" // Forcer le fuseau horaire (UTC+1)
     };
 
     // Crée un formatteur pour la date locale française (France)
@@ -108,7 +108,7 @@ export function isSameWorkWeek(date: Date) {
     // On cherche la date du lundi
     const startOfWeek = new Date(now);
     startOfWeek.setDate(
-        now.getDate() - (currentDay === 0 ? 6 : currentDay - 1),
+        now.getDate() - (currentDay === 0 ? 6 : currentDay - 1)
     );
     startOfWeek.setHours(1, 0, 0); // Début de la journée
 
@@ -128,4 +128,10 @@ export function isToday(date: Date) {
         date.getMonth() === now.getMonth() &&
         date.getFullYear() === now.getFullYear()
     );
+}
+
+// Transforme une date au format "JJ/MM/AAAA" en objet Date
+export function parseDate(dateStr: string): Date {
+    const [day, month, year] = dateStr.split("/").map(Number);
+    return new Date(year, month - 1, day); // Mois commence à 0 en JS
 }

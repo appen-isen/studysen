@@ -348,7 +348,7 @@ const timeStyles = StyleSheet.create({
     daysBox: {
         flexDirection: "row",
         justifyContent: "space-between",
-        gap: 2,
+        gap: 3,
         width: "100%"
     },
     daysButton: {
@@ -356,7 +356,8 @@ const timeStyles = StyleSheet.create({
     },
     daysLabel: {
         backgroundColor: Colors.light,
-        paddingBlock: 5,
+        paddingHorizontal: 5,
+        paddingVertical: 8,
         borderRadius: 5,
         textAlign: "center",
         fontSize: 12,

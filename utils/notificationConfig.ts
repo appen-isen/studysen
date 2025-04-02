@@ -1,18 +1,41 @@
 import useSettingsStore from "@/stores/settingsStore";
 import * as Notifications from "expo-notifications";
 import axios from "axios";
+import { Linking, Platform } from "react-native";
+import Constants from "expo-constants";
 
 // Define the API base URL for development and production
 const API_BASE_URL = "https://api.isen-orbit.fr/v1";
 
 // Request permission for notifications
-export const requestPermissions = async () => {
+export const requestPermissions = async (openSettings = false) => {
     const status = await Notifications.getPermissionsAsync();
     if (status.status !== "granted") {
         const { status: newStatus } =
             await Notifications.requestPermissionsAsync();
         if (newStatus !== "granted") {
-            alert("Permission for notifications was denied");
+            if (openSettings) {
+                //On ouvre les paramètres de l'OS pour les notifications
+                if (Platform.OS === "ios") {
+                    const bundleId =
+                        Constants?.expoConfig?.ios?.bundleIdentifier ?? "";
+                    return Linking.openURL(
+                        `App-Prefs:NOTIFICATIONS_ID&path=${bundleId}`
+                    );
+                }
+
+                const packageName =
+                    Constants?.expoConfig?.android?.package ?? "";
+                return Linking.sendIntent(
+                    "android.settings.APP_NOTIFICATION_SETTINGS",
+                    [
+                        {
+                            key: "android.provider.extra.APP_PACKAGE",
+                            value: packageName
+                        }
+                    ]
+                );
+            }
         }
     }
 };
