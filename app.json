@@ -16,7 +16,10 @@
         "ios": {
             "supportsTablet": true,
             "requireFullScreen": true,
-            "bundleIdentifier": "com.appenisen.isenorbit"
+            "bundleIdentifier": "com.appenisen.isenorbit",
+            "infoPlist": {
+                "UIViewControllerBasedStatusBarAppearance": true
+            }
         },
         "android": {
             "adaptiveIcon": {
@@ -49,6 +52,17 @@
                     "androidMode": "default",
                     "androidCollapsedTitle": "ISEN Orbit",
                     "allowsNotificationsEnabled": true
+                }
+            ],
+            [
+                "expo-font",
+                {
+                    "fonts": [
+                        "assets/fonts/OpenSans-300.ttf",
+                        "assets/fonts/OpenSans-400.ttf",
+                        "assets/fonts/OpenSans-600.ttf",
+                        "assets/fonts/OpenSans-700.ttf"
+                    ]
                 }
             ],
             [
