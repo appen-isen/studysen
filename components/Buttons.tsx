@@ -9,7 +9,7 @@ import {
     StyleProp,
     ViewStyle,
     Platform,
-    PressableProps,
+    PressableProps
 } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
@@ -30,7 +30,7 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
     JSX,
     title,
     isLoading,
-    bgColor,
+    bgColor
 }) => {
     const [pressed, setPressed] = useState(false);
 
@@ -40,7 +40,7 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
                 pressed
                     ? { ...styles.button, ...styles.pressedButton, ...style }
                     : { ...styles.button, ...style },
-                bgColor && { backgroundColor: bgColor },
+                bgColor && { backgroundColor: bgColor }
             ]}
             onPress={onPress}
             onPressOut={() => setPressed(false)}
@@ -82,14 +82,14 @@ export const AnimatedPressable: React.FC<AnimatedPressableProps> = ({
     const handlePressIn = () => {
         Animated.spring(scaleAnim, {
             toValue: scale,
-            useNativeDriver: true,
+            useNativeDriver: true
         }).start();
     };
 
     const handlePressOut = () => {
         Animated.spring(scaleAnim, {
             toValue: 1,
-            useNativeDriver: true,
+            useNativeDriver: true
         }).start();
     };
 
@@ -145,40 +145,39 @@ const styles = StyleSheet.create({
         paddingInline: 20,
         paddingBlock: 10,
         borderRadius: 10,
-        backgroundColor: Colors.primary,
+        backgroundColor: Colors.primary
     },
     pressedButton: {
-        backgroundColor: Colors.secondary,
+        backgroundColor: Colors.secondary
     },
     buttonText: {
         fontSize: 18,
         fontWeight: "bold",
         letterSpacing: 0.25,
         color: Colors.white,
-        textAlign: "center",
+        textAlign: "center"
     },
     buttonIssueText: {
         fontSize: 20,
         fontWeight: "bold",
         letterSpacing: 0.25,
         color: Colors.white,
-        textAlign: "center",
-    },
+        textAlign: "center"
+    }
 });
 
 const toggleStyles = StyleSheet.create({
     container: {
         flexDirection: "row",
         alignItems: "center",
-
         gap: 5,
-        paddingBlock: 10,
-        paddingInline: 15,
+        paddingHorizontal: 15,
+        paddingVertical: 8,
         backgroundColor: Colors.light,
-        borderRadius: 10,
+        borderRadius: 30
     },
     label: {
         fontSize: 14,
-        fontWeight: 600,
-    },
+        fontWeight: 600
+    }
 });

@@ -165,8 +165,8 @@ export default function PlanningScreen() {
             <PageHeader title="Mes cours">
                 <Toggle
                     stateList={[
-                        { label: "Journée", icon: "event-note" },
-                        { label: "Semaine", icon: "calendar-month" }
+                        { label: "Voir la semaine", icon: "calendar-month" },
+                        { label: "Voir la journée", icon: "event-note" }
                     ]}
                     state={planningView === "list" ? 0 : 1}
                     setState={(currentState) => {
@@ -320,11 +320,12 @@ const timeStyles = StyleSheet.create({
         width: "100%"
     },
     weekArrow: {
-        width: 36,
-        height: 36,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 5,
         fontSize: 28,
         textAlign: "center",
-        verticalAlign: "middle",
         borderRadius: 999,
         backgroundColor: Colors.black,
         color: Colors.white

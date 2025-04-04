@@ -26,13 +26,14 @@ export function PageHeader(props: { title: string; children?: ReactNode }) {
 const pageStyles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: Colors.white
     },
     content: {
         flex: 1,
         paddingBlock: 10,
         paddingInline: 20,
-        backgroundColor: Colors.white,
-    },
+        backgroundColor: Colors.white
+    }
 });
 
 const headerStyles = StyleSheet.create({
@@ -41,7 +42,7 @@ const headerStyles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginTop: 20,
+        marginTop: 20
     },
     title: {
         paddingBlock: 10,
@@ -51,6 +52,6 @@ const headerStyles = StyleSheet.create({
         color: Colors.white,
         backgroundColor: Colors.primary,
         borderRadius: 15,
-        borderBottomRightRadius: 0,
-    },
+        borderBottomRightRadius: 0
+    }
 });
