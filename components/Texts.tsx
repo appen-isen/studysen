@@ -19,7 +19,10 @@ export function Text(props: TextProps) {
         let finalFontWeight = "300";
 
         if (props.style && typeof props.style === "object") {
-            const fontWeight = styles
+            // On inverse pour prioriser les styles définis en dernier
+            const reversedStyles = [...styles].reverse();
+
+            const fontWeight = reversedStyles
                 .map((style) =>
                     style && typeof style === "object" && "fontWeight" in style
                         ? (style as TextStyle).fontWeight
@@ -28,39 +31,42 @@ export function Text(props: TextProps) {
                 .find((weight) => weight !== undefined);
 
             if (fontWeight) {
-                if (Platform.OS === "ios") {
-                    // Pour iOS, on peut utiliser fontWeight directement
+                // On change la valeur de fontWeight en nombre valide
+                if (typeof fontWeight === "string") {
+                    if (fontWeight === "normal") {
+                        finalFontWeight = "400";
+                    } else if (fontWeight === "bold") {
+                        finalFontWeight = "700";
+                    } else if (!isNaN(Number(fontWeight))) {
+                        finalFontWeight = fontWeight.toString();
+                    }
+                } else if (typeof fontWeight === "number") {
                     finalFontWeight = fontWeight.toString();
-                } else {
+                }
+
+                if (Platform.OS !== "ios") {
                     // Pour Android, on doit mapper les valeurs de fontWeight
                     const fontWeightMap: Record<string, string> = {
                         "100": "OpenSans-300",
                         "200": "OpenSans-300",
                         "300": "OpenSans-300",
                         "400": "OpenSans-400",
-                        normal: "OpenSans-400",
                         "500": "OpenSans-400",
                         "600": "OpenSans-600",
                         "700": "OpenSans-700",
                         "800": "OpenSans-700",
-                        "900": "OpenSans-700",
-                        bold: "OpenSans-700"
+                        "900": "OpenSans-700"
                     };
                     finalFontFamily =
-                        fontWeightMap[fontWeight.toString()] || "OpenSans-300";
+                        fontWeightMap[finalFontWeight] || "OpenSans-300";
                 }
             }
         }
 
-        return Platform.select({
-            ios: {
-                fontFamily: finalFontFamily,
-                fontWeight: finalFontWeight
-            },
-            android: {
-                fontFamily: finalFontFamily
-            }
-        }) as TextStyle;
+        return {
+            fontFamily: finalFontFamily,
+            fontWeight: finalFontWeight
+        } as TextStyle;
     };
 
     const getStyleWithoutFontWeight = () => {

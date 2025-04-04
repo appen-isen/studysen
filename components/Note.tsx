@@ -6,11 +6,17 @@ import { getSubjectName } from "@/utils/notes";
 import Colors from "@/constants/Colors";
 
 // Composant qui réprésente une note
-export function NoteElement(props: { note: Note }) {
+export function NoteElement(props: {
+    note: Note;
+    onPress: (note: Note) => void;
+}) {
     const { note } = props;
     const subjectName = getSubjectName(note.subject);
     return (
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity
+            style={styles.container}
+            onPress={() => props.onPress(note)}
+        >
             {/* Contenu de gauche */}
             <View style={styles.titleBox}>
                 {/* Barre de couleur de la matière */}

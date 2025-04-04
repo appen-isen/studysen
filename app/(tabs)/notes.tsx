@@ -4,7 +4,13 @@ import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { useNotesStore } from "@/stores/webaurionStore";
 import { getSemester } from "@/utils/date";
-import { calculateAverage, filterNotesBySemester, getDSNumber, getSubjectNameFromGroup, groupNotesBySubject } from "@/utils/notes";
+import {
+    calculateAverage,
+    filterNotesBySemester,
+    getDSNumber,
+    getSubjectNameFromGroup,
+    groupNotesBySubject
+} from "@/utils/notes";
 import { Note, NotesList } from "@/webAurion/utils/types";
 import { Octicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -16,7 +22,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 export default function NotesScreen() {
     const router = useRouter();
     const [selectedSemester, setSelectedSemester] = useState<0 | 1>(
-        getSemester(),
+        getSemester()
     );
     // Récupération des notes
     const { notes } = useNotesStore();
@@ -24,7 +30,7 @@ export default function NotesScreen() {
     // Tableau des notes du semestre sélectionné
 
     const selectedNotes = groupNotesBySubject(
-        filterNotesBySemester(notes, selectedSemester),
+        filterNotesBySemester(notes, selectedSemester)
     )
         // Tri des matières par nombre de notes
         .sort((a, b) => b.notes.length - a.notes.length);
@@ -47,10 +53,12 @@ export default function NotesScreen() {
                 <Toggle
                     stateList={[
                         { label: "Semestre 1", icon: "switch-left" },
-                        { label: "Semestre 2", icon: "switch-right" },
+                        { label: "Semestre 2", icon: "switch-right" }
                     ]}
                     state={selectedSemester}
-                    setState={(currentState) => setSelectedSemester(currentState === 0 ? 1 : 0)}
+                    setState={(currentState) =>
+                        setSelectedSemester(currentState === 0 ? 1 : 0)
+                    }
                 />
                 {selectedNotes.length > 0 && (
                     // Moyenne générale s'il y a des notes
@@ -106,7 +114,6 @@ export default function NotesScreen() {
                 {currentNote && (
                     <NoteModal
                         note={currentNote}
-                        noteCode={currentNote.code}
                         visible={noteModalInfoVisible}
                         setVisible={setNoteModalInfoVisible}
                     ></NoteModal>
@@ -164,36 +171,36 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: "100%",
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white
     },
     topbar: {
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "center"
     },
     backIcon: {
         fontSize: 40,
         margin: 20,
-        color: Colors.primary,
+        color: Colors.primary
     },
     contentView: {
         flex: 1,
         justifyContent: "flex-start",
-        alignItems: "center",
+        alignItems: "center"
     },
     title: {
         fontSize: 25,
         fontWeight: "bold",
-        color: Colors.primary,
+        color: Colors.primary
     },
     // Sélecteur de semestre
     semesterSelector: {
-        marginTop: 10,
+        marginTop: 10
     },
     selectorText: {
         fontSize: 18,
         color: Colors.primary,
         fontWeight: "bold",
-        marginVertical: 5,
+        marginVertical: 5
     },
     // Moyenne générale
     noteAverageView: {
@@ -201,50 +208,50 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 40,
+        marginTop: 40
     },
     noteAverageTitle: {
         fontSize: 20,
-        fontWeight: "bold",
+        fontWeight: "bold"
     },
     // Valeur de la moyenne
     noteAverageValContainer: {
         flexDirection: "row",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     noteAverageInfo: {
         color: Colors.primary,
         fontSize: 25,
         textAlign: "center",
-        marginLeft: 10,
+        marginLeft: 10
     },
     noteAverageValue: {
         color: Colors.primary,
         fontWeight: "bold",
         fontSize: 30,
-        marginRight: 10,
+        marginRight: 10
     },
     // Conteneur de la liste de notes
     scrollView: {
-        width: "100%",
+        width: "100%"
     },
     scrollContainer: {
         display: "flex",
         justifyContent: "flex-start",
         alignItems: "center",
         paddingBottom: 40,
-        marginTop: 20,
+        marginTop: 20
     },
     // Message si aucune note n'est disponible
     noNoteContainer: {
-        marginTop: 40,
+        marginTop: 40
     },
     noNoteText: {
         fontWeight: "bold",
         fontSize: 16,
-        textAlign: "center",
-    },
+        textAlign: "center"
+    }
 });
 
 // Styles pour le composant NotesGroup
@@ -255,7 +262,7 @@ const notesGroupStyles = StyleSheet.create({
         backgroundColor: Colors.primary,
         borderRadius: 10,
         boxShadow: "0px 0px 8px 2px rgba(0,0,0,0.1)",
-        marginTop: 30,
+        marginTop: 30
     },
     // En-tête du groupe de notes
     header: {
@@ -265,7 +272,7 @@ const notesGroupStyles = StyleSheet.create({
         alignItems: "center",
         borderTopRightRadius: 10,
         borderTopLeftRadius: 10,
-        padding: 8,
+        padding: 8
     },
     headerSubject: {
         width: "79%",
@@ -273,7 +280,7 @@ const notesGroupStyles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 5,
-        paddingVertical: 8,
+        paddingVertical: 8
     },
     headerAverage: {
         width: "19%",
@@ -283,19 +290,19 @@ const notesGroupStyles = StyleSheet.create({
         backgroundColor: Colors.hexWithOpacity(Colors.white, 0.9),
         boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)",
         borderRadius: 5,
-        paddingVertical: 8,
+        paddingVertical: 8
     },
     // Textes de l'en-tête
     headerSubjectText: {
         fontSize: 20,
         fontWeight: "bold",
         color: Colors.white,
-        textAlign: "center",
+        textAlign: "center"
     },
     headerAverageText: {
         fontSize: 18,
         fontWeight: "bold",
-        color: Colors.primary,
+        color: Colors.primary
     },
     // Contenu du groupe de notes
     content: {
@@ -308,7 +315,7 @@ const notesGroupStyles = StyleSheet.create({
         padding: 8,
         backgroundColor: Colors.white,
         borderRadius: 5,
-        boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)",
+        boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)"
     },
     noteContainer: {
         display: "flex",
@@ -319,14 +326,14 @@ const notesGroupStyles = StyleSheet.create({
         backgroundColor: Colors.secondary,
         borderRadius: 10,
         margin: "4%", // Adds spacing between items
-        boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)",
+        boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)"
     },
     noteNumber: {
-        color: Colors.primary,
+        color: Colors.primary
     },
     noteValue: {
         color: Colors.primary,
         fontSize: 16,
-        fontWeight: "bold",
-    },
+        fontWeight: "bold"
+    }
 });

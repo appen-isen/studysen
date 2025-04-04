@@ -11,7 +11,7 @@ import {
 } from "@/stores/webaurionStore";
 import useSessionStore from "@/stores/sessionStore";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
-import { PlanningEvent } from "@/webAurion/utils/types";
+import { Note, PlanningEvent } from "@/webAurion/utils/types";
 import {
     findEvent,
     getCurrentEvent,
@@ -37,6 +37,7 @@ import useSettingsStore from "@/stores/settingsStore";
 import { getSemester } from "@/utils/date";
 import { Page, PageHeader } from "@/components/Page";
 import { NoteElement } from "@/components/Note";
+import NoteModal from "@/components/modals/NoteModal";
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -60,6 +61,9 @@ export default function HomeScreen() {
     //Permet de stocker l'événement sélectionné pour l'afficher dans la modal
     const [selectedEvent, setSelectedEvent] = useState<PlanningEvent | null>();
     const [eventModalInfoVisible, setEventModalInfoVisible] = useState(false);
+    //Permet de stocker la note sélectionnée pour l'afficher dans la modal
+    const [selectedNote, setSelectedNote] = useState<Note | null>();
+    const [noteModalInfoVisible, setNoteModalInfoVisible] = useState(false);
 
     //Lorsque la page est chargée
     useEffect(() => {
@@ -323,6 +327,10 @@ export default function HomeScreen() {
                                 <NoteElement
                                     key={note.code + index}
                                     note={note}
+                                    onPress={() => {
+                                        setSelectedNote(note);
+                                        setNoteModalInfoVisible(true);
+                                    }}
                                 />
                             ))}
                         </View>
@@ -354,6 +362,15 @@ export default function HomeScreen() {
                         setVisible={setEventModalInfoVisible}
                     ></EventModal>
                 )}
+                {/* Modal pour afficher les informations d'une note */}
+                {selectedNote && (
+                    <NoteModal
+                        note={selectedNote}
+                        visible={noteModalInfoVisible}
+                        setVisible={setNoteModalInfoVisible}
+                    ></NoteModal>
+                )}
+                {/* Modal pour afficher les informations d'une note */}
             </ScrollView>
         </Page>
     );
