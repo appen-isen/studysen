@@ -10,12 +10,12 @@ import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
 import {
     fillDayWithBlankEvents,
-    getSubjectColor,
     groupEventsByDay,
     updatePlanningForListMode
 } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { AnimatedPressable } from "../Buttons";
+import { getSubjectColor } from "@/utils/colors";
 
 export default function PlanningWeek(props: {
     events: PlanningEvent[];

@@ -1,7 +1,5 @@
-import Colors from "@/constants/Colors";
 import { PlanningEvent } from "@/webAurion/utils/types";
 import { getCloserMonday } from "./date";
-import { MaterialIcons } from "@expo/vector-icons";
 
 export type DayEvents = {
     [date: string]: PlanningEvent[];
@@ -135,63 +133,6 @@ export function createBlankEvent(start: Date, end: Date): PlanningEvent {
         end: formatDate(end),
         className: ""
     };
-}
-
-const subjectMapping: Record<string, string> = {
-    "Algorithmique C": "Informatique",
-    "Formation humaine et sociale": "FHS",
-    Linux: "Informatique",
-    "Web Frontend": "Informatique",
-    "Culture numérique": "Informatique"
-};
-// Fonction pour obtenir la couleur d'un événement en fonction de la matière
-export function getSubjectColor(subject: string): string {
-    const mappedSubject = subjectMapping[subject] || subject; // Si pas de correspondance, on garde le nom original
-    switch (mappedSubject) {
-        case "Mathématiques":
-            return "#FFA99D";
-        case "Physique":
-            return "#FFD970";
-        case "Sciences de l'Ingénieur":
-            return "#D296FF";
-        case "Informatique":
-            return "#8BD8FF";
-        case "Anglais":
-            return "#FFA3E3";
-        case "FHS":
-            return "#B1E8BB";
-        default:
-            return Colors.lightGray;
-    }
-}
-// Fonction pour obtenir l'icône d'un événement en fonction de la matière
-export function getSubjectIcon(
-    subject: string
-): keyof typeof MaterialIcons.glyphMap {
-    let icon: keyof typeof MaterialIcons.glyphMap;
-    switch (subject) {
-        case "Mathématiques":
-            icon = "functions";
-            break;
-        case "Physique":
-            icon = "science";
-            break;
-        case "Sciences de l'Ingénieur":
-            icon = "route";
-            break;
-        case "Informatique":
-            icon = "code";
-            break;
-        case "Anglais":
-            icon = "translate";
-            break;
-        case "FHS":
-            icon = "record-voice-over";
-            break;
-        default:
-            icon = "event";
-    }
-    return icon;
 }
 
 // Fonction pour retrouver un événement dans le planning

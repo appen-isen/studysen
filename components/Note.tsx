@@ -1,9 +1,10 @@
 import { Note } from "@/webAurion/utils/types";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "./Texts";
-import { getSubjectColor, truncateString } from "@/utils/planning";
+import { truncateString } from "@/utils/planning";
 import { getSubjectName } from "@/utils/notes";
 import Colors from "@/constants/Colors";
+import { getColorFromNoteCode, getSubjectColor } from "@/utils/colors";
 
 // Composant qui réprésente une note
 export function NoteElement(props: {
@@ -24,7 +25,7 @@ export function NoteElement(props: {
                     style={[
                         styles.noteBar,
                         {
-                            backgroundColor: getSubjectColor(subjectName)
+                            backgroundColor: getColorFromNoteCode(note.code)
                         }
                     ]}
                 ></View>

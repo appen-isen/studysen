@@ -27,7 +27,6 @@ import {
     getLatestNotes
 } from "@/utils/notes";
 import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import {
     cancelAllScheduledNotifications,
     requestPermissions,

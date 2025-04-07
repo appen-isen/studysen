@@ -2,11 +2,11 @@ import { PlanningEvent } from "@/webAurion/utils/types";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
-import { getSubjectColor, getSubjectIcon } from "@/utils/planning";
 
 import { Sheet } from "../Sheet";
 import { MaterialIcons } from "@expo/vector-icons";
 import { formatFullDate } from "@/utils/date";
+import { getSubjectColor, getSubjectIcon } from "@/utils/colors";
 
 type EventModalProps = {
     visible: boolean;
@@ -26,8 +26,8 @@ export default function EventModal(props: EventModalProps) {
                     style={[
                         popupStyles.headerIcon,
                         {
-                            backgroundColor: getSubjectColor(event.subject),
-                        },
+                            backgroundColor: getSubjectColor(event.subject)
+                        }
                     ]}
                 >
                     <MaterialIcons
@@ -77,42 +77,42 @@ export default function EventModal(props: EventModalProps) {
 const popupStyles = StyleSheet.create({
     container: {
         padding: 20,
-        gap: 20,
+        gap: 20
     },
     headerBox: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 10,
+        gap: 10
     },
     headerIcon: {
         width: 22,
         height: 22,
         borderRadius: 999,
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     headerTitle: {
         fontSize: 18,
-        fontWeight: 400,
+        fontWeight: 400
     },
     headerSubtitle: {
         fontSize: 12,
         fontWeight: 400,
-        color: Colors.gray,
+        color: Colors.gray
     },
     fieldTitle: {
         fontSize: 10,
         fontWeight: 700,
         color: Colors.gray,
-        textTransform: "uppercase",
+        textTransform: "uppercase"
     },
     fieldBox: {
         gap: 4,
-        alignItems: "flex-start",
+        alignItems: "flex-start"
     },
     fieldValue: {
         fontSize: 14,
-        fontWeight: 400,
+        fontWeight: 400
     },
     fieldTag: {
         paddingBlock: 5,
@@ -120,13 +120,13 @@ const popupStyles = StyleSheet.create({
         borderRadius: 5,
         textAlign: "center",
         fontSize: 12,
-        fontWeight: 600,
+        fontWeight: 600
     },
     fieldTagLight: {
-        backgroundColor: Colors.light,
+        backgroundColor: Colors.light
     },
     fieldTagBlack: {
         backgroundColor: Colors.black,
-        color: Colors.white,
-    },
+        color: Colors.white
+    }
 });

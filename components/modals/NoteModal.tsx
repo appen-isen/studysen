@@ -1,16 +1,16 @@
 import { Note } from "@/webAurion/utils/types";
-import { View, StyleSheet, ScrollView } from "react-native";
-import { Bold, Text } from "../Texts";
+import { View, StyleSheet } from "react-native";
+import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
-import { BottomModal } from "../Modals";
-import {
-    getDSNumber,
-    getSemesterFromCode,
-    getSubjectName
-} from "@/utils/notes";
+import { getSubjectName } from "@/utils/notes";
 import { Sheet } from "../Sheet";
-import { getSubjectColor, getSubjectIcon } from "@/utils/planning";
 import { MaterialIcons } from "@expo/vector-icons";
+import {
+    getColorFromNoteCode,
+    getIconFromNoteCode,
+    getSubjectColor,
+    getSubjectIcon
+} from "@/utils/colors";
 
 type NoteModalProps = {
     visible: boolean;
@@ -19,7 +19,6 @@ type NoteModalProps = {
 };
 export default function NoteModal(props: NoteModalProps) {
     const { note, visible, setVisible } = props;
-    const subjectName = getSubjectName(note.subject);
     return (
         // <BottomModal
         //     setVisible={props.setVisible}
@@ -69,12 +68,12 @@ export default function NoteModal(props: NoteModalProps) {
                     style={[
                         popupStyles.headerIcon,
                         {
-                            backgroundColor: getSubjectColor(subjectName)
+                            backgroundColor: getColorFromNoteCode(note.code)
                         }
                     ]}
                 >
                     <MaterialIcons
-                        name={getSubjectIcon(subjectName)}
+                        name={getIconFromNoteCode(note.code)}
                         size={14}
                     />
                 </View>
