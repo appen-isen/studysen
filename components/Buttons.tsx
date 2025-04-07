@@ -9,7 +9,9 @@ import {
     StyleProp,
     ViewStyle,
     Platform,
-    PressableProps
+    PressableProps,
+    View,
+    LayoutChangeEvent
 } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
@@ -126,6 +128,80 @@ export function Toggle(props: ToggleProps) {
     );
 }
 
+//Sélecteur dynamique à options multiples
+type MultiToggleProps = {
+    options: string[];
+    defaultIndex?: number;
+    onToggle?: (index: number) => void;
+};
+
+export const MultiToggle = ({
+    options,
+    defaultIndex = 0,
+    onToggle
+}: MultiToggleProps) => {
+    const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
+    const translateX = useRef(new Animated.Value(0)).current;
+    const [containerWidth, setContainerWidth] = useState(0);
+
+    const sliderMargin = 3; // Espace entre le slider et les bords du conteneur
+
+    // Fonction pour gérer le changement de mise en page
+    const handleLayout = (e: LayoutChangeEvent) => {
+        const width = e.nativeEvent.layout.width;
+        setContainerWidth(width);
+
+        const itemWidth = width / options.length;
+        const initialTranslate = itemWidth * selectedIndex + sliderMargin;
+        translateX.setValue(initialTranslate);
+    };
+
+    // Fonction pour gérer le changement d'index et animer le slider
+    const handlePress = (index: number) => {
+        // Mise à jour de l'index sélectionné
+        if (index === selectedIndex) return;
+        setSelectedIndex(index);
+
+        // Calculer la nouvelle position du slider
+        const itemWidth = containerWidth / options.length;
+        Animated.spring(translateX, {
+            toValue: itemWidth * index + sliderMargin,
+            useNativeDriver: false
+        }).start();
+
+        onToggle?.(index);
+    };
+
+    // Calculer la largeur de chaque élément et la largeur du slider
+    const itemWidth = containerWidth / options.length;
+    const sliderWidth = itemWidth - sliderMargin * 2;
+
+    return (
+        <View onLayout={handleLayout} style={mToggleStyles.container}>
+            {/* Slider animé qui se déplace entre les options */}
+            <Animated.View
+                style={[
+                    mToggleStyles.slider,
+                    {
+                        width: sliderWidth,
+                        transform: [{ translateX }]
+                    }
+                ]}
+            />
+            {/* Options de sélection */}
+            <View style={mToggleStyles.labels}>
+                {options.map((label, index) => (
+                    <Pressable key={index} onPress={() => handlePress(index)}>
+                        <View style={mToggleStyles.option}>
+                            <Text style={mToggleStyles.text}>{label}</Text>
+                        </View>
+                    </Pressable>
+                ))}
+            </View>
+        </View>
+    );
+};
+
 // Switch avec les couleurs de l'application
 export const ISENSwitch: React.FC<SwitchProps> = (props) => {
     return (
@@ -179,5 +255,39 @@ const toggleStyles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: 600
+    }
+});
+
+// Styles pour le MultiToggle
+const mToggleStyles = StyleSheet.create({
+    container: {
+        height: 40,
+        backgroundColor: Colors.light,
+        justifyContent: "center",
+        borderRadius: 30,
+        padding: 3,
+        overflow: "hidden",
+        paddingHorizontal: 3
+    },
+    slider: {
+        position: "absolute",
+        height: "100%",
+        backgroundColor: Colors.white,
+        borderRadius: 20,
+        elevation: 2
+    },
+    labels: {
+        flexDirection: "row",
+        flex: 1
+    },
+    option: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 30
+    },
+    text: {
+        color: Colors.black,
+        fontWeight: "bold"
     }
 });

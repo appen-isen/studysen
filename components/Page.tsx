@@ -3,6 +3,9 @@ import { ReactNode } from "react";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AnimatedPressable } from "./Buttons";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 export function Page(props: { children?: ReactNode; style?: any }) {
     return (
@@ -14,11 +17,48 @@ export function Page(props: { children?: ReactNode; style?: any }) {
     );
 }
 
-export function PageHeader(props: { title: string; children?: ReactNode }) {
+type PageHeaderProps = {
+    title: string;
+    titlePosition?: "right" | "left";
+    returnTo?: string;
+    children?: ReactNode;
+};
+
+export function PageHeader({
+    title,
+    returnTo,
+    titlePosition = "right",
+    children
+}: PageHeaderProps) {
+    const router = useRouter();
     return (
         <View style={headerStyles.container}>
-            <Text style={headerStyles.title}>{props.title}</Text>
-            {props.children}
+            {titlePosition === "left" && children}
+            {/* Si on a un bouton de retour, on l'affiche à gauche du titre */}
+            {returnTo !== undefined && (
+                <AnimatedPressable
+                    style={headerStyles.returnButton}
+                    onPress={() => {
+                        setTimeout(() => router.back(), 200); // Délai de 200ms pour l'animation
+                    }}
+                    scale={0.9}
+                >
+                    <MaterialIcons name="arrow-back" size={24} />
+                    <Text style={headerStyles.returnText}>{returnTo}</Text>
+                </AnimatedPressable>
+            )}
+            <Text
+                // On ajuste le style en fonction de la position du titre
+                style={[
+                    headerStyles.title,
+                    titlePosition === "right"
+                        ? headerStyles.rightTitle
+                        : headerStyles.leftTitle
+                ]}
+            >
+                {title}
+            </Text>
+            {titlePosition === "right" && children}
         </View>
     );
 }
@@ -51,7 +91,24 @@ const headerStyles = StyleSheet.create({
         fontWeight: 600,
         color: Colors.white,
         backgroundColor: Colors.primary,
-        borderRadius: 15,
+        borderRadius: 15
+    },
+    rightTitle: {
         borderBottomRightRadius: 0
+    },
+    leftTitle: {
+        borderBottomLeftRadius: 0
+    },
+    returnButton: {
+        flexDirection: "row",
+        backgroundColor: Colors.light,
+        gap: 10,
+        paddingVertical: 7,
+        paddingHorizontal: 20,
+        borderRadius: 30
+    },
+    returnText: {
+        fontSize: 16,
+        fontWeight: 600
     }
 });

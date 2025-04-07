@@ -1,18 +1,21 @@
 import Colors from "@/constants/Colors";
 import { MaterialIcons } from "@expo/vector-icons";
 
+// Correspondance entre les différents noms et code de matière
 const subjectMapping: Record<string, string> = {
     MATH: "Mathématiques",
     PROBA: "Mathématiques",
     PHYS: "Physique",
     ALGO: "Informatique",
     WEB: "Informatique",
+    LINUX: "Informatique",
+    CULTURE_NUM: "Informatique",
     BDD: "Informatique",
     DEV: "Informatique",
     STM32: "Informatique",
     ENVT: "Environnement",
     SI: "Sciences de l'Ingénieur",
-    ANGL: "Anglais",
+    ANGLAIS: "Anglais",
     FHS: "FHS"
 };
 // Fonction pour obtenir la couleur d'un événement en fonction de la matière
@@ -93,5 +96,5 @@ export function getIconFromNoteCode(
     if (subjectKey) {
         return getSubjectIcon(subjectKey);
     }
-    return "event";
+    return "grade";
 }

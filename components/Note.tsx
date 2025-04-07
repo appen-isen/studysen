@@ -52,7 +52,8 @@ export function NoteElement(props: {
 const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
-        height: 40
+        width: "100%",
+        height: 45
     },
     titleBox: {
         width: "60%",
