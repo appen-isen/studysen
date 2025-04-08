@@ -1,131 +1,117 @@
 import { Note } from "@/webAurion/utils/types";
-import { View, StyleSheet, ScrollView } from "react-native";
-import { Bold, Text } from "../Texts";
+import { View, StyleSheet } from "react-native";
+import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
-import { BottomModal } from "../Modals";
-import {
-    getDSNumber,
-    getSemesterFromCode,
-    getSubjectName,
-} from "@/utils/notes";
+import { Sheet } from "../Sheet";
+import { MaterialIcons } from "@expo/vector-icons";
+import { getColorFromNoteCode, getIconFromNoteCode } from "@/utils/colors";
 
 type NoteModalProps = {
     visible: boolean;
     setVisible: (visible: boolean) => void;
     note: Note;
-    noteCode: string;
 };
 export default function NoteModal(props: NoteModalProps) {
-    const { note, noteCode } = props;
+    const { note, visible, setVisible } = props;
     return (
-        <BottomModal
-            setVisible={props.setVisible}
-            visible={props.visible}
-            flexSize={0.5}
+        <Sheet
+            sheetStyle={popupStyles.container}
+            visible={visible}
+            setVisible={setVisible}
         >
-            {/* Info sur la matière */}
-            <Text style={styles.title}>{getSubjectName(note.subject)}</Text>
-            {/* Nom du DS */}
-            <Text style={styles.noteName}>
-                {getDSNumber(note.code)} S{getSemesterFromCode(noteCode)}
-            </Text>
-            {/* Info sur la note */}
-            <View style={styles.infoContainer}>
-                {/* Date de début */}
-                <View style={styles.infoBox}>
-                    <Bold style={styles.infoTitle}>Date</Bold>
-                    <Text style={styles.infoText}>{note.date}</Text>
+            <View style={popupStyles.headerBox}>
+                <View
+                    style={[
+                        popupStyles.headerIcon,
+                        {
+                            backgroundColor: getColorFromNoteCode(note.code)
+                        }
+                    ]}
+                >
+                    <MaterialIcons
+                        name={getIconFromNoteCode(note.code)}
+                        size={14}
+                    />
                 </View>
-                {/* Séparateur */}
-                <View style={[styles.separator]}></View>
-                {/* Date de fin */}
-                <View style={styles.infoBox}>
-                    <Bold style={styles.infoTitle}>Note</Bold>
-                    <Text style={styles.infoText}>
-                        {/* S'il n'y a pas de note, on affiche l'appréciation à la place */}
-                        {note.note === "-" && note.description
-                            ? note.description
-                            : note.note}
-                    </Text>
+                <View>
+                    <Text style={popupStyles.headerTitle}>{note.subject}</Text>
                 </View>
             </View>
+            <View style={popupStyles.fieldBox}>
+                <Text style={popupStyles.fieldTitle}>Note</Text>
+                <Text style={[popupStyles.fieldTag, popupStyles.fieldTagBold]}>
+                    {note.note === "-" && note.description
+                        ? note.description
+                        : note.note}
+                </Text>
+            </View>
+            <View style={popupStyles.fieldBox}>
+                <Text style={popupStyles.fieldTitle}>Date</Text>
+                <Text style={[popupStyles.fieldTag, popupStyles.fieldTagLight]}>
+                    {note.date}
+                </Text>
+            </View>
 
-            {/* Intervenants */}
-            <Text style={styles.peopleInfoTitle}>Intervenants</Text>
-            <ScrollView style={styles.infoScrollView}>
-                <Text style={styles.peopleInfo}>{note.instructor}</Text>
-            </ScrollView>
-        </BottomModal>
+            <View>
+                <Text style={popupStyles.fieldTitle}>Correcteur</Text>
+                <Text style={popupStyles.fieldValue}>{note.instructor}</Text>
+            </View>
+        </Sheet>
     );
 }
 
-const styles = StyleSheet.create({
-    //Contenu de la modal
-
-    //Titre de la matière
-    title: {
-        fontSize: 25,
-        color: Colors.primary,
-        fontWeight: "bold",
-        alignSelf: "center",
-        textAlign: "center",
+const popupStyles = StyleSheet.create({
+    container: {
+        padding: 20,
+        gap: 20
     },
-    noteName: {
-        fontSize: 20,
-        color: "black",
-        fontWeight: "bold",
-        alignSelf: "center",
-        marginTop: 20,
-        textAlign: "center",
-    },
-    //Affichage des informations sur la note (date et valeur)
-    infoContainer: {
-        display: "flex",
+    headerBox: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-around",
-        alignSelf: "center",
-        width: "100%",
-        marginVertical: 40,
+        gap: 10
     },
-    separator: {
-        width: 4,
-        height: 40,
-        borderRadius: 10,
-        backgroundColor: Colors.primary,
-    },
-    infoBox: {
-        display: "flex",
-        flexDirection: "column",
+    headerIcon: {
+        width: 22,
+        height: 22,
+        borderRadius: 999,
         justifyContent: "center",
-        alignItems: "center",
-        width: "40%",
+        alignItems: "center"
     },
-    infoTitle: {
-        fontSize: 20,
-        color: Colors.primary,
-    },
-    infoText: {
+    headerTitle: {
         fontSize: 18,
+        fontWeight: 400
     },
-    //Intervenants et Etudiants
-    peopleInfoTitle: {
-        color: Colors.primary,
-        textDecorationLine: "underline",
-        fontWeight: "bold",
-        fontSize: 20,
-        marginTop: 20,
+    fieldTitle: {
+        fontSize: 10,
+        fontWeight: 700,
+        color: Colors.gray,
+        textTransform: "uppercase"
     },
-    peopleInfo: {
-        alignSelf: "center",
+    fieldBox: {
+        gap: 4,
+        alignItems: "flex-start"
+    },
+    fieldValue: {
+        fontSize: 14,
+        fontWeight: 400
+    },
+    fieldTag: {
+        paddingBlock: 5,
+        paddingInline: 10,
+        borderRadius: 5,
         textAlign: "center",
-        width: "90%",
-        fontSize: 18,
-        color: "black",
-        marginTop: 5,
+        fontSize: 12,
+        fontWeight: 600
     },
-    infoScrollView: {
-        width: "100%",
-        height: 30,
+    fieldTagLight: {
+        backgroundColor: Colors.light
     },
+    fieldTagBold: {
+        backgroundColor: Colors.light,
+        fontWeight: 700
+    },
+    fieldTagBlack: {
+        backgroundColor: Colors.black,
+        color: Colors.white
+    }
 });

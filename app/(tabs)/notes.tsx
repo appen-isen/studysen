@@ -1,30 +1,40 @@
-import { AnimatedPressable, Toggle } from "@/components/Buttons";
+import { AnimatedPressable, MultiToggle, Toggle } from "@/components/Buttons";
 import NoteModal from "@/components/modals/NoteModal";
-import { Text } from "@/components/Texts";
+import { Bold, Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { useNotesStore } from "@/stores/webaurionStore";
 import { getSemester } from "@/utils/date";
-import { calculateAverage, filterNotesBySemester, getDSNumber, getSubjectNameFromGroup, groupNotesBySubject } from "@/utils/notes";
+import {
+    calculateAverage,
+    filterNotesBySemester,
+    getDSNumber,
+    getSubjectNameFromGroup,
+    groupNotesBySubject
+} from "@/utils/notes";
 import { Note, NotesList } from "@/webAurion/utils/types";
-import { Octicons } from "@expo/vector-icons";
+import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { Page, PageHeader } from "@/components/Page";
+import { getColorFromNoteCode, getIconFromNoteCode } from "@/utils/colors";
+import { Sheet } from "@/components/Sheet";
 
 export default function NotesScreen() {
     const router = useRouter();
     const [selectedSemester, setSelectedSemester] = useState<0 | 1>(
-        getSemester(),
+        getSemester()
     );
+    // Affichage de la modal d'information sur la moyenne
+    const [infoVisible, setInfoVisible] = useState(false);
     // Récupération des notes
     const { notes } = useNotesStore();
 
     // Tableau des notes du semestre sélectionné
 
     const selectedNotes = groupNotesBySubject(
-        filterNotesBySemester(notes, selectedSemester),
+        filterNotesBySemester(notes, selectedSemester)
     )
         // Tri des matières par nombre de notes
         .sort((a, b) => b.notes.length - a.notes.length);
@@ -35,47 +45,42 @@ export default function NotesScreen() {
     const [noteModalInfoVisible, setNoteModalInfoVisible] = useState(false);
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.topbar}>
-                <AnimatedPressable onPress={() => router.back()}>
-                    <FontAwesome6 name="arrow-left" style={styles.backIcon} />
-                </AnimatedPressable>
-                <Text style={styles.title}>Mes notes</Text>
-            </View>
+        <Page style={styles.container}>
+            <PageHeader
+                title="Mes Notes"
+                titlePosition="left"
+                returnTo="Accueil"
+            ></PageHeader>
             <View style={styles.contentView}>
                 {/* Sélecteur de semestre */}
-                <Toggle
-                    stateList={[
-                        { label: "Semestre 1", icon: "switch-left" },
-                        { label: "Semestre 2", icon: "switch-right" },
-                    ]}
-                    state={selectedSemester}
-                    setState={(currentState) => setSelectedSemester(currentState === 0 ? 1 : 0)}
+                <MultiToggle
+                    options={["Semestre 1", "Semestre 2"]}
+                    defaultIndex={selectedSemester}
+                    onToggle={(index) => setSelectedSemester(index as 0 | 1)}
                 />
+                {/* Affichage de la moyenne générale si des notes sont disponibles */}
                 {selectedNotes.length > 0 && (
-                    // Moyenne générale s'il y a des notes
                     <View style={styles.noteAverageView}>
-                        <Text style={styles.noteAverageTitle}>
-                            Moyenne générale
-                        </Text>
-                        <View style={styles.noteAverageValContainer}>
-                            {/* Valeur de la moyenne */}
+                        <View>
+                            <Text style={styles.noteAverageTitle}>
+                                MOYENNE GÉNÉRALE
+                            </Text>
                             <Text style={styles.noteAverageValue}>
                                 {noteAverageValue}
                             </Text>
+                        </View>
+                        <View>
                             {/* Bouton d'information */}
                             <AnimatedPressable
-                                onPress={() => router.push("/notes-help")}
+                                onPress={() => setInfoVisible(true)}
+                                style={styles.noteAverageInfo}
                             >
-                                <Octicons
-                                    name="info"
-                                    style={styles.noteAverageInfo}
-                                />
+                                <MaterialIcons name="info-outline" size={20} />
+                                <Text>En savoir plus</Text>
                             </AnimatedPressable>
                         </View>
                     </View>
                 )}
-
                 {/* Message si aucune note n'est disponible */}
                 {selectedNotes.length === 0 && (
                     <View style={styles.noNoteContainer}>
@@ -84,7 +89,6 @@ export default function NotesScreen() {
                         </Text>
                     </View>
                 )}
-
                 {/* Notes par matière */}
                 <ScrollView
                     contentContainerStyle={styles.scrollContainer}
@@ -102,17 +106,46 @@ export default function NotesScreen() {
                         ></NotesGroup>
                     ))}
                 </ScrollView>
+                {/* Modal d'informations sur le calcul de la moyenne */}
+                <Sheet
+                    visible={infoVisible}
+                    setVisible={setInfoVisible}
+                    sheetStyle={infoStyles.container}
+                >
+                    <Text style={infoStyles.subtitle}>
+                        Attention aux moyennes
+                    </Text>
+                    <Text style={infoStyles.paragraph}>
+                        Les moyennes affichées <Bold>ne sont pas</Bold> vos
+                        vraies moyennes !
+                    </Text>
+                    <Text style={infoStyles.paragraph}>
+                        L'application n'a <Bold>pas accès</Bold> aux{" "}
+                        <Bold>coefficients</Bold> de chaque note. Les
+                        <Text style={infoStyles.important}> moyennes</Text> des
+                        matières sont donc{" "}
+                        <Text style={infoStyles.important}> erronées</Text>. Il
+                        en va de même pour la <Bold>moyenne générale</Bold>{" "}
+                        affichée.
+                    </Text>
+                    <Text style={infoStyles.paragraph}>
+                        Ces moyennes sont donc uniquement affichées{" "}
+                        <Text style={infoStyles.important}>
+                            à titre indicatif
+                        </Text>
+                        .
+                    </Text>
+                </Sheet>
                 {/* Modal pour afficher les informations d'une note */}
                 {currentNote && (
                     <NoteModal
                         note={currentNote}
-                        noteCode={currentNote.code}
                         visible={noteModalInfoVisible}
                         setVisible={setNoteModalInfoVisible}
                     ></NoteModal>
                 )}
             </View>
-        </SafeAreaView>
+        </Page>
     );
 }
 
@@ -128,6 +161,22 @@ function NotesGroup(props: {
             <View style={notesGroupStyles.header}>
                 {/* Matière */}
                 <View style={notesGroupStyles.headerSubject}>
+                    {/* Icône de la matière */}
+                    <View
+                        style={[
+                            notesGroupStyles.headerIcon,
+                            {
+                                backgroundColor: getColorFromNoteCode(
+                                    props.notesList.code
+                                )
+                            }
+                        ]}
+                    >
+                        <MaterialIcons
+                            name={getIconFromNoteCode(props.notesList.code)}
+                            size={20}
+                        />
+                    </View>
                     <Text style={notesGroupStyles.headerSubjectText}>
                         {getSubjectNameFromGroup(notes)}
                     </Text>
@@ -139,194 +188,325 @@ function NotesGroup(props: {
                     </Text>
                 </View>
             </View>
-            <View style={notesGroupStyles.content}>
-                {/* Notes */}
-                {notes.map((note, index) => (
-                    <AnimatedPressable
-                        style={notesGroupStyles.noteContainer}
-                        // Affichage de la modal au clic
-                        onPress={() => props.setCurrentNote(note)}
-                        key={`note-${note.code}-${index}`}
-                    >
-                        <Text style={notesGroupStyles.noteNumber}>
-                            {getDSNumber(note.code)}
-                        </Text>
-                        <Text style={notesGroupStyles.noteValue}>
-                            {note.note}
-                        </Text>
-                    </AnimatedPressable>
-                ))}
-            </View>
+
+            {notes.length > 0 && (
+                <View style={notesGroupStyles.content}>
+                    {/* Couleur de la matière */}
+                    <View
+                        style={[
+                            notesGroupStyles.groupSeparator,
+                            {
+                                backgroundColor: getColorFromNoteCode(
+                                    props.notesList.code
+                                )
+                            }
+                        ]}
+                    ></View>
+                    <View style={notesGroupStyles.notesTable}>
+                        {/* En-tête du tableau des notes */}
+                        <View style={notesGroupStyles.noteRow}>
+                            <View style={notesGroupStyles.noteCol}>
+                                <Text style={notesGroupStyles.tableTitles}>
+                                    NOM
+                                </Text>
+                            </View>
+                            <View style={notesGroupStyles.noteCol}>
+                                <Text style={notesGroupStyles.tableTitles}>
+                                    DATE
+                                </Text>
+                            </View>
+                            <View style={notesGroupStyles.noteCol}>
+                                <Text style={notesGroupStyles.tableTitles}>
+                                    NOTE
+                                </Text>
+                            </View>
+                        </View>
+
+                        {/* Notes */}
+                        {notes.map((note, index) => (
+                            <View
+                                style={notesGroupStyles.noteContainer}
+                                key={`note-container-${note.code}-${index}`}
+                            >
+                                {/* Barre de séparation entre les notes */}
+                                <View
+                                    style={notesGroupStyles.noteSeparator}
+                                    key={`note-separator-${note.code}-${index}`}
+                                ></View>
+                                {/* Ligne de la note */}
+                                <TouchableOpacity
+                                    style={notesGroupStyles.noteRow}
+                                    // Affichage de la modal au clic
+                                    onPress={() => props.setCurrentNote(note)}
+                                    key={`note-${note.code}-${index}`}
+                                >
+                                    {/* Nom du DS */}
+                                    <View
+                                        style={notesGroupStyles.noteCol}
+                                        key={`note-col-name-${note.code}-${index}`}
+                                    >
+                                        <Text
+                                            style={notesGroupStyles.noteName}
+                                            key={`note-name-${note.code}-${index}`}
+                                        >
+                                            {getDSNumber(note.code)}
+                                        </Text>
+                                    </View>
+                                    {/* Date de la note */}
+                                    <View
+                                        style={notesGroupStyles.noteCol}
+                                        key={`note-col-date-${note.code}-${index}`}
+                                    >
+                                        <Text
+                                            style={notesGroupStyles.noteDate}
+                                            key={`note-date-${note.code}-${index}`}
+                                        >
+                                            {note.date}
+                                        </Text>
+                                    </View>
+                                    {/* Valeur de la note */}
+                                    <View
+                                        style={notesGroupStyles.noteCol}
+                                        key={`note-col-value-${note.code}-${index}`}
+                                    >
+                                        <Text
+                                            style={notesGroupStyles.noteValue}
+                                            key={`note-value-${note.code}-${index}`}
+                                        >
+                                            {note.note}
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+                    </View>
+                </View>
+            )}
         </View>
     );
 }
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        width: "100%",
-        backgroundColor: Colors.white,
+        gap: 25
     },
     topbar: {
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "center"
     },
     backIcon: {
         fontSize: 40,
         margin: 20,
-        color: Colors.primary,
+        color: Colors.primary
     },
     contentView: {
         flex: 1,
         justifyContent: "flex-start",
-        alignItems: "center",
+        alignItems: "center"
     },
     title: {
         fontSize: 25,
         fontWeight: "bold",
-        color: Colors.primary,
+        color: Colors.primary
     },
     // Sélecteur de semestre
     semesterSelector: {
-        marginTop: 10,
+        marginTop: 10
     },
     selectorText: {
         fontSize: 18,
         color: Colors.primary,
         fontWeight: "bold",
-        marginVertical: 5,
+        marginVertical: 5
     },
     // Moyenne générale
     noteAverageView: {
         width: "100%",
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "row",
+        justifyContent: "space-between",
         alignItems: "center",
-        marginTop: 40,
+        marginTop: 40
     },
     noteAverageTitle: {
-        fontSize: 20,
-        fontWeight: "bold",
+        fontSize: 14,
+        color: Colors.gray,
+        fontWeight: "bold"
     },
     // Valeur de la moyenne
-    noteAverageValContainer: {
+    noteAverageValue: {
+        color: Colors.black,
+        fontWeight: "600",
+        fontSize: 30,
+        marginRight: 10
+    },
+    // Info sur la moyenne
+    noteAverageInfo: {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-    },
-    noteAverageInfo: {
-        color: Colors.primary,
-        fontSize: 25,
-        textAlign: "center",
-        marginLeft: 10,
-    },
-    noteAverageValue: {
-        color: Colors.primary,
-        fontWeight: "bold",
-        fontSize: 30,
-        marginRight: 10,
+        gap: 10,
+        borderRadius: 8,
+        backgroundColor: Colors.light,
+        padding: 6,
+        marginTop: 15
     },
     // Conteneur de la liste de notes
     scrollView: {
-        width: "100%",
+        width: "100%"
     },
     scrollContainer: {
         display: "flex",
         justifyContent: "flex-start",
         alignItems: "center",
         paddingBottom: 40,
-        marginTop: 20,
+        marginTop: 20
     },
     // Message si aucune note n'est disponible
     noNoteContainer: {
-        marginTop: 40,
+        marginTop: 40
     },
     noNoteText: {
         fontWeight: "bold",
         fontSize: 16,
-        textAlign: "center",
-    },
+        textAlign: "center"
+    }
 });
 
 // Styles pour le composant NotesGroup
 const notesGroupStyles = StyleSheet.create({
     container: {
-        width: "90%",
+        width: "100%",
         maxWidth: 500,
-        backgroundColor: Colors.primary,
-        borderRadius: 10,
-        boxShadow: "0px 0px 8px 2px rgba(0,0,0,0.1)",
-        marginTop: 30,
+        marginTop: 30
     },
     // En-tête du groupe de notes
     header: {
-        display: "flex",
         flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-        borderTopRightRadius: 10,
-        borderTopLeftRadius: 10,
-        padding: 8,
+        justifyContent: "space-between",
+        alignItems: "center"
     },
     headerSubject: {
-        width: "79%",
-        display: "flex",
+        flexDirection: "row",
         justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 5,
-        paddingVertical: 8,
-    },
-    headerAverage: {
-        width: "19%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: Colors.hexWithOpacity(Colors.white, 0.9),
-        boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)",
-        borderRadius: 5,
-        paddingVertical: 8,
+        gap: 10,
+        alignItems: "center"
     },
     // Textes de l'en-tête
     headerSubjectText: {
-        fontSize: 20,
-        fontWeight: "bold",
-        color: Colors.white,
-        textAlign: "center",
+        fontSize: 16,
+        fontWeight: 600,
+        color: Colors.black,
+        maxWidth: 300,
+        textAlign: "center"
+    },
+    headerIcon: {
+        width: 30,
+        height: 30,
+        marginTop: 2,
+        borderRadius: 999,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    headerAverage: {
+        backgroundColor: Colors.light,
+        width: 75,
+        height: 40,
+        borderRadius: 5,
+        justifyContent: "center",
+        alignItems: "center"
     },
     headerAverageText: {
         fontSize: 18,
         fontWeight: "bold",
-        color: Colors.primary,
+        color: Colors.black
     },
     // Contenu du groupe de notes
+    groupSeparator: {
+        width: 4,
+        height: "100%",
+        borderRadius: 20
+    },
     content: {
-        marginHorizontal: 10,
-        marginBottom: 10,
+        flex: 1,
+        width: "100%",
         flexDirection: "row",
-        justifyContent: "center",
-        flexWrap: "wrap",
-        alignItems: "center",
-        padding: 8,
-        backgroundColor: Colors.white,
-        borderRadius: 5,
-        boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)",
+        marginTop: 5
     },
-    noteContainer: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        backgroundColor: Colors.secondary,
-        borderRadius: 10,
-        margin: "4%", // Adds spacing between items
-        boxShadow: "0px 2px 6px 0px rgba(0,0,0,0.1)",
+    //Tableau des notes
+    notesTable: {
+        width: "100%",
+        marginLeft: 15
     },
-    noteNumber: {
-        color: Colors.primary,
+    tableTitles: {
+        color: Colors.gray,
+        fontSize: 14,
+        fontWeight: 600
+    },
+    noteRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        width: "100%"
+    },
+    noteCol: {
+        width: "33.33%",
+        paddingVertical: 5
+    },
+    noteSeparator: {
+        width: "100%",
+        height: 1,
+        marginVertical: 3,
+        backgroundColor: Colors.light
+    },
+    noteContainer: {},
+    noteName: {
+        fontSize: 16,
+        fontWeight: 600,
+        color: Colors.black
+    },
+    noteDate: {
+        fontSize: 14,
+        color: Colors.gray
     },
     noteValue: {
-        color: Colors.primary,
+        borderRadius: 5,
+        backgroundColor: Colors.light,
+        width: 60,
         fontSize: 16,
         fontWeight: "bold",
+        textAlign: "center"
+    }
+});
+
+// Styles pour la modal d'information de la moyenne
+const infoStyles = StyleSheet.create({
+    container: {
+        alignItems: "flex-start",
+        padding: 20,
+        gap: 20
     },
+    subtitle: {
+        fontSize: 14,
+        fontWeight: "bold",
+        backgroundColor: Colors.primary,
+        color: Colors.white,
+        paddingBlock: 5,
+        paddingInline: 10,
+        borderRadius: 5
+    },
+    paragraph: {
+        color: Colors.darkGray
+    },
+    important: {
+        color: Colors.primary,
+        fontWeight: "bold"
+    },
+    link: {
+        flexDirection: "row",
+        gap: 5,
+        alignItems: "center",
+        backgroundColor: Colors.light,
+        paddingBlock: 5,
+        paddingInline: 10,
+        borderRadius: 5
+    }
 });

@@ -19,7 +19,8 @@ export default function RootLayout() {
         "OpenSans-400": require("../assets/fonts/OpenSans-400.ttf"),
         "OpenSans-600": require("../assets/fonts/OpenSans-600.ttf"),
         "OpenSans-700": require("../assets/fonts/OpenSans-700.ttf"),
-        ...FontAwesome.font,
+        OpenSans: require("../assets/fonts/OpenSans.ttf"),
+        ...FontAwesome.font
     });
 
     //Etat de chargement des stores
@@ -60,7 +61,7 @@ function RootLayoutNav() {
                 headerShown: false,
                 //Barre de status
                 statusBarBackgroundColor: "#fff",
-                statusBarStyle: "dark",
+                statusBarStyle: "dark"
             }}
         >
             <Stack.Screen name="login" />
@@ -69,21 +70,11 @@ function RootLayoutNav() {
             */}
             <Stack.Screen name="(tabs)" />
             {/* //On définit ici les modales */}
-
-            <Stack.Screen
-                name="(modals)/notes-help"
-                options={{
-                    presentation: "modal",
-                    animation: "slide_from_bottom",
-                    headerTitle: "Informations sur les notes",
-                    headerShown: true,
-                }}
-            />
             <Stack.Screen
                 name="(settings)"
                 options={{
                     presentation: "modal",
-                    animation: "slide_from_right",
+                    animation: "slide_from_right"
                 }}
             />
         </Stack>

@@ -1,4 +1,5 @@
 import { Note, NotesList } from "@/webAurion/utils/types";
+import { parseDate } from "./date";
 
 // Fonction pour grouper les notes par matières
 export function groupNotesBySubject(notes: NotesList[]): NotesList[] {
@@ -20,7 +21,7 @@ export function groupNotesBySubject(notes: NotesList[]): NotesList[] {
         } else {
             notesByCode.push({
                 code,
-                notes: [...note.notes],
+                notes: [...note.notes]
             });
         }
     });
@@ -114,7 +115,7 @@ export function getSemesterFromCode(code: string): number {
 // Fonction pour filtrer les notes par semestre
 export function filterNotesBySemester(
     notes: NotesList[],
-    semester: 0 | 1,
+    semester: 0 | 1
 ): NotesList[] {
     return notes.filter((note) => {
         const match = note.code.match(/_S(\d+)/);
@@ -124,4 +125,20 @@ export function filterNotesBySemester(
         }
         return false;
     });
+}
+
+//Fonction permettant de retourner les X dernières notes par date
+export function getLatestNotes(
+    notes: NotesList[],
+    numberOfNotes: number
+): Note[] {
+    const allNotes: Note[] = notes.flatMap((n) => n.notes);
+
+    // Trier les notes par date décroissante en utilisant la fonction parseDate
+    allNotes.sort(
+        (a, b) => parseDate(b.date).getTime() - parseDate(a.date).getTime()
+    );
+
+    // Récupérer les X dernières notes
+    return allNotes.slice(0, numberOfNotes);
 }

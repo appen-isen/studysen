@@ -9,16 +9,12 @@ import {
     View
 } from "react-native";
 import { Text } from "@/components/Texts";
-import {
-    getSubjectColor,
-    getSubjectIcon,
-    groupEventsByDay,
-    updatePlanningForListMode
-} from "@/utils/planning";
+import { groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { AnimatedPressable } from "../Buttons";
+import { getSubjectColor, getSubjectIcon } from "@/utils/colors";
 
 export default function PlanningList(props: {
     events: PlanningEvent[];
