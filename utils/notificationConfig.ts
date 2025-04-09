@@ -5,7 +5,7 @@ import { Linking, Platform } from "react-native";
 import Constants from "expo-constants";
 
 // Define the API base URL for development and production
-const API_BASE_URL = "https://api.isen-orbit.fr/v1";
+export const API_BASE_URL = "https://api.isen-orbit.fr/v1";
 
 // Request permission for notifications
 export const requestPermissions = async (openSettings = false) => {
