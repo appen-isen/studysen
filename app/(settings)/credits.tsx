@@ -31,11 +31,7 @@ export default function Credits() {
     }, []);
     return (
         <Page style={styles.container}>
-            <PageHeader
-                title="Application"
-                titlePosition="left"
-                returnTo="Profil"
-            ></PageHeader>
+            <PageHeader title="Application" returnTo="Profil"></PageHeader>
             {/* Information sur l'application */}
             <View style={styles.section}>
                 <Bold style={styles.sectionTitle}>À propos</Bold>

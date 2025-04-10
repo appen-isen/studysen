@@ -46,17 +46,13 @@ export default function NotesScreen() {
 
     return (
         <Page style={styles.container}>
-            <PageHeader
-                title="Mes Notes"
-                titlePosition="left"
-                returnTo="Accueil"
-            ></PageHeader>
+            <PageHeader title="Mes Notes" returnTo="Accueil"></PageHeader>
             <View style={styles.contentView}>
                 {/* Sélecteur de semestre */}
                 <MultiToggle
                     options={["Semestre 1", "Semestre 2"]}
-                    defaultIndex={selectedSemester}
-                    onToggle={(index) => setSelectedSemester(index as 0 | 1)}
+                    selectedIndex={selectedSemester}
+                    onSelect={(index) => setSelectedSemester(index as 0 | 1)}
                 />
                 {/* Affichage de la moyenne générale si des notes sont disponibles */}
                 {selectedNotes.length > 0 && (

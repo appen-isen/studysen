@@ -1,224 +1,184 @@
 import { useEffect, useState } from "react";
 import { View, StyleSheet, Pressable } from "react-native";
 import { useRouter } from "expo-router";
-import { AnimatedPressable, Button, ISENSwitch } from "@/components/Buttons";
-import { FontAwesome6 } from "@expo/vector-icons";
+import { Button, ISENSwitch, MultiToggle } from "@/components/Buttons";
+import { MaterialIcons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
-import { SafeAreaView } from "react-native-safe-area-context";
 import {
     cancelAllScheduledNotifications,
-    deleteNotifications,
-    getUserIdByEmail,
     requestPermissions,
-    scheduleCourseNotification,
-    sendTestNotification,
+    sendTestNotification
 } from "@/utils/notificationConfig";
-import { Dropdown } from "@/components/Modals";
 import useSettingsStore, { NotificationDelay } from "@/stores/settingsStore";
+import { Page, PageHeader } from "@/components/Page";
 
 // Paramètres des notifications
 export default function NotifSettings() {
-    const router = useRouter();
     const { settings, setSettings } = useSettingsStore();
-    //Menu déroulant pour choisir le délai des notifs
-    const [delayMenuVisible, setDelayMenuVisible] = useState(false);
+
+    //Liste des délais de notification
+    const delays = ["Off", "5min", "15min", "30min", "1h"];
+    //Slider pour choisir le délai
+    const [notifDelayIndex, setNotifDelayIndex] = useState<number>(
+        //Délai par défaut depuis les paramètres
+        settings.notificationsEnabled
+            ? delays.indexOf(settings.notificationsDelay)
+            : 0
+    );
+    const [localNotifEnabled, setLocalNotifEnabled] = useState<boolean>(
+        settings.localNotifications
+    );
 
     useEffect(() => {
-        requestPermissions();
+        // Si les notifications sont actives
+        if (settings.notificationsEnabled) {
+            // On demande les permissions pour les notifications
+            requestPermissions().then((granted) => {
+                if (!granted) {
+                    handleDelayChange(0); // On désactive les notifications si les permissions ne sont pas accordées
+                }
+            });
+        }
     }, []);
 
-    const toggleNotifications = () => {
-        const nextNotifState = !settings.notificationsEnabled;
-        setSettings("notificationsEnabled", nextNotifState);
+    const toggleLocalNotifications = (index: number) => {
+        setLocalNotifEnabled(index === 1);
+        setSettings("localNotifications", index === 1);
+    };
 
-        if (nextNotifState) {
-            requestPermissions();
+    // Changement de la valeur du délai de notification
+    const handleDelayChange = (index: number) => {
+        // On met à jour le délai de notification
+        setNotifDelayIndex(index);
+        if (delays[index] === "Off") {
+            setSettings("notificationsEnabled", false);
         } else {
-            cancelAllScheduledNotifications();
+            setSettings("notificationsEnabled", true);
+            setSettings(
+                "notificationsDelay",
+                delays[index] as NotificationDelay
+            );
+            requestPermissions(true).then((granted) => {
+                if (!granted) {
+                    handleDelayChange(0); // On désactive les notifications si les permissions ne sont pas accordées
+                }
+            });
         }
-    };
 
-    const toggleNotificationsLocal = () => {
-        const nextNotifState = !settings.localNotifications;
-        setSettings("localNotifications", nextNotifState);
-    };
-
-    const handleDelayChange = async (value: NotificationDelay) => {
-        try {
-            const { settings } = useSettingsStore.getState();
-
-            if (settings.username) {
-                // Normalize email
-                const normalizedName = settings.username
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "")
-                    .toLowerCase();
-                const email =
-                    normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
-
-                // Get user ID
-                const userId = await getUserIdByEmail(email);
-
-                // Delete all existing notifications
-                await deleteNotifications(userId);
-
-                // Update the settings with new delay
-                setSettings("notificationsDelay", value);
-            }
-        } catch (error) {
-            console.error("Error updating notification delay:", error);
-        }
+        //On supprime les notifications déjà plannifiées
+        cancelAllScheduledNotifications();
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            {/* Bouton de retour */}
-            <AnimatedPressable onPress={() => router.back()}>
-                <FontAwesome6 name="arrow-left" style={styles.backIcon} />
-            </AnimatedPressable>
-            {/* Texte d'information */}
-            <View style={styles.contentView}>
-                <Bold style={styles.title}>Notifications</Bold>
-
-                {/* Switch pour activer/désactiver les notifications */}
-                <Pressable
-                    style={styles.switchContainer}
-                    onPress={toggleNotifications}
-                >
-                    <Bold style={styles.switchLabel}>
-                        Activer les notifications
-                    </Bold>
-                    <ISENSwitch
-                        onValueChange={toggleNotifications}
-                        value={settings.notificationsEnabled}
-                    />
-                </Pressable>
-
-                {/* Switch pour activer/désactiver les notifications en mode local*/}
-                <Pressable
-                    style={styles.switchContainer}
-                    onPress={toggleNotificationsLocal}
-                >
-                    <Bold style={styles.switchLabel}>
-                        Forcer les notifications locales
-                    </Bold>
-                    <ISENSwitch
-                        onValueChange={toggleNotificationsLocal}
-                        value={settings.localNotifications}
-                    />
-                </Pressable>
-
-                {/* Sélecteur pour le délai de notification */}
-                {/* Bouton pour choisir le campus */}
-                <AnimatedPressable
-                    style={styles.delaySelect}
-                    scale={0.95}
-                    onPress={() => setDelayMenuVisible(true)}
-                >
-                    <Text style={styles.delaySelectText}>
-                        Délai de <Bold>{settings.notificationsDelay}</Bold>
-                    </Text>
-                    <FontAwesome6
-                        style={styles.delaySelectText}
-                        name="chevron-down"
-                        size={24}
-                    />
-                </AnimatedPressable>
-                <Dropdown
-                    visible={delayMenuVisible}
-                    setVisible={setDelayMenuVisible}
-                    options={["5min", "15min", "30min", "1h"]}
-                    selectedItem={settings.notificationsDelay}
-                    setSelectedItem={(item: string) =>
-                        handleDelayChange(item as NotificationDelay)
-                    }
-                    modalBoxStyle={styles.dropdownBoxStyle}
-                />
-
-                {/* Bouton pour appliquer les changements */}
-                <Button
-                    title="Appliquer les changements"
-                    textStyle={styles.buttonText}
-                    onPress={() => router.replace("/login")}
-                />
-
-                {/* Bouton pour envoyer une notification de test */}
-                <Button
-                    title="Envoyer une notification"
-                    textStyle={styles.buttonText}
-                    onPress={sendTestNotification}
-                />
-                <Text style={styles.infoText}>
-                    Les notifications sont encore en beta et peuvent ne pas
-                    fonctionner correctement.
+        <Page style={styles.container}>
+            <PageHeader title="Notifications" returnTo="Profil"></PageHeader>
+            {/* Présentation des notifications */}
+            <View style={styles.section}>
+                <Bold style={styles.sectionTitle}>Avant un cours</Bold>
+                <Text style={styles.paragraph}>
+                    Vous avez oublié votre prochain cours ? Recevez une
+                    notification de quelle
+                    <Text style={styles.important}> matière</Text> il s'agit et
+                    en quelle <Text style={styles.important}>salle</Text> juste{" "}
+                    <Bold>avant votre cours.</Bold>
                 </Text>
             </View>
-        </SafeAreaView>
+            {/* Avertissement BETA */}
+            <View style={styles.inDevBox}>
+                <View style={styles.inDevTitleContainer}>
+                    <MaterialIcons
+                        name="warning-amber"
+                        size={24}
+                        color={Colors.primary}
+                    />
+                    <Text style={styles.inDevTitle}>
+                        EN COURS DE DÉVELOPPEMENT
+                    </Text>
+                </View>
+
+                <Text style={styles.inDevText}>
+                    Cette fonctionnalité est susceptible de ne pas fonctionner
+                    correctement.
+                </Text>
+            </View>
+            {/* Sélecteur pour le délai de notification */}
+
+            <Text style={styles.subtitle}>DÉLAI AVANT LA NOTIFICATION</Text>
+            <MultiToggle
+                options={delays}
+                selectedIndex={notifDelayIndex}
+                onSelect={handleDelayChange}
+            ></MultiToggle>
+            {/* Sélecteur pour activer/désactiver les notifications en mode local*/}
+            <Text style={styles.subtitle}>NOTIFICATIONS LOCALES</Text>
+            <MultiToggle
+                options={["Désactivé", "Activé"]}
+                selectedIndex={settings.localNotifications ? 1 : 0}
+                onSelect={toggleLocalNotifications}
+            ></MultiToggle>
+
+            {/* Bouton pour envoyer une notification de test */}
+            <Button
+                title="Envoyer une notification de test"
+                textStyle={styles.buttonText}
+                onPress={sendTestNotification}
+            />
+        </Page>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        width: "100%",
-        backgroundColor: "white",
+        gap: 25
     },
-    backIcon: {
-        fontSize: 40,
-        margin: 20,
+    //Sections
+    section: {
+        marginTop: 15
+    },
+    sectionTitle: {
+        fontSize: 20,
+        letterSpacing: 0.5
+    },
+    subtitle: {
+        color: Colors.gray,
+        fontSize: 14,
+        marginTop: 15,
+        fontWeight: "bold"
+    },
+    //Style de texte
+    paragraph: {
+        color: Colors.black,
+        marginTop: 10
+    },
+    important: {
         color: Colors.primary,
+        fontWeight: "bold"
     },
-    contentView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+
+    //Style de la boîte d'avertissement
+    inDevBox: {
+        borderRadius: 5,
+        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.1),
+        padding: 10
     },
-    title: {
-        color: Colors.primary,
-        fontSize: 25,
-        textAlign: "center",
-        marginBottom: 20,
-    },
-    switchContainer: {
+    inDevTitleContainer: {
         flexDirection: "row",
-        justifyContent: "center",
         alignItems: "center",
+        justifyContent: "flex-start",
+        marginLeft: 10,
+        gap: 10
+    },
+    inDevTitle: {
+        color: Colors.primary,
+        fontWeight: "bold",
+        fontSize: 16
+    },
+    inDevText: {
+        marginLeft: 40,
+        marginTop: 5
     },
     buttonText: {
-        fontSize: 16,
-    },
-    switchLabel: {
-        fontSize: 18,
-        marginRight: 10,
-    },
-    // Sélecteur de délai
-    dropdownBoxStyle: {
-        width: 250,
-        display: "flex",
-        justifyContent: "flex-start",
-        alignItems: "flex-start",
-    },
-    delaySelect: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-        padding: 5,
-        width: 250,
-        backgroundColor: Colors.primary,
-        borderRadius: 50,
-        marginVertical: 20,
-    },
-    delaySelectText: {
-        color: "white",
-        marginLeft: 5,
-        marginRight: 5,
-    },
-    infoText: {
-        width: "90%",
-        alignSelf: "center",
-        textAlign: "center",
-        fontSize: 15,
-    },
+        fontSize: 16
+    }
 });

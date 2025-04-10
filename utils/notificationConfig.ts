@@ -36,8 +36,10 @@ export const requestPermissions = async (openSettings = false) => {
                     ]
                 );
             }
+            return false;
         }
     }
+    return true;
 };
 
 // Configure notification handler
