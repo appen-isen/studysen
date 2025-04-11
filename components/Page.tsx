@@ -27,8 +27,6 @@ export function PageHeader({ title, returnTo, children }: PageHeaderProps) {
     const router = useRouter();
     return (
         <View style={headerStyles.container}>
-            {/* Si pas de bouton de retour, on affiche le contenu en premier */}
-            {returnTo === undefined && children}
             {/* Si on a un bouton de retour, on l'affiche à gauche du titre */}
             {returnTo !== undefined && (
                 <AnimatedPressable
@@ -53,8 +51,8 @@ export function PageHeader({ title, returnTo, children }: PageHeaderProps) {
             >
                 {title}
             </Text>
-            {/* Si bouton de retour, on affiche le contenu après le bouton */}
-            {returnTo !== undefined && children}
+            {/* On affiche le contenu */}
+            {children}
         </View>
     );
 }
