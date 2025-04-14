@@ -6,6 +6,7 @@ import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "@/utils/notificationConfig";
+import { Link } from "expo-router";
 
 //Les crédits
 export default function Credits() {
@@ -31,13 +32,9 @@ export default function Credits() {
     }, []);
     return (
         <Page style={styles.container}>
-            <PageHeader
-                title="Application"
-                titlePosition="left"
-                returnTo="Profil"
-            ></PageHeader>
+            <PageHeader title="Application" returnTo="Profil"></PageHeader>
             {/* Information sur l'application */}
-            <View style={styles.section}>
+            <View>
                 <Bold style={styles.sectionTitle}>À propos</Bold>
                 <Text style={styles.paragraph}>
                     <Text style={styles.important}>ISEN Orbit</Text> est une
@@ -50,9 +47,19 @@ export default function Credits() {
                     certaines informations importantes du campus ainsi que de{" "}
                     <Bold>créer du lien</Bold> entre étudiants.
                 </Text>
+                <Text style={styles.paragraph}>
+                    Notre projet est <Bold>open-source</Bold>, vous pouvez le
+                    retrouver sur{" "}
+                    <Link
+                        href={"https://github.com/appen-isen/isen-orbit"}
+                        style={styles.link}
+                    >
+                        GitHub
+                    </Link>
+                </Text>
             </View>
             {/* Crédits */}
-            <View style={styles.section}>
+            <View>
                 <Bold style={styles.sectionTitle}>Derrière l'application</Bold>
                 <Text style={styles.subtitle}>DÉVELOPPEMENT</Text>
                 <View style={styles.nameContainer}>
@@ -73,7 +80,7 @@ export default function Credits() {
                 </View>
             </View>
             {/* Informations complémentaires */}
-            <View style={styles.section}>
+            <View>
                 <Bold style={styles.sectionTitle}>
                     Informations complémentaires
                 </Bold>
@@ -100,9 +107,6 @@ const styles = StyleSheet.create({
         gap: 25
     },
     //Sections
-    section: {
-        marginTop: 15
-    },
     sectionTitle: {
         fontSize: 20,
         letterSpacing: 0.5
@@ -121,6 +125,11 @@ const styles = StyleSheet.create({
     important: {
         color: Colors.primary,
         fontWeight: "bold"
+    },
+    link: {
+        color: Colors.primary,
+        fontWeight: "bold",
+        textDecorationLine: "underline"
     },
     nameContainer: {
         flexDirection: "row",

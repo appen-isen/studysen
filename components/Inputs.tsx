@@ -5,7 +5,9 @@ import {
     View,
     TouchableOpacity,
     Pressable,
-    Keyboard
+    Keyboard,
+    ViewStyle,
+    TextStyle
 } from "react-native";
 import { useEffect, useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -55,7 +57,6 @@ export function Input(props: TextInputProps & InputProps) {
                 placeholderTextColor={Colors.gray}
                 style={[inputStyles.input, textInputStyle]}
                 autoComplete={autoComplete}
-                numberOfLines={1}
             />
             {/* Le bouton pour cacher/afficher le mot de passe */}
             {password && (
@@ -71,12 +72,20 @@ export function Input(props: TextInputProps & InputProps) {
     );
 }
 
-export function Checkbox(props: CheckboxProps & { text: string }) {
+export function Checkbox(
+    props: CheckboxProps & {
+        text: string;
+        containerStyle?: ViewStyle;
+        textStyle?: TextStyle;
+    }
+) {
     return (
-        <View style={checkboxStyles.container}>
+        <View style={[checkboxStyles.container, props.containerStyle || {}]}>
             <PaperCheckbox {...props} />
             <Pressable onPress={props.onPress}>
-                <Text style={checkboxStyles.label}>{props.text}</Text>
+                <Text style={[checkboxStyles.label, props.textStyle || {}]}>
+                    {props.text}
+                </Text>
             </Pressable>
         </View>
     );

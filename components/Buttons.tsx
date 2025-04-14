@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     ButtonProps,
     Pressable,
@@ -131,73 +131,73 @@ export function Toggle(props: ToggleProps) {
 //Sélecteur dynamique à options multiples
 type MultiToggleProps = {
     options: string[];
-    defaultIndex?: number;
-    onToggle?: (index: number) => void;
+    selectedIndex: number;
+    onSelect: (index: number) => void;
 };
 
 export const MultiToggle = ({
     options,
-    defaultIndex = 0,
-    onToggle
+    selectedIndex,
+    onSelect
 }: MultiToggleProps) => {
-    const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
-    const translateX = useRef(new Animated.Value(0)).current;
-    const [containerWidth, setContainerWidth] = useState(0);
+    const [dimensions, setDimensions] = useState<
+        { width: number; left: number }[]
+    >([]);
+    const animatedLeft = useRef(new Animated.Value(0)).current;
+    const animatedWidth = useRef(new Animated.Value(0)).current;
 
-    const sliderMargin = 3; // Espace entre le slider et les bords du conteneur
+    useEffect(() => {
+        if (dimensions.length === options.length) {
+            const { width, left } = dimensions[selectedIndex];
+            // Animation de la largeur et de la position du slider
+            Animated.parallel([
+                Animated.spring(animatedLeft, {
+                    toValue: left,
+                    useNativeDriver: false
+                }),
+                Animated.spring(animatedWidth, {
+                    toValue: width,
+                    useNativeDriver: false
+                })
+            ]).start();
+        }
+    }, [selectedIndex, dimensions]);
 
-    // Fonction pour gérer le changement de mise en page
-    const handleLayout = (e: LayoutChangeEvent) => {
-        const width = e.nativeEvent.layout.width;
-        setContainerWidth(width);
-
-        const itemWidth = width / options.length;
-        const initialTranslate = itemWidth * selectedIndex + sliderMargin;
-        translateX.setValue(initialTranslate);
+    // Dimension de chaque option
+    const handleOptionLayout = (index: number, event: LayoutChangeEvent) => {
+        const { width, x } = event.nativeEvent.layout;
+        setDimensions((prev) => {
+            const newDims = [...prev];
+            newDims[index] = { width, left: x };
+            return newDims;
+        });
     };
 
-    // Fonction pour gérer le changement d'index et animer le slider
-    const handlePress = (index: number) => {
-        // Mise à jour de l'index sélectionné
-        if (index === selectedIndex) return;
-        setSelectedIndex(index);
-
-        // Calculer la nouvelle position du slider
-        const itemWidth = containerWidth / options.length;
-        Animated.spring(translateX, {
-            toValue: itemWidth * index + sliderMargin,
-            useNativeDriver: false
-        }).start();
-
-        onToggle?.(index);
-    };
-
-    // Calculer la largeur de chaque élément et la largeur du slider
-    const itemWidth = containerWidth / options.length;
-    const sliderWidth = itemWidth - sliderMargin * 2;
+    if (!options.length) return null;
 
     return (
-        <View onLayout={handleLayout} style={mToggleStyles.container}>
-            {/* Slider animé qui se déplace entre les options */}
+        <View style={mToggleStyles.container}>
+            {/* Slider qui se déplace entre les options */}
             <Animated.View
                 style={[
                     mToggleStyles.slider,
                     {
-                        width: sliderWidth,
-                        transform: [{ translateX }]
+                        width: animatedWidth,
+                        left: animatedLeft
                     }
                 ]}
             />
-            {/* Options de sélection */}
-            <View style={mToggleStyles.labels}>
-                {options.map((label, index) => (
-                    <Pressable key={index} onPress={() => handlePress(index)}>
-                        <View style={mToggleStyles.option}>
-                            <Text style={mToggleStyles.text}>{label}</Text>
-                        </View>
-                    </Pressable>
-                ))}
-            </View>
+            {/* Options du toggle */}
+            {options.map((option, index) => (
+                <Pressable
+                    key={index}
+                    onPress={() => onSelect(index)}
+                    onLayout={(e) => handleOptionLayout(index, e)}
+                    style={{ paddingHorizontal: 16 }}
+                >
+                    <Text style={mToggleStyles.optionText}>{option}</Text>
+                </Pressable>
+            ))}
         </View>
     );
 };
@@ -261,33 +261,24 @@ const toggleStyles = StyleSheet.create({
 // Styles pour le MultiToggle
 const mToggleStyles = StyleSheet.create({
     container: {
-        height: 40,
         backgroundColor: Colors.light,
-        justifyContent: "center",
         borderRadius: 30,
-        padding: 3,
-        overflow: "hidden",
-        paddingHorizontal: 3
+        position: "relative",
+        alignSelf: "center",
+        paddingHorizontal: 5,
+        flexDirection: "row"
     },
     slider: {
         position: "absolute",
-        height: "100%",
         backgroundColor: Colors.white,
-        borderRadius: 20,
-        elevation: 2
+        borderRadius: 30,
+        height: "80%",
+        top: "10%"
     },
-    labels: {
-        flexDirection: "row",
-        flex: 1
-    },
-    option: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        paddingHorizontal: 30
-    },
-    text: {
+    optionText: {
+        fontSize: 14,
+        fontWeight: "600",
         color: Colors.black,
-        fontWeight: "bold"
+        paddingVertical: 12
     }
 });

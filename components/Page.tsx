@@ -19,21 +19,14 @@ export function Page(props: { children?: ReactNode; style?: any }) {
 
 type PageHeaderProps = {
     title: string;
-    titlePosition?: "right" | "left";
     returnTo?: string;
     children?: ReactNode;
 };
 
-export function PageHeader({
-    title,
-    returnTo,
-    titlePosition = "right",
-    children
-}: PageHeaderProps) {
+export function PageHeader({ title, returnTo, children }: PageHeaderProps) {
     const router = useRouter();
     return (
         <View style={headerStyles.container}>
-            {titlePosition === "left" && children}
             {/* Si on a un bouton de retour, on l'affiche à gauche du titre */}
             {returnTo !== undefined && (
                 <AnimatedPressable
@@ -51,14 +44,15 @@ export function PageHeader({
                 // On ajuste le style en fonction de la position du titre
                 style={[
                     headerStyles.title,
-                    titlePosition === "right"
+                    returnTo === undefined
                         ? headerStyles.rightTitle
                         : headerStyles.leftTitle
                 ]}
             >
                 {title}
             </Text>
-            {titlePosition === "right" && children}
+            {/* On affiche le contenu */}
+            {children}
         </View>
     );
 }

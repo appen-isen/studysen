@@ -215,9 +215,6 @@ export default function HomeScreen() {
         router.push("/notes");
     };
 
-    // Demande de permission pour les notifications
-    requestPermissions();
-
     return (
         <Page style={styles.container}>
             <ScrollView

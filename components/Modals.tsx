@@ -1,4 +1,13 @@
-import { Modal, View, StyleSheet, Image, TouchableWithoutFeedback, FlatList, TouchableOpacity, Animated } from "react-native";
+import {
+    Modal,
+    View,
+    StyleSheet,
+    Image,
+    TouchableWithoutFeedback,
+    FlatList,
+    TouchableOpacity,
+    Animated
+} from "react-native";
 import { Text } from "@/components/Texts";
 import { AnimatedPressable, Button } from "@/components/Buttons";
 import { ReactNode, useEffect, useRef } from "react";
@@ -62,7 +71,7 @@ export function BottomModal(props: BottomModalProps) {
             Animated.timing(slideAnim, {
                 toValue: 0, // Position finale (visible)
                 duration: 300,
-                useNativeDriver: true,
+                useNativeDriver: true
             }).start();
         }
     }, [props.visible]);
@@ -73,7 +82,7 @@ export function BottomModal(props: BottomModalProps) {
         Animated.timing(slideAnim, {
             toValue: 800, // Position initiale (hors de l'écran)
             duration: 300,
-            useNativeDriver: true,
+            useNativeDriver: true
         }).start();
         props.setVisible(false);
     };
@@ -102,8 +111,8 @@ export function BottomModal(props: BottomModalProps) {
                             flex:
                                 props.flexSize !== undefined
                                     ? props.flexSize
-                                    : 0.7,
-                        },
+                                    : 0.7
+                        }
                     ]}
                 >
                     {/* Bouton pour fermer la modal */}
@@ -133,6 +142,27 @@ export function ErrorModal(props: PopupModalProps) {
                 source={require("@/assets/images/error.png")}
             />
             <Text style={styles.modalTitle}>Erreur</Text>
+            <Text style={styles.modalText}>{props.message}</Text>
+
+            <Button
+                onPress={() => props.setVisible(false)}
+                style={styles.modalButton}
+                textStyle={styles.modalButtonText}
+                title={"OK"}
+            />
+        </ModalBase>
+    );
+}
+
+// Modal de succès
+export function SuccessModal(props: PopupModalProps) {
+    return (
+        <ModalBase setVisible={props.setVisible} visible={props.visible}>
+            <Image
+                style={styles.modalImg}
+                source={require("@/assets/images/success.png")}
+            />
+            <Text style={styles.modalTitle}>Succès</Text>
             <Text style={styles.modalText}>{props.message}</Text>
 
             <Button
@@ -225,7 +255,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "rgba(0, 0, 0, 0.5)",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
     },
     modalContent: {
         display: "flex",
@@ -236,10 +266,10 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 10,
         elevation: 10,
-        padding: 10,
+        padding: 10
     },
     modalBackground: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFillObject
     },
     // Contenu des modales
     modalTitle: { fontSize: 35, fontWeight: 600, textAlign: "center" },
@@ -247,67 +277,67 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textAlign: "center",
         marginTop: 10,
-        width: "90%",
+        width: "90%"
     },
     modalButton: {
-        marginTop: 20,
+        marginTop: 20
     },
     modalButtonText: { fontSize: 23 },
     modalImg: {
         width: 75,
         height: 75,
-        marginBottom: 15,
+        marginBottom: 15
     },
     buttonView: {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-around",
-        width: "100%",
+        width: "100%"
     },
     // Dropdown
     dropdownItem: {
         padding: 10,
         borderBottomWidth: 1,
-        borderBottomColor: "#eee",
+        borderBottomColor: "#eee"
     },
     dropdownItemView: {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center",
+        alignItems: "center"
     },
     dropdownText: {
-        fontSize: 16,
+        fontSize: 16
     },
     dropdownSelectedIcon: {
         color: Colors.primary,
         fontSize: 20,
-        alignSelf: "flex-end",
+        alignSelf: "flex-end"
     },
     flatList: {
-        width: "100%",
-    },
+        width: "100%"
+    }
 });
 
 const bottomModalStyles = StyleSheet.create({
     modalOverlay: {
-        justifyContent: "flex-end",
+        justifyContent: "flex-end"
     },
     modalContent: {
         justifyContent: "flex-start",
         alignItems: "flex-start",
         width: "100%",
         borderTopRightRadius: 10,
-        borderTopLeftRadius: 10,
+        borderTopLeftRadius: 10
     },
     // Bouton pour fermer la modal
     closeIconPressable: {
         justifyContent: "flex-start",
-        padding: 10,
+        padding: 10
     },
     closeIcon: {
         fontSize: 40,
-        color: Colors.primary,
-    },
+        color: Colors.primary
+    }
 });
