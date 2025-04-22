@@ -2,6 +2,7 @@ import { PlanningEvent } from "@/webAurion/utils/types";
 import {
     ActivityIndicator,
     Dimensions,
+    LayoutChangeEvent,
     Pressable,
     StyleSheet,
     View
@@ -16,6 +17,9 @@ import {
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { AnimatedPressable } from "../Buttons";
 import { getSubjectColor } from "@/utils/colors";
+import { useState } from "react";
+
+const HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 
 export default function PlanningWeek(props: {
     events: PlanningEvent[];
@@ -26,21 +30,21 @@ export default function PlanningWeek(props: {
         groupEventsByDay(updatePlanningForListMode(props.events))
     );
 
+    const [weekHeight, setWeekHeight] = useState(0);
+    const PIXEL_PER_HOUR = weekHeight / HOURS.length;
+
+    function handleLayout(e: LayoutChangeEvent) {
+        const { height } = e.nativeEvent.layout;
+        setWeekHeight(height);
+    }
+
     return (
-        <View style={calendarStyles.container}>
+        <View style={calendarStyles.container} onLayout={handleLayout}>
             <View style={calendarStyles.hoursBox}>
-                <Text style={calendarStyles.hourLabel}>08</Text>
-                <Text style={calendarStyles.hourLabel}>09</Text>
-                <Text style={calendarStyles.hourLabel}>10</Text>
-                <Text style={calendarStyles.hourLabel}>11</Text>
-                <Text style={calendarStyles.hourLabel}>12</Text>
-                <Text style={calendarStyles.hourLabel}>13</Text>
-                <Text style={calendarStyles.hourLabel}>14</Text>
-                <Text style={calendarStyles.hourLabel}>15</Text>
-                <Text style={calendarStyles.hourLabel}>16</Text>
-                <Text style={calendarStyles.hourLabel}>17</Text>
-                <Text style={calendarStyles.hourLabel}>18</Text>
-                <Text style={calendarStyles.hourLabel}>19</Text>
+                {HOURS.map((hour) => <Text
+                    key={hour}
+                    style={[calendarStyles.hourLabel, { height: PIXEL_PER_HOUR }]}
+                >{hour < 10 ? `0${hour}` : hour}</Text>)}
             </View>
             {/* For each days of the week */}
             {[0, 1, 2, 3, 4].map((offset, dayIndex) => (
@@ -54,6 +58,7 @@ export default function PlanningWeek(props: {
                                 key={eventIndex}
                                 event={event}
                                 onPress={props.setSelectedEvent}
+                                PIXEL_PER_HOUR={PIXEL_PER_HOUR}
                             />
                         );
                     })}
@@ -62,12 +67,11 @@ export default function PlanningWeek(props: {
         </View>
     );
 }
-// On définit la hauteur d'une heure en pixels en fonction de la hauteur de l'écran
-const PIXEL_PER_HOUR = Dimensions.get("window").height / 20;
 
 export function WeekEvent(props: {
     event: PlanningEvent;
     onPress: (event: PlanningEvent) => void;
+    PIXEL_PER_HOUR: number;
 }) {
     const startHour = formatDateToLocalTime(props.event.start);
     const endHour = formatDateToLocalTime(props.event.end);
@@ -76,7 +80,7 @@ export function WeekEvent(props: {
         (new Date(props.event.end).getTime() -
             new Date(props.event.start).getTime()) /
         (1000 * 60 * 60);
-    const eventHeight = durationInHours * PIXEL_PER_HOUR;
+    const eventHeight = durationInHours * props.PIXEL_PER_HOUR; 
 
     //Si l'événement est vide alors on affiche une case vide
     if (props.event.id === "blank") {
@@ -152,7 +156,6 @@ const calendarStyles = StyleSheet.create({
         color: Colors.darkGray,
         width: "100%",
         boxSizing: "border-box",
-        height: PIXEL_PER_HOUR,
         paddingTop: 5,
         fontSize: 15,
         fontWeight: 400
