@@ -157,7 +157,7 @@ ${username}
     return (
         <Page style={styles.container}>
             <PageHeader title="Contact" returnTo="Profil"></PageHeader>
-            <View>
+            <View style={styles.responsiveContainer}>
                 <Bold style={styles.sectionTitle}>Formulaire de contact</Bold>
                 <Text style={styles.paragraph}>
                     J'ai un problème, une suggestion ou une question concernant
@@ -169,7 +169,12 @@ ${username}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.contentView}
             >
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <ScrollView
+                    contentContainerStyle={[
+                        styles.scrollContainer,
+                        styles.responsiveContainer
+                    ]}
+                >
                     <View>
                         <Text style={styles.subtitle}>TYPE DE REQUÊTE</Text>
                         <MultiToggle
@@ -322,6 +327,12 @@ const styles = StyleSheet.create({
     container: {
         gap: 25
     },
+    responsiveContainer: {
+        width: "100%",
+        alignSelf: "center",
+        gap: 10,
+        maxWidth: 600
+    },
     //Sections
     sectionTitle: {
         fontSize: 20,
@@ -367,9 +378,8 @@ const styles = StyleSheet.create({
         alignSelf: "flex-start"
     },
     checkboxContainer: {
-        marginHorizontal: 10,
-        marginTop: 5,
-        gap: 5
+        marginLeft: 15,
+        marginTop: 5
     },
     checkboxLabel: {
         fontSize: 14,

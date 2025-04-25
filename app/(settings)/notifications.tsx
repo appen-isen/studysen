@@ -74,7 +74,7 @@ export default function NotifSettings() {
         <Page style={styles.container}>
             <PageHeader title="Notifications" returnTo="Profil"></PageHeader>
             {/* Présentation des notifications */}
-            <View style={styles.section}>
+            <View style={styles.responsiveContainer}>
                 <Bold style={styles.sectionTitle}>Avant un cours</Bold>
                 <Text style={styles.paragraph}>
                     Vous avez oublié votre prochain cours ? Recevez une
@@ -85,7 +85,7 @@ export default function NotifSettings() {
                 </Text>
             </View>
             {/* Avertissement BETA */}
-            <View style={styles.inDevBox}>
+            <View style={[styles.inDevBox, styles.responsiveContainer]}>
                 <View style={styles.inDevTitleContainer}>
                     <MaterialIcons
                         name="warning-amber"
@@ -103,27 +103,28 @@ export default function NotifSettings() {
                 </Text>
             </View>
             {/* Sélecteur pour le délai de notification */}
+            <View style={styles.responsiveContainer}>
+                <Text style={styles.subtitle}>DÉLAI AVANT LA NOTIFICATION</Text>
+                <MultiToggle
+                    options={delays}
+                    selectedIndex={notifDelayIndex}
+                    onSelect={handleDelayChange}
+                ></MultiToggle>
+                {/* Sélecteur pour activer/désactiver les notifications en mode local*/}
+                <Text style={styles.subtitle}>NOTIFICATIONS LOCALES</Text>
+                <MultiToggle
+                    options={["Désactivé", "Activé"]}
+                    selectedIndex={settings.localNotifications ? 1 : 0}
+                    onSelect={toggleLocalNotifications}
+                ></MultiToggle>
 
-            <Text style={styles.subtitle}>DÉLAI AVANT LA NOTIFICATION</Text>
-            <MultiToggle
-                options={delays}
-                selectedIndex={notifDelayIndex}
-                onSelect={handleDelayChange}
-            ></MultiToggle>
-            {/* Sélecteur pour activer/désactiver les notifications en mode local*/}
-            <Text style={styles.subtitle}>NOTIFICATIONS LOCALES</Text>
-            <MultiToggle
-                options={["Désactivé", "Activé"]}
-                selectedIndex={settings.localNotifications ? 1 : 0}
-                onSelect={toggleLocalNotifications}
-            ></MultiToggle>
-
-            {/* Bouton pour envoyer une notification de test */}
-            <Button
-                title="Envoyer une notification de test"
-                textStyle={styles.buttonText}
-                onPress={sendTestNotification}
-            />
+                {/* Bouton pour envoyer une notification de test */}
+                <Button
+                    title="Envoyer une notification de test"
+                    textStyle={styles.buttonText}
+                    onPress={sendTestNotification}
+                />
+            </View>
         </Page>
     );
 }
@@ -132,9 +133,16 @@ const styles = StyleSheet.create({
     container: {
         gap: 25
     },
+    responsiveContainer: {
+        width: "100%",
+        alignSelf: "center",
+        gap: 10,
+        maxWidth: 600
+    },
     //Sections
     section: {
-        marginTop: 15
+        marginTop: 15,
+        maxWidth: 600
     },
     sectionTitle: {
         fontSize: 20,

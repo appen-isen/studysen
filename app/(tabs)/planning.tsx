@@ -165,7 +165,10 @@ export default function PlanningScreen() {
             <PageHeader title="Mes cours">
                 <Toggle
                     stateList={[
-                        { label: "Voir la semaine", icon: "calendar-month" },
+                        {
+                            label: "Voir la semaine",
+                            icon: "calendar-month"
+                        },
                         { label: "Voir la journée", icon: "event-note" }
                     ]}
                     state={planningView === "list" ? 0 : 1}
@@ -179,7 +182,7 @@ export default function PlanningScreen() {
             </PageHeader>
 
             {/* Sélecteur de date */}
-            <View style={timeStyles.container}>
+            <View style={[timeStyles.container, styles.responsiveContainer]}>
                 {/* Sélecteur de semaine */}
                 <View style={timeStyles.weekBox}>
                     {/* Flèche pour reculer d'une semaine */}
@@ -286,7 +289,6 @@ export default function PlanningScreen() {
                     }}
                 />
             )}
-
             {/* Modal d'informations sur un cours */}
 
             {selectedEvent && (
@@ -303,6 +305,11 @@ export default function PlanningScreen() {
 const styles = StyleSheet.create({
     container: {
         gap: 25
+    },
+    responsiveContainer: {
+        width: "100%",
+        alignSelf: "center",
+        maxWidth: 600
     }
 });
 
@@ -310,6 +317,7 @@ const timeStyles = StyleSheet.create({
     container: {
         gap: 10
     },
+
     //
     // Week selector
     //

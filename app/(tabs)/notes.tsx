@@ -317,6 +317,7 @@ const styles = StyleSheet.create({
     // Moyenne générale
     noteAverageView: {
         width: "100%",
+        maxWidth: 600,
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -372,7 +373,7 @@ const styles = StyleSheet.create({
 const notesGroupStyles = StyleSheet.create({
     container: {
         width: "100%",
-        maxWidth: 500,
+        maxWidth: 600,
         marginTop: 30
     },
     // En-tête du groupe de notes

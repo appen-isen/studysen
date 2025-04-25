@@ -42,7 +42,7 @@ export default function ClubsScreen() {
     return (
         <Page style={styles.container}>
             <PageHeader title="Clubs"></PageHeader>
-            <ScrollView>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <Post post={posts[0]}></Post>
                 <Post post={posts[1]}></Post>
             </ScrollView>
@@ -53,5 +53,8 @@ export default function ClubsScreen() {
 const styles = StyleSheet.create({
     container: {
         gap: 25
+    },
+    scrollContainer: {
+        alignSelf: "center"
     }
 });

@@ -219,6 +219,9 @@ export function ListEvent(props: {
 const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
+        width: "100%",
+        maxWidth: 600,
+        alignSelf: "center",
         gap: 15
     },
     timeBar: {
