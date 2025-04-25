@@ -114,28 +114,35 @@ export function WeekEvent(props: {
             <Text style={eventStyles.subject} numberOfLines={1}>
                 {props.event.subject}
             </Text>
-            <View style={eventStyles.tags}>
-                <Text
-                    style={[eventStyles.tag, eventStyles.tagWhite]}
-                    numberOfLines={1}
-                >
-                    {startHour}
-                </Text>
-                <Text
-                    style={[eventStyles.tag, eventStyles.tagWhite]}
-                    numberOfLines={1}
-                >
-                    {endHour}
-                </Text>
-            </View>
-            <View style={eventStyles.tags}>
-                <Text
-                    style={[eventStyles.tag, eventStyles.tagBlack]}
-                    numberOfLines={1}
-                >
-                    {props.event.room}
-                </Text>
-            </View>
+            {/* On affiche l'heure de début et de fin de l'événement si la durée est supérieure à 30 minutes*/}
+            {durationInHours > 0.5 && (
+                <View style={eventStyles.tags}>
+                    <Text
+                        style={[eventStyles.tag, eventStyles.tagWhite]}
+                        numberOfLines={1}
+                    >
+                        {startHour}
+                    </Text>
+                    <Text
+                        style={[eventStyles.tag, eventStyles.tagWhite]}
+                        numberOfLines={1}
+                    >
+                        {endHour}
+                    </Text>
+                </View>
+            )}
+
+            {/* On affiche la salle si l'événement dure plus d'une heure */}
+            {durationInHours > 1 && (
+                <View style={eventStyles.tags}>
+                    <Text
+                        style={[eventStyles.tag, eventStyles.tagBlack]}
+                        numberOfLines={1}
+                    >
+                        {props.event.room}
+                    </Text>
+                </View>
+            )}
         </AnimatedPressable>
     );
 }
@@ -143,10 +150,12 @@ export function WeekEvent(props: {
 const calendarStyles = StyleSheet.create({
     container: {
         flex: 6,
+        width: "100%",
+        maxWidth: 600,
+        alignSelf: "center",
         marginHorizontal: "auto",
         flexDirection: "row",
-        gap: 2,
-        width: "100%"
+        gap: 2
     },
     dayColumn: {
         flex: 1
@@ -181,10 +190,9 @@ const eventStyles = StyleSheet.create({
         gap: 5
     },
     colorBar: {
-        position: "absolute",
         width: 32,
         height: 8,
-        transform: [{ translateY: "-50%" }],
+        marginTop: -13,
         borderRadius: 999
     },
     subject: {

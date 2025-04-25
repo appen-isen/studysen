@@ -312,7 +312,7 @@ export default function HomeScreen() {
                     {/* Contenu de la section */}
                     <View style={sectionStyles.content}>
                         {/* On récupère et affiche les trois dernières notes */}
-                        <View>
+                        <View style={{ width: "100%" }}>
                             {getLatestNotes(notes, 3).map((note, index) => (
                                 <NoteElement
                                     key={note.code + index}

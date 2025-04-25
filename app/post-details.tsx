@@ -26,7 +26,9 @@ export default function PostDetailsScreen() {
                 title={currentPost.type === "event" ? "Événement" : "Post"}
                 returnTo="Clubs"
             ></PageHeader>
-            <Post post={currentPost} details={true}></Post>
+            <View style={{ maxWidth: 600, alignSelf: "center" }}>
+                <Post post={currentPost} details={true}></Post>
+            </View>
         </Page>
     );
 }

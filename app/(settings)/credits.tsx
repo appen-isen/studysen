@@ -34,7 +34,7 @@ export default function Credits() {
         <Page style={styles.container} scrollable={true}>
             <PageHeader title="Application" returnTo="Profil"></PageHeader>
             {/* Information sur l'application */}
-            <View>
+            <View style={styles.responsiveContainer}>
                 <Bold style={styles.sectionTitle}>À propos</Bold>
                 <Text style={styles.paragraph}>
                     <Text style={styles.important}>ISEN Orbit</Text> est une
@@ -59,7 +59,7 @@ export default function Credits() {
                 </Text>
             </View>
             {/* Crédits */}
-            <View>
+            <View style={styles.responsiveContainer}>
                 <Bold style={styles.sectionTitle}>Derrière l'application</Bold>
                 <Text style={styles.subtitle}>DÉVELOPPEMENT</Text>
                 <View style={styles.nameContainer}>
@@ -80,7 +80,7 @@ export default function Credits() {
                 </View>
             </View>
             {/* Informations complémentaires */}
-            <View>
+            <View style={styles.responsiveContainer}>
                 <Bold style={styles.sectionTitle}>
                     Informations complémentaires
                 </Bold>
@@ -105,6 +105,11 @@ export default function Credits() {
 const styles = StyleSheet.create({
     container: {
         gap: 25
+    },
+    responsiveContainer: {
+        width: "100%",
+        alignSelf: "center",
+        maxWidth: 600
     },
     //Sections
     sectionTitle: {
