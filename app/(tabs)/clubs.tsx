@@ -2,6 +2,7 @@ import { Page, PageHeader } from "@/components/Page";
 import { PostType } from "@/utils/types";
 import { ScrollView, StyleSheet } from "react-native";
 import { Post } from "../post-details";
+import { DotLoader } from "@/components/Sync";
 
 export default function ClubsScreen() {
     const posts: PostType[] = [
@@ -45,6 +46,7 @@ export default function ClubsScreen() {
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <Post post={posts[0]}></Post>
                 <Post post={posts[1]}></Post>
+                <DotLoader />
             </ScrollView>
         </Page>
     );
