@@ -2,10 +2,8 @@ import useSettingsStore from "@/stores/settingsStore";
 import * as Notifications from "expo-notifications";
 import axios from "axios";
 import { Linking, Platform } from "react-native";
+import { API_BASE_URL } from "@/utils/config";
 import Constants from "expo-constants";
-
-// Define the API base URL for development and production
-export const API_BASE_URL = "https://api.isen-orbit.fr/v1";
 
 // Request permission for notifications
 export const requestPermissions = async (openSettings = false) => {
