@@ -185,6 +185,7 @@ export default function LoginScreen() {
                         onChangeText={(text) => setUsername(text)}
                         value={username}
                         autoComplete="username"
+                        numberOfLines={1}
                     ></Input>
                     <Input
                         placeholder="Mot de passe"
@@ -192,6 +193,7 @@ export default function LoginScreen() {
                         onChangeText={(text) => setPassword(text)}
                         value={password}
                         autoComplete="password"
+                        numberOfLines={1}
                         password
                     ></Input>
                     <Checkbox
