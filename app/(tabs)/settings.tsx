@@ -15,6 +15,10 @@ import {
     usePlanningStore,
     useSyncedPlanningStore
 } from "@/stores/webaurionStore";
+import { Page } from "@/components/Page";
+import { MaterialIcons } from "@expo/vector-icons";
+import { calculateAverage, filterNotesBySemester, groupNotesBySubject } from "@/utils/notes";
+import { getSemester } from "@/utils/date";
 
 export default function SettingsScreen() {
     const router = useRouter();
@@ -23,6 +27,12 @@ export default function SettingsScreen() {
     const { clearSyncedPlanning } = useSyncedPlanningStore();
     const { clearNotes } = useNotesStore();
     const { settings, setSettings } = useSettingsStore();
+
+    
+    const [selectedSemester, setSelectedSemester] = useState<0 | 1>(getSemester());
+    const { notes } = useNotesStore();
+    const selectedNotes = groupNotesBySubject(filterNotesBySemester(notes, selectedSemester)).sort((a, b) => b.notes.length - a.notes.length);
+    const noteAverageValue = calculateAverage(selectedNotes);
 
     // Message de confirmation pour la déconnexion
     const [confirmVisible, setConfirmVisible] = useState(false);
@@ -52,240 +62,246 @@ export default function SettingsScreen() {
             );
         }
     }, [settings]);
-    return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.title}>Mon compte</Text>
-            <View style={styles.settingsView}>
-                {/* Bouton de déconnexion */}
-                <AnimatedPressable
-                    onPress={() => setConfirmVisible(true)}
-                    style={styles.logoutBtn}
-                >
-                    <FontAwesome6
-                        name="arrow-right-from-bracket"
-                        style={styles.logoutIcon}
-                    />
-                </AnimatedPressable>
-
-                {/* Profil */}
-                <View style={styles.profileView}>
-                    <View style={styles.profileCircle}>
-                        <Text style={styles.profileCircleText}>
-                            {firstLetters}
-                        </Text>
-                    </View>
+    return <Page style={styles.container}>
+        <View style={styles.profileView}>
+            <View style={styles.profilePart}>
+                <Text style={styles.profileAvatar}>{firstLetters}</Text>
+                <View style={styles.profileContent}>
                     <Text style={styles.profileName}>{username}</Text>
-                    <Text style={styles.profileEmail}>{email}</Text>
-                    {/* Bouton pour choisir le campus */}
-                    <AnimatedPressable
-                        style={styles.campusSelect}
-                        scale={0.95}
-                        onPress={() => setCampusMenuVisible(true)}
-                    >
-                        <Text style={styles.campusSelectText}>
-                            Campus de <Bold>{settings.campus}</Bold>
-                        </Text>
-                        <FontAwesome6
-                            style={styles.campusSelectText}
-                            name="chevron-down"
-                            size={24}
-                        />
-                    </AnimatedPressable>
-                    <Dropdown
-                        visible={campusMenuVisible}
-                        setVisible={setCampusMenuVisible}
-                        options={[...CAMPUS]}
-                        selectedItem={settings.campus}
-                        setSelectedItem={(newCampus) =>
-                            setSettings(
-                                "campus",
-                                newCampus as (typeof CAMPUS)[number]
-                            )
-                        }
-                        modalBoxStyle={styles.dropdownBoxStyle}
-                    ></Dropdown>
-                </View>
-
-                {/* Les paramètres */}
-                <View style={styles.settingsNav}>
-                    <SettingsNav
-                        name="Notifications"
-                        icon="bell"
-                        route={"/notifications"}
-                    />
-                    <SettingsNav
-                        name="Crédits"
-                        icon="users"
-                        route={"/credits"}
-                    />
-                    <SettingsNav
-                        name="Contact"
-                        icon="contact-book"
-                        route={"/contact"}
-                    />
+                    <Text style={styles.profileMail}>{email}</Text>
                 </View>
             </View>
-
-            {/* Modal de confirmation */}
-            <ConfirmModal
-                visible={confirmVisible}
-                message={confirmMessage}
-                setVisible={(visible) => setConfirmVisible(visible)}
-                onConfirm={() => {
-                    clearSession();
-                    clearPlanning();
-                    clearSyncedPlanning();
-                    clearNotes();
-                    removeSecureStoreItem("username");
-                    removeSecureStoreItem("password");
-                    router.replace("/login");
-                }}
+            <AnimatedPressable style={styles.profileLogout} onPress={() => setConfirmVisible(true)}>
+                <MaterialIcons name="logout" style={styles.profileLogoutIcon} />
+            </AnimatedPressable>
+        </View>
+        <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Mon profil étudiant</Text>
+            <TouchableOpacity style={[settingStyles.container, settingStyles.verticalContainer]} onPress={() => router.push("/notes")}>
+                <View style={settingStyles.subContainer}>
+                    <MaterialIcons name="school" style={settingStyles.icon} />
+                    <View style={settingStyles.content}>
+                        <Text style={settingStyles.title}>Mes Notes</Text>
+                        <Text style={settingStyles.text}>Accédez à vos <Bold>notes</Bold> et vos <Bold>moyennes</Bold> organisées par <Bold>semestre</Bold>.</Text>
+                        <View style={settingStyles.field}>
+                            <Text style={settingStyles.fieldTitle}>Moyenne Générale</Text>
+                            <Text style={settingStyles.fieldValue}>{noteAverageValue}</Text>
+                        </View>
+                    </View>
+                </View>
+                <View style={settingStyles.action}>
+                    <MaterialIcons style={settingStyles.actionIcon} name="arrow-forward" />
+                    <Text style={settingStyles.actionText}>Voir le détail</Text>
+                </View>
+            </TouchableOpacity>
+        </View>
+        <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Paramètres</Text>
+            {/* Les paramètres */}
+            <SettingsNav
+                title="Notifications"
+                text={<>Soyez informés de la <Bold>salle</Bold>, de l'<Bold>heure</Bold> et de la <Bold>matière</Bold> avant votre cours.</>}
+                icon="notifications-active"
+                route={"/notifications"}
             />
-        </SafeAreaView>
-    );
+            <SettingsNav
+                title="Signaler un problème"
+                text={<>Des <Bold>problèmes</Bold> lors de l'utilisation de l'application ? <Bold>Contactez</Bold> nous !</>}
+                icon="bug-report"
+                route={"/contact"}
+            />
+            <SettingsNav
+                title="Application"
+                text={<>Plus d'informations sur l'<Bold>application</Bold> et l'<Bold>équipe</Bold> derrière celle-ci.</>}
+                icon="apps"
+                route={"/credits"}
+            />
+        </View>
+
+        {/* Modal de confirmation */}
+        <ConfirmModal
+            visible={confirmVisible}
+            message={confirmMessage}
+            setVisible={(visible) => setConfirmVisible(visible)}
+            onConfirm={() => {
+                clearSession();
+                clearPlanning();
+                clearSyncedPlanning();
+                clearNotes();
+                removeSecureStoreItem("username");
+                removeSecureStoreItem("password");
+                router.replace("/login");
+            }}
+        />
+    </Page>;
 }
 
-function SettingsNav(props: { name: string; icon: string; route: Href }) {
-    const { name, icon, route } = props;
+function SettingsNav(props: { title: string, text: React.JSX.Element, icon: keyof typeof MaterialIcons.glyphMap, route: Href }) {
+    const { title, text, icon, route } = props;
     const router = useRouter();
-    return (
-        <TouchableOpacity
-            style={navStyles.container}
-            onPress={() => router.push(route)}
-        >
-            {/* Nom de la section avec icon*/}
-            <View style={navStyles.nameContainer}>
-                <FontAwesome6 name={icon} style={navStyles.icon}></FontAwesome6>
-                <Text style={navStyles.name}>{name}</Text>
-            </View>
-            {/* Flèche de navigation */}
-            <AnimatedPressable onPress={() => router.push(route)}>
-                <FontAwesome6 name="chevron-right" style={navStyles.icon} />
-            </AnimatedPressable>
-        </TouchableOpacity>
-    );
+    return <TouchableOpacity style={[settingStyles.container, settingStyles.horizontalContainer]} onPress={() => router.push(route)}>
+        <MaterialIcons name={icon} style={settingStyles.icon} />
+        <View style={settingStyles.content}>
+            <Text style={settingStyles.title}>{title}</Text>
+            <Text style={settingStyles.text}>{text}</Text>
+        </View>
+        <View style={[settingStyles.action, settingStyles.actionCentered]}>
+            <MaterialIcons style={settingStyles.actionIcon} name="arrow-forward" />
+        </View>
+    </TouchableOpacity>;
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        gap: 25,
+    },
+    //
+    // Profile
+    //
+    profileView: {
+        flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: Colors.primary
+        backgroundColor: Colors.light,
+        borderRadius: 999,
+        padding: 15,
     },
-    title: {
-        fontSize: 25,
-        fontWeight: "bold",
-        color: "white",
-        marginTop: 20
-    },
-    settingsView: {
-        display: "flex",
-        flexDirection: "column",
-        width: "100%",
-        height: "90%",
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        backgroundColor: "white"
-    },
-    // Déconnexion
-    logoutBtn: {
-        alignSelf: "flex-end",
-        marginTop: 20,
-        marginRight: 20
-    },
-    logoutIcon: {
-        fontSize: 30,
-        color: Colors.primary
-    },
-    // Profil
-    profileView: {
-        flexDirection: "column",
+    profilePart: {
+        flexDirection: "row",
         alignItems: "center",
-        justifyContent: "center"
+        gap: 15,
     },
-    profileCircle: {
-        alignItems: "center",
-        justifyContent: "center",
-        width: 75,
-        height: 75,
-        borderRadius: 75,
-        backgroundColor: Colors.primary
-    },
-    // Texte du profil
-    profileCircleText: {
-        color: "white",
-        fontSize: 35,
+    profileAvatar: {
+        textAlign: "center",
+        textAlignVertical: "center",
+        fontSize: 18,
         fontWeight: "bold",
-        textAlign: "center"
+        width: 48,
+        height: 48,
+        borderRadius: 999,
+        backgroundColor: Colors.primary,
+        color: Colors.white
     },
-    profileName: {
-        fontSize: 20,
-        fontWeight: "bold",
-        marginTop: 20,
-        textAlign: "center"
-    },
-    profileEmail: {
-        fontSize: 15,
-        marginTop: 15,
-        textAlign: "center"
-    },
-    // Sélecteur de campus
-    dropdownBoxStyle: {
-        width: 250,
-        display: "flex",
-        justifyContent: "flex-start",
+    profileContent: {
         alignItems: "flex-start"
     },
-    campusSelect: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center",
-        padding: 5,
-        width: 250,
-        backgroundColor: Colors.primary,
-        borderRadius: 50,
-        marginTop: 20
+    profileName: {
+        fontSize: 16,
+        fontWeight: 600,
+        textAlign: "center"
     },
-    campusSelectText: {
-        color: "white",
-        marginLeft: 5,
-        marginRight: 5
+    profileMail: {
+        fontSize: 10,
+        textAlign: "center",
+        maxWidth: "100%",
+        wordWrap: "break-word",
     },
-    //Les paramètres
-    settingsNav: {
-        width: "100%",
-        alignSelf: "center",
-        maxWidth: 600,
-        marginTop: 40
-    }
+    profileLogout: {
+        borderRadius: 999,
+        backgroundColor: Colors.white,
+        borderColor: Colors.primary,
+        borderRightWidth: 4,
+    },
+    profileLogoutIcon: {
+        width: 48,
+        height: 48,
+        textAlign: "center",
+        textAlignVertical: "center",
+        fontSize: 20,
+        color: Colors.darkGray,
+    },
+    //
+    // Settings
+    //
+    section: {
+        gap: 10,
+    },
+    sectionTitle: {
+        color: Colors.gray,
+        fontSize: 12,
+        fontWeight: 700,
+        textTransform: "uppercase",
+    },
 });
 
-//Styles pour les boutons de navigation dans les paramètres
-const navStyles = StyleSheet.create({
+
+const settingStyles = StyleSheet.create({
+    //
+    // Setting navigation style
+    //
     container: {
-        width: "95%",
-        paddingVertical: 20,
-        alignSelf: "center",
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexDirection: "row"
+        backgroundColor: Colors.light,
+        borderRadius: 10,
+        padding: 15,
+        gap: 15,
     },
-    nameContainer: {
+    horizontalContainer: {
         flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "space-between",
     },
-    name: {
-        fontSize: 20,
-        fontWeight: "bold",
-        marginLeft: 10
+    verticalContainer: {
+        alignItems: "flex-start",
+    },
+    subContainer: {
+        flexDirection: "row",
+        gap: 15,
     },
     icon: {
-        fontSize: 30,
-        width: 40,
+        width: 32,
+        height: 32,
+        fontSize: 20,
+        backgroundColor: Colors.lightGray,
+        color: Colors.darkGray,
+        borderRadius: 10,
         textAlign: "center",
-        color: Colors.primary
-    }
+        textAlignVertical: "center",
+    },
+    content: {
+        flex: 1,
+        gap: 5,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: 600,
+    },
+    text: {
+        color: Colors.darkGray,
+        fontWeight: 500,
+    },
+    action: {
+        flexDirection: "row",
+        borderRadius: 5,
+        backgroundColor: Colors.primary,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    actionCentered: {
+        alignSelf: "center",
+    },
+    actionIcon: {
+        width: 32,
+        height: 32,
+        fontSize: 20,
+        color: Colors.white,
+        textAlign: "center",
+        textAlignVertical: "center",
+    },
+    actionText: {
+        fontSize: 12,
+        color: Colors.white,
+        fontWeight: 600,
+        marginRight: 10 ,
+    },
+    field: {
+        marginTop: 10,
+    },
+    fieldTitle: {
+        fontSize: 12,
+        color: Colors.gray,
+        fontWeight: "bold",
+        textTransform: "uppercase",
+    },
+    fieldValue: {
+        fontSize: 24,
+    },
 });
