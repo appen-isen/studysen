@@ -62,7 +62,7 @@ export default function SettingsScreen() {
             );
         }
     }, [settings]);
-    return <Page style={styles.container}>
+    return <Page style={styles.container} scrollable={true}>
         <View style={styles.profileView}>
             <View style={styles.profilePart}>
                 <Text style={styles.profileAvatar}>{firstLetters}</Text>

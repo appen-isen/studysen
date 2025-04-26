@@ -1,20 +1,20 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { ReactNode } from "react";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { AnimatedPressable } from "./Buttons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-export function Page(props: { children?: ReactNode; style?: any }) {
-    return (
-        <SafeAreaView style={pageStyles.container}>
-            <View style={[pageStyles.content, props.style]}>
-                {props.children}
-            </View>
-        </SafeAreaView>
-    );
+export function Page(props: { children?: ReactNode; style?: any, scrollable?: boolean }) {
+    const contentStyle = [
+        pageStyles.content,
+        props.scrollable ? { flexGrow: 1 } : { flex: 1 },
+        props.style
+    ]
+    return <ScrollView style={pageStyles.container} contentContainerStyle={contentStyle} scrollEnabled={props.scrollable}>
+        {props.children}
+    </ScrollView>;
 }
 
 type PageHeaderProps = {
@@ -63,7 +63,6 @@ const pageStyles = StyleSheet.create({
         backgroundColor: Colors.white
     },
     content: {
-        flex: 1,
         paddingBlock: 10,
         paddingInline: 20,
         backgroundColor: Colors.white

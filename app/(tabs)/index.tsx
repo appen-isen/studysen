@@ -216,15 +216,9 @@ export default function HomeScreen() {
     };
 
     return (
-        <Page style={styles.container}>
-            <ScrollView
-                contentContainerStyle={styles.scrollContainer}
-                style={styles.scrollView}
-                showsVerticalScrollIndicator={false}
-                overScrollMode="never"
-            >
+        <Page style={styles.container} scrollable={true}>
                 {/* En tête de la page */}
-                <PageHeader title="Accueil"></PageHeader>
+                <PageHeader title="Accueil" />
                 {/* Affichage prénom */}
                 <View style={[sectionStyles.section, styles.welcomeBox]}>
                     <Text style={styles.heyText}>
@@ -367,14 +361,13 @@ export default function HomeScreen() {
                     ></NoteModal>
                 )}
                 {/* Modal pour afficher les informations d'une note */}
-            </ScrollView>
         </Page>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        gap: 25
+        gap: 35
     },
     scrollView: {
         width: "100%"
@@ -388,7 +381,6 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: "bold",
         color: Colors.primary,
-        marginTop: 20
     },
     //Texte de bienvenue
     welcomeBox: {
@@ -435,7 +427,6 @@ const sectionStyles = StyleSheet.create({
         justifyContent: "center",
         width: "100%",
         maxWidth: 600,
-        marginTop: 35
     },
     titleText: {
         fontSize: 16,
@@ -451,6 +442,5 @@ const sectionStyles = StyleSheet.create({
         minHeight: 140,
         width: "100%",
         gap: 15,
-        marginTop: 10
     }
 });

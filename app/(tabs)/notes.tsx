@@ -1,4 +1,4 @@
-import { AnimatedPressable, MultiToggle, Toggle } from "@/components/Buttons";
+import { AnimatedPressable, MultiToggle } from "@/components/Buttons";
 import NoteModal from "@/components/modals/NoteModal";
 import { Bold, Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
@@ -12,11 +12,10 @@ import {
     groupNotesBySubject
 } from "@/utils/notes";
 import { Note, NotesList } from "@/webAurion/utils/types";
-import { MaterialIcons, Octicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Page, PageHeader } from "@/components/Page";
 import { getColorFromNoteCode, getIconFromNoteCode } from "@/utils/colors";
 import { Sheet } from "@/components/Sheet";
@@ -45,7 +44,7 @@ export default function NotesScreen() {
     const [noteModalInfoVisible, setNoteModalInfoVisible] = useState(false);
 
     return (
-        <Page style={styles.container}>
+        <Page style={styles.container} scrollable={true}>
             <PageHeader title="Mes Notes" returnTo="Accueil"></PageHeader>
             <View style={styles.contentView}>
                 {/* Sélecteur de semestre */}
@@ -86,22 +85,17 @@ export default function NotesScreen() {
                     </View>
                 )}
                 {/* Notes par matière */}
-                <ScrollView
-                    contentContainerStyle={styles.scrollContainer}
-                    style={styles.scrollView}
-                >
-                    {selectedNotes.map((notesList, index) => (
-                        <NotesGroup
-                            notesList={notesList}
-                            setCurrentNote={(note) => {
-                                //On sélectionne la note pour l'affichage de la modal
-                                setCurrentNote(note);
-                                setNoteModalInfoVisible(true);
-                            }}
-                            key={`group-${notesList.code}-${index}`}
-                        ></NotesGroup>
-                    ))}
-                </ScrollView>
+                {selectedNotes.map((notesList, index) => (
+                    <NotesGroup
+                        notesList={notesList}
+                        setCurrentNote={(note) => {
+                            //On sélectionne la note pour l'affichage de la modal
+                            setCurrentNote(note);
+                            setNoteModalInfoVisible(true);
+                        }}
+                        key={`group-${notesList.code}-${index}`}
+                    ></NotesGroup>
+                ))}
                 {/* Modal d'informations sur le calcul de la moyenne */}
                 <Sheet
                     visible={infoVisible}
@@ -372,28 +366,27 @@ const styles = StyleSheet.create({
 const notesGroupStyles = StyleSheet.create({
     container: {
         width: "100%",
-        maxWidth: 500,
         marginTop: 30
     },
     // En-tête du groupe de notes
     header: {
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "center",
     },
     headerSubject: {
+        flex: 1,
         flexDirection: "row",
-        justifyContent: "center",
         gap: 10,
-        alignItems: "center"
+        alignItems: "center",
     },
     // Textes de l'en-tête
     headerSubjectText: {
+        flex: 1,
         fontSize: 16,
         fontWeight: 600,
         color: Colors.black,
-        maxWidth: 300,
-        textAlign: "center"
+
     },
     headerIcon: {
         width: 30,
@@ -430,7 +423,7 @@ const notesGroupStyles = StyleSheet.create({
     },
     //Tableau des notes
     notesTable: {
-        width: "100%",
+        flex: 1,
         marginLeft: 15
     },
     tableTitles: {
@@ -441,14 +434,12 @@ const notesGroupStyles = StyleSheet.create({
     noteRow: {
         flexDirection: "row",
         alignItems: "center",
-        width: "100%"
     },
     noteCol: {
-        width: "33.33%",
+        flex: 1,
         paddingVertical: 5
     },
     noteSeparator: {
-        width: "100%",
         height: 1,
         marginVertical: 3,
         backgroundColor: Colors.light

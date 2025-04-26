@@ -31,7 +31,7 @@ export default function Credits() {
         checkBackend();
     }, []);
     return (
-        <Page style={styles.container}>
+        <Page style={styles.container} scrollable={true}>
             <PageHeader title="Application" returnTo="Profil"></PageHeader>
             {/* Information sur l'application */}
             <View>
