@@ -41,10 +41,17 @@ export default function PlanningWeek(props: {
     return (
         <View style={calendarStyles.container} onLayout={handleLayout}>
             <View style={calendarStyles.hoursBox}>
-                {HOURS.map((hour) => <Text
-                    key={hour}
-                    style={[calendarStyles.hourLabel, { height: PIXEL_PER_HOUR }]}
-                >{hour < 10 ? `0${hour}` : hour}</Text>)}
+                {HOURS.map((hour) => (
+                    <Text
+                        key={hour}
+                        style={[
+                            calendarStyles.hourLabel,
+                            { height: PIXEL_PER_HOUR }
+                        ]}
+                    >
+                        {hour < 10 ? `0${hour}` : hour}
+                    </Text>
+                ))}
             </View>
             {/* For each days of the week */}
             {[0, 1, 2, 3, 4].map((offset, dayIndex) => (
@@ -80,7 +87,7 @@ export function WeekEvent(props: {
         (new Date(props.event.end).getTime() -
             new Date(props.event.start).getTime()) /
         (1000 * 60 * 60);
-    const eventHeight = durationInHours * props.PIXEL_PER_HOUR; 
+    const eventHeight = durationInHours * props.PIXEL_PER_HOUR;
 
     //Si l'événement est vide alors on affiche une case vide
     if (props.event.id === "blank") {
