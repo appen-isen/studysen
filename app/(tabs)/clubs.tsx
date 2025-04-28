@@ -1,11 +1,12 @@
 import { Page, PageHeader } from "@/components/Page";
 import { PostType } from "@/utils/types";
-import { FlatList, StyleSheet } from "react-native";
+import { FlatList, SafeAreaView, StyleSheet, View } from "react-native";
 import { Post } from "../post-details";
 import { DotLoader } from "@/components/Sync";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/utils/config";
 import axios from "axios";
+import Colors from "@/constants/Colors";
 
 export default function ClubsScreen() {
     const [posts, setPosts] = useState<PostType[]>([]);
@@ -71,28 +72,38 @@ export default function ClubsScreen() {
     }, []);
 
     return (
-        <Page style={styles.container}>
-            <PageHeader title="Clubs"></PageHeader>
-            <FlatList
-                data={posts}
-                contentContainerStyle={styles.scrollContainer}
-                keyExtractor={(_, index) => index.toString()}
-                renderItem={({ item }) => <Post post={item} />}
-                onEndReached={() => {
-                    //Si le chargement initial est terminé, on charge les nouveaux posts
-                    if (!isFirstLoading && !isLoading) {
-                        loadPosts();
-                    }
-                }}
-                onEndReachedThreshold={0.5}
-                ListFooterComponent={isLoading ? <DotLoader /> : null}
-            />
-        </Page>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.content}>
+                <PageHeader title="Clubs"></PageHeader>
+                <FlatList
+                    data={posts}
+                    contentContainerStyle={styles.scrollContainer}
+                    keyExtractor={(_, index) => index.toString()}
+                    renderItem={({ item }) => <Post post={item} />}
+                    onEndReached={() => {
+                        //Si le chargement initial est terminé, on charge les nouveaux posts
+                        if (!isFirstLoading && !isLoading) {
+                            loadPosts();
+                        }
+                    }}
+                    onEndReachedThreshold={0.5}
+                    ListFooterComponent={isLoading ? <DotLoader /> : null}
+                />
+            </View>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+        backgroundColor: Colors.white
+    },
+    content: {
+        flex: 1,
+        paddingBlock: 10,
+        paddingInline: 20,
+        backgroundColor: Colors.white,
         gap: 25
     },
     scrollContainer: {
