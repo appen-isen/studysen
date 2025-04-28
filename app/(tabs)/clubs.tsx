@@ -1,29 +1,40 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, } from "react-native";
 import { Text } from "@/components/Texts";
-import { FontAwesome6 } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Page } from "@/components/Page";
+import Colors from "@/constants/Colors";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function ClubsScreen() {
     return (
-        <SafeAreaView style={styles.container}>
-            <FontAwesome6 name="hammer" size={24} color="black" />
+        <Page style={styles.container} scrollable={true}>
+            <MaterialIcons style={styles.icon} name="build" />
             <Text style={styles.title}>
-                La page de la vie associative est encore en développement.
+                Cette page est en cours de développement.
             </Text>
-        </SafeAreaView>
+        </Page>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "white",
+        gap: 25,
+    },
+    icon: {
+        width: 48,
+        height: 48,
+        borderRadius: 10,
+        backgroundColor: Colors.light,
+        textAlign: "center",
+        textAlignVertical: "center",
+        fontSize: 28,
     },
     title: {
-        fontSize: 20,
+        fontSize: 16,
+        textTransform: "uppercase",
         fontWeight: "bold",
         textAlign: "center",
+        color: Colors.darkGray,
     },
 });

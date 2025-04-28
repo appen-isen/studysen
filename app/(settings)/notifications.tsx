@@ -71,7 +71,7 @@ export default function NotifSettings() {
     };
 
     return (
-        <Page style={styles.container}>
+        <Page style={styles.container} scrollable={true}>
             <PageHeader title="Notifications" returnTo="Profil"></PageHeader>
             {/* Présentation des notifications */}
             <View style={styles.section}>

@@ -155,7 +155,7 @@ ${username}
     };
 
     return (
-        <Page style={styles.container}>
+        <Page style={styles.container} scrollable={true}>
             <PageHeader title="Contact" returnTo="Profil"></PageHeader>
             <View>
                 <Bold style={styles.sectionTitle}>Formulaire de contact</Bold>
@@ -169,110 +169,108 @@ ${username}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.contentView}
             >
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
-                    <View>
-                        <Text style={styles.subtitle}>TYPE DE REQUÊTE</Text>
-                        <MultiToggle
-                            options={["Bug", "Suggestion & Autre"]}
-                            selectedIndex={contactType}
-                            onSelect={setContactType}
-                        ></MultiToggle>
-                    </View>
+                <View>
+                    <Text style={styles.subtitle}>TYPE DE REQUÊTE</Text>
+                    <MultiToggle
+                        options={["Bug", "Suggestion & Autre"]}
+                        selectedIndex={contactType}
+                        onSelect={setContactType}
+                    ></MultiToggle>
+                </View>
+                <View>
+                    <Text style={styles.subtitle}>
+                        VOTRE{" "}
+                        {contactType === 0 ? "PROBLÈME" : "SUGGESTION"}
+                    </Text>
+                    <Input
+                        textInputStyle={styles.input}
+                        placeholder="Décrivez votre problème ou suggestion ici."
+                        value={description}
+                        onChangeText={setDescription}
+                        numberOfLines={5}
+                        multiline
+                    />
+                </View>
+                {/* Si problème, on affiche le champ pour les étapes de reproduction */}
+                {contactType === 0 && (
                     <View>
                         <Text style={styles.subtitle}>
-                            VOTRE{" "}
-                            {contactType === 0 ? "PROBLÈME" : "SUGGESTION"}
+                            ÉTAPES DE REPRODUCTION
                         </Text>
                         <Input
                             textInputStyle={styles.input}
-                            placeholder="Décrivez votre problème ou suggestion ici."
-                            value={description}
-                            onChangeText={setDescription}
+                            placeholder="Décrivez étapes par étapes comment faire pour reproduire ce problème."
+                            value={reproductionSteps}
+                            onChangeText={setReproductionSteps}
                             numberOfLines={5}
                             multiline
                         />
-                    </View>
-                    {/* Si problème, on affiche le champ pour les étapes de reproduction */}
-                    {contactType === 0 && (
-                        <View>
-                            <Text style={styles.subtitle}>
-                                ÉTAPES DE REPRODUCTION
-                            </Text>
-                            <Input
-                                textInputStyle={styles.input}
-                                placeholder="Décrivez étapes par étapes comment faire pour reproduire ce problème."
-                                value={reproductionSteps}
-                                onChangeText={setReproductionSteps}
-                                numberOfLines={5}
-                                multiline
-                            />
-                            <Text style={styles.subtitle}>CAPTURE D'ÉCRAN</Text>
-                            <AnimatedPressable
-                                onPress={pickImage}
-                                style={styles.infoButton}
-                            >
-                                <MaterialIcons
-                                    name="insert-photo"
-                                    size={24}
-                                    color="black"
-                                />
-                                <Text>
-                                    {selectedImage
-                                        ? "Changer la capture d'écran"
-                                        : "Ajouter une capture d'écran"}
-                                </Text>
-                            </AnimatedPressable>
-                        </View>
-                    )}
-                    {/* Informations complémentaires */}
-                    <View>
-                        <Text style={styles.subtitle}>
-                            INFORMATIONS SUPLÉMENTAIRES
-                        </Text>
-                        <Text style={styles.paragraph}>
-                            Pour <Bold>mieux identifier</Bold> le problème, lors
-                            de l'envoi du formulaire, ISEN Orbit
-                            <Bold> peut</Bold> collecter des
-                            <Bold> données supplémentaires.</Bold>
-                        </Text>
+                        <Text style={styles.subtitle}>CAPTURE D'ÉCRAN</Text>
                         <AnimatedPressable
-                            onPress={() => setInfoVisible(true)}
+                            onPress={pickImage}
                             style={styles.infoButton}
                         >
                             <MaterialIcons
-                                name="candlestick-chart"
-                                size={20}
+                                name="insert-photo"
+                                size={24}
                                 color="black"
                             />
-                            <Text>En savoir plus</Text>
+                            <Text>
+                                {selectedImage
+                                    ? "Changer la capture d'écran"
+                                    : "Ajouter une capture d'écran"}
+                            </Text>
                         </AnimatedPressable>
-                        <Checkbox
-                            status={additionnalData ? "checked" : "unchecked"}
-                            onPress={() => setAdditionnalData(!additionnalData)}
-                            containerStyle={styles.checkboxContainer}
-                            textStyle={styles.checkboxLabel}
-                            color={Colors.primary}
-                            text="J’accepte que des données supplémentaires soient récoltées."
-                        />
                     </View>
-                    <Button
-                        onPress={handleSubmit}
-                        title=""
-                        style={styles.sendButton}
-                        JSX={
-                            <View style={styles.sendButtonView}>
-                                <MaterialIcons
-                                    name="ios-share"
-                                    size={24}
-                                    color={Colors.white}
-                                />
-                                <Text style={styles.sendButtonText}>
-                                    Envoyer le formulaire
-                                </Text>
-                            </View>
-                        }
-                    ></Button>
-                </ScrollView>
+                )}
+                {/* Informations complémentaires */}
+                <View>
+                    <Text style={styles.subtitle}>
+                        INFORMATIONS SUPLÉMENTAIRES
+                    </Text>
+                    <Text style={styles.paragraph}>
+                        Pour <Bold>mieux identifier</Bold> le problème, lors
+                        de l'envoi du formulaire, ISEN Orbit
+                        <Bold> peut</Bold> collecter des
+                        <Bold> données supplémentaires.</Bold>
+                    </Text>
+                    <AnimatedPressable
+                        onPress={() => setInfoVisible(true)}
+                        style={styles.infoButton}
+                    >
+                        <MaterialIcons
+                            name="candlestick-chart"
+                            size={20}
+                            color="black"
+                        />
+                        <Text>En savoir plus</Text>
+                    </AnimatedPressable>
+                    <Checkbox
+                        status={additionnalData ? "checked" : "unchecked"}
+                        onPress={() => setAdditionnalData(!additionnalData)}
+                        containerStyle={styles.checkboxContainer}
+                        textStyle={styles.checkboxLabel}
+                        color={Colors.primary}
+                        text="J’accepte que des données supplémentaires soient récoltées."
+                    />
+                </View>
+                <Button
+                    onPress={handleSubmit}
+                    title=""
+                    style={styles.sendButton}
+                    JSX={
+                        <View style={styles.sendButtonView}>
+                            <MaterialIcons
+                                name="ios-share"
+                                size={24}
+                                color={Colors.white}
+                            />
+                            <Text style={styles.sendButtonText}>
+                                Envoyer le formulaire
+                            </Text>
+                        </View>
+                    }
+                ></Button>
             </KeyboardAvoidingView>
             {/* Modal d'informations sur les données supplémentaires */}
             <Sheet
