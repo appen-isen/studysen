@@ -26,7 +26,7 @@ export default function PostDetailsScreen() {
                 title={currentPost.type === "event" ? "Événement" : "Post"}
                 returnTo="Clubs"
             ></PageHeader>
-            <View style={{ maxWidth: 600, alignSelf: "center" }}>
+            <View style={postStyles.responsiveContainer}>
                 <Post post={currentPost} details={true}></Post>
             </View>
         </Page>
@@ -184,6 +184,11 @@ const postStyles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center"
     },
+    responsiveContainer: {
+        maxWidth: 600,
+        width: "100%",
+        alignSelf: "center"
+    },
     //Textes
     textSeparator: {
         width: 20,
@@ -220,11 +225,11 @@ const postStyles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: Colors.light,
-        width: "25%",
-        padding: 5,
+        padding: 8,
         borderRadius: 50,
         marginTop: 5,
-        marginBottom: 20
+        marginBottom: 20,
+        alignSelf: "flex-start"
     },
     clubImage: {
         width: 30,
