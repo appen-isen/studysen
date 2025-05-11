@@ -8,6 +8,7 @@ import { API_BASE_URL } from "@/utils/config";
 import axios from "axios";
 import Colors from "@/constants/Colors";
 import { Bold } from "@/components/Texts";
+import useSettingsStore, { campusToId } from "@/stores/settingsStore";
 
 export default function ClubsScreen() {
     const [posts, setPosts] = useState<PostType[]>([]);
@@ -15,6 +16,7 @@ export default function ClubsScreen() {
     const [isLoading, setIsLoading] = useState(true);
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const { settings } = useSettingsStore();
 
     const fetchLatestPost = async (
         offset: number
@@ -22,7 +24,9 @@ export default function ClubsScreen() {
         try {
             //On récupère le X dernier post
             const response = await axios.get(
-                `${API_BASE_URL}/v1/posts/latest?offset=${offset}`
+                `${API_BASE_URL}/v1/posts/latest?offset=${offset}&campus=${campusToId(
+                    settings.campus
+                )}`
             );
             return response.data.post;
         } catch (error) {
