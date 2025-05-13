@@ -2,7 +2,7 @@ import { create } from "zustand";
 import {
     clearStateFromStorage,
     loadStateFromStorage,
-    saveStateToStorage,
+    saveStateToStorage
 } from "./storage";
 
 // Liste des campus
@@ -33,7 +33,7 @@ function getDefaultSettings(): Settings {
         notificationsEnabled: true,
         notificationsDelay: "15min",
         localNotifications: false,
-        deviceId: "",
+        deviceId: ""
     };
 }
 
@@ -50,7 +50,7 @@ const useSettingsStore = create<SettingsState>()((set) => ({
     clearSettings: () => {
         set({ settings: getDefaultSettings() });
         clearStateFromStorage("settings");
-    }, // Réinitialise les réglages
+    } // Réinitialise les réglages
 }));
 
 // On charge les stores depuis le stockage
@@ -61,6 +61,22 @@ export async function initializeSettingsStore() {
         //On ajoute la valeur par défaut pour les paramètres non enregistrés
         const settings = { ...getDefaultSettings(), ...initialSettingsState };
         useSettingsStore.setState({ settings: settings });
+    }
+}
+
+// On transforme un nom de campus en ID
+export function campusToId(campus: (typeof CAMPUS)[number]): number {
+    switch (campus) {
+        case "Nantes":
+            return 1;
+        case "Rennes":
+            return 2;
+        case "Brest":
+            return 3;
+        case "Caen":
+            return 4;
+        default:
+            return 1;
     }
 }
 
