@@ -7,6 +7,11 @@ import Constants from "expo-constants";
 
 // Request permission for notifications
 export const requestPermissions = async (openSettings = false) => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return false;
+    }
+
     const status = await Notifications.getPermissionsAsync();
     if (status.status !== "granted") {
         const { status: newStatus } =
@@ -50,8 +55,11 @@ Notifications.setNotificationHandler({
 });
 
 export const sendTestNotification = async () => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
     const { settings } = useSettingsStore.getState();
-
     try {
         // Configure notification channel for Android
         await Notifications.setNotificationChannelAsync("default", {
@@ -105,6 +113,11 @@ export const sendTestNotification = async () => {
 };
 
 export const cancelAllScheduledNotifications = async () => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
+
     console.log("Annulation de toutes les notifications planifiées");
     const { settings } = useSettingsStore.getState();
     let userId = undefined;
@@ -150,6 +163,10 @@ export const cancelAllScheduledNotifications = async () => {
 };
 
 export const registerForPushNotificationsAsync = async () => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
     const { settings, setSettings } = useSettingsStore.getState();
 
     try {
@@ -199,6 +216,10 @@ export const scheduleCourseNotification = async (
     courseTime: Date,
     email: string
 ) => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
     const { settings } = useSettingsStore.getState();
     const notificationTime = new Date(
         courseTime.getTime() -
@@ -256,6 +277,10 @@ export const scheduleLocalNotification = async (
     body: string,
     date: Date
 ) => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
     try {
         await Notifications.scheduleNotificationAsync({
             content: {

@@ -1,7 +1,14 @@
 import PlanningApi from "./PlanningApi";
-import { getJSFFormParams, getName, getViewState } from "../utils/AurionUtils";
+import {
+    getJSFFormParams,
+    getName,
+    getViewState,
+    paramsToHashMap
+} from "../utils/AurionUtils";
 import NotesApi from "./NotesApi";
 import axios, { AxiosInstance } from "axios";
+import { Platform } from "react-native";
+import { sendTauriCommand } from "@/utils/desktop";
 
 export class Session {
     private client: AxiosInstance;
@@ -21,7 +28,7 @@ export class Session {
         this.client = axios.create({
             baseURL: this.baseURL,
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            withCredentials: true,
+            withCredentials: true
         });
     }
 
@@ -36,7 +43,7 @@ export class Session {
     public login(
         username: string,
         password: string,
-        timeout?: number,
+        timeout?: number
     ): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             //Mode de démo
@@ -46,27 +53,28 @@ export class Session {
                 console.log(`Logged in as ${this.username}`);
                 return resolve(true);
             }
+            //Les paramètres nécessaires pour effectuer une requête POST
             const params = new URLSearchParams();
             params.append("username", username);
             params.append("password", password);
-            this.client
-                .post(`/login`, params, { timeout: timeout })
-                .then(async (res) => {
+
+            // On envoie la requête de connexion
+            this.sendPOST<string>(`/login`, params)
+                .then((res) => {
+                    // On traite la réponse de la connexion
+                    // On vérifie si la connexion a réussi
                     if (
-                        res.data.includes("Home page") ||
-                        res.data.includes("Page d'accueil")
+                        res.includes("Home page") ||
+                        res.includes("Page d'accueil")
                     ) {
                         // On récupère le nom de l'utilisateur
-                        this.username = getName(res.data);
+                        this.username = getName(res);
                         console.log(`Logged in as ${this.username}`);
                         resolve(true);
-                    } else {
-                        resolve(false);
                     }
+                    resolve(false);
                 })
-                .catch((e) => {
-                    reject(e);
-                });
+                .catch((e) => reject(e));
         });
     }
 
@@ -87,7 +95,7 @@ export class Session {
     // (1ère phase) Besoin de simuler le clic sur la sidebar pour obtenir le ViewState nécessaire aux fonctionnements des reqûetes
     public sendSidebarRequest(
         subMenuId: string,
-        viewState: string,
+        viewState: string
     ): Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
             try {
@@ -95,17 +103,17 @@ export class Session {
                 const params = getJSFFormParams(
                     "j_idt46",
                     "sidebar",
-                    viewState,
+                    viewState
                 );
                 // On ajoute l'ID du sous-menu qui correspond à la rubrique chosie (Scolarité, mon compte, divers, ...)
                 params.append(
                     "webscolaapp.Sidebar.ID_SUBMENU",
-                    `submenu_${subMenuId}`,
+                    `submenu_${subMenuId}`
                 );
                 // On envoie la requête POST
                 const response = await this.sendPOST<string>(
-                    `faces/Planning.xhtml`,
-                    params,
+                    `/faces/Planning.xhtml`,
+                    params
                 );
                 resolve(response);
             } catch (err) {
@@ -118,7 +126,7 @@ export class Session {
     // Cette fonction retourne un second ViewState qui sera utilisé pour effectuer les prochaines requêtes POST
     public sendSidebarSubmenuRequest(
         subMenuId: string,
-        viewState: string,
+        viewState: string
     ): Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
             try {
@@ -129,8 +137,8 @@ export class Session {
                 params.append("form:sidebar", "form:sidebar");
                 params.append("form:sidebar_menuid", subMenuId);
                 const response = await this.sendPOST<string>(
-                    `faces/Planning.xhtml`,
-                    params,
+                    `/faces/Planning.xhtml`,
+                    params
                 );
                 const secondViewState = getViewState(response);
                 if (secondViewState) {
@@ -153,7 +161,7 @@ export class Session {
             }
             try {
                 const schedulePage = await this.sendGET<string>(
-                    "/faces/Planning.xhtml",
+                    "/faces/Planning.xhtml"
                 );
                 let viewState = getViewState(schedulePage);
                 if (viewState) {
@@ -164,7 +172,7 @@ export class Session {
                     // On récupère le ViewState pour effectuer la prochaine requête
                     viewState = await this.sendSidebarSubmenuRequest(
                         subMenuId,
-                        viewState,
+                        viewState
                     );
                     if (viewState) {
                         this.viewStateCache = viewState;
@@ -191,10 +199,23 @@ export class Session {
     }
 
     public sendGET<T>(url: string): Promise<T> {
+        if (Platform.OS === "web") {
+            // On utilise la fonction pour envoyer la requête GET à travers Rust si on est sur l'application de bureau
+            return sendTauriCommand("send_get", {
+                url: this.baseURL + url
+            }).then((response) => response);
+        }
         return this.client.get<T>(url).then((response) => response.data);
     }
 
-    public sendPOST<T>(url: string, data: unknown): Promise<T> {
+    public sendPOST<T>(url: string, data: URLSearchParams): Promise<T> {
+        if (Platform.OS === "web") {
+            // On utilise la fonction pour envoyer la requête POST à travers Rust si on est sur l'application de bureau
+            return sendTauriCommand("send_post", {
+                url: this.baseURL + url,
+                params: paramsToHashMap(data)
+            }).then((response) => response);
+        }
         return this.client.post<T>(url, data).then((response) => response.data);
     }
 }

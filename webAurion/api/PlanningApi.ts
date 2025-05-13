@@ -2,7 +2,7 @@ import { getJSFFormParams } from "../utils/AurionUtils";
 import { generateDemoPlanning } from "../utils/demo";
 import {
     getScheduleDates,
-    planningResponseToEvents,
+    planningResponseToEvents
 } from "../utils/PlanningUtils";
 import { PlanningEvent } from "../utils/types";
 import Session from "./Session";
@@ -28,7 +28,7 @@ class PlanningApi {
                 const params = getJSFFormParams(
                     "j_idt118",
                     "j_idt118",
-                    viewState,
+                    viewState
                 );
 
                 //On récupère les dates de début et de fin de l'emploi du temps
@@ -38,8 +38,8 @@ class PlanningApi {
                 params.append("form:j_idt118_end", endTimestamp.toString());
 
                 const response = await this.session.sendPOST<string>(
-                    "faces/Planning.xhtml",
-                    params,
+                    "/faces/Planning.xhtml",
+                    params
                 );
                 resolve(planningResponseToEvents(response));
             } catch (error) {

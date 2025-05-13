@@ -20,7 +20,7 @@ export function getViewState(html: string): string | undefined {
 export function getJSFFormParams(
     formId: string,
     renderId: string,
-    viewState: string,
+    viewState: string
 ): URLSearchParams {
     const params = new URLSearchParams();
     params.append("javax.faces.partial.ajax", "true");
@@ -44,4 +44,9 @@ export function getName(html: string): string {
         return username;
     }
     return "";
+}
+
+// Conversion de l'objet URLSearchParams en HashMap pour Rust (application de bureau)
+export function paramsToHashMap(params: URLSearchParams) {
+    return Object.fromEntries(params.entries());
 }
