@@ -50,6 +50,18 @@
             "expo-router",
             "expo-secure-store",
             [
+                "expo-splash-screen",
+                {
+                    "backgroundColor": "#ffffff",
+                    "image": "./assets/images/splash-icon.png",
+                    "dark": {
+                        "image": "./assets/images/splash-icon.png",
+                        "backgroundColor": "#ffffff"
+                    },
+                    "imageWidth": 200
+                }
+            ],
+            [
                 "expo-notifications",
                 {
                     "icon": "./assets/images/notification_icon.png",
