@@ -35,7 +35,7 @@ export async function removeSecureStoreItem(key: string): Promise<void> {
     try {
         if (Platform.OS === "web") {
             //Si on est sur l'appli de bureau, on utilise le secure store de Tauri
-            return await sendTauriCommand("delete_secure_item", { key });
+            return await sendTauriCommand("delete_item", { key });
         }
         await deleteItemAsync(key);
     } catch (e) {
