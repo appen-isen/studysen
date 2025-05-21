@@ -112,7 +112,7 @@ export function WeekEvent(props: {
                 ]}
             />
             <Text style={eventStyles.subject} numberOfLines={1}>
-                {props.event.subject}
+                {props.event.subject || props.event.title}
             </Text>
             {/* On affiche l'heure de début et de fin de l'événement si la durée est supérieure à 30 minutes*/}
             {durationInHours > 0.5 && (

@@ -6,7 +6,7 @@ import {
 } from "./storage";
 
 // Liste des campus
-export const CAMPUS = ["Nantes", "Rennes", "Brest", "Caen"] as const;
+export const CAMPUS = ["Nantes", "Brest", "Caen", "Rennes", "Paris"] as const;
 
 export type NotificationDelay = "5min" | "15min" | "30min" | "1h";
 
@@ -69,12 +69,14 @@ export function campusToId(campus: (typeof CAMPUS)[number]): number {
     switch (campus) {
         case "Nantes":
             return 1;
-        case "Rennes":
-            return 2;
         case "Brest":
-            return 3;
+            return 2;
         case "Caen":
+            return 3;
+        case "Rennes":
             return 4;
+        case "Paris":
+            return 5;
         default:
             return 1;
     }
