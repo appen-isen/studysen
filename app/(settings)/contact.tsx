@@ -18,6 +18,7 @@ import useSettingsStore from "@/stores/settingsStore";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import * as Device from "expo-device";
+import { API_BASE_URL } from "@/utils/config";
 
 export default function Contact() {
     const { settings } = useSettingsStore();
@@ -125,16 +126,13 @@ ${username}
 
             // Créer l'issue sur GitHub
 
-            const response = await axios.post(
-                "https://api.isen-orbit.fr/v1/github",
-                {
-                    title,
-                    body: bodyContent,
-                    image: selectedImage,
-                    labels: [`${contactType === 0 ? "bug" : "suggestion"}`],
-                    assignees: ["dd060606", "BreizhHardware"]
-                }
-            );
+            const response = await axios.post(`${API_BASE_URL}/github`, {
+                title,
+                body: bodyContent,
+                image: selectedImage,
+                labels: [`${contactType === 0 ? "bug" : "suggestion"}`],
+                assignees: ["dd060606", "BreizhHardware"]
+            });
 
             // Succès
             setSuccessVisible(true);
@@ -162,7 +160,7 @@ ${username}
                 <Text style={styles.paragraph}>
                     J'ai un problème, une suggestion ou une question concernant
                     l'application
-                    <Bold> ISEN Orbit.</Bold>
+                    <Bold> Studysen.</Bold>
                 </Text>
             </View>
             <KeyboardAvoidingView
@@ -236,7 +234,7 @@ ${username}
                         </Text>
                         <Text style={styles.paragraph}>
                             Pour <Bold>mieux identifier</Bold> le problème, lors
-                            de l'envoi du formulaire, ISEN Orbit
+                            de l'envoi du formulaire, Studysen
                             <Bold> peut</Bold> collecter des
                             <Bold> données supplémentaires.</Bold>
                         </Text>

@@ -5,8 +5,8 @@ import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { API_BASE_URL } from "@/utils/notificationConfig";
 import { Link } from "expo-router";
+import { API_BASE_URL } from "@/utils/config";
 
 //Les crédits
 export default function Credits() {
@@ -37,9 +37,9 @@ export default function Credits() {
             <View style={styles.responsiveContainer}>
                 <Bold style={styles.sectionTitle}>À propos</Bold>
                 <Text style={styles.paragraph}>
-                    <Text style={styles.important}>ISEN Orbit</Text> est une
-                    application crée par le club <Bold>Appen'ISEN</Bold> du
-                    campus de Nantes de l'école d'ingénieur ISEN.
+                    <Text style={styles.important}>Studysen</Text> est une
+                    application crée par le club <Bold>Appen</Bold> du campus de
+                    Nantes de l'école d'ingénieur ISEN.
                 </Text>
                 <Text style={styles.paragraph}>
                     L’objectif de cette application est de{" "}
@@ -51,7 +51,7 @@ export default function Credits() {
                     Notre projet est <Bold>open-source</Bold>, vous pouvez le
                     retrouver sur{" "}
                     <Link
-                        href={"https://github.com/appen-isen/isen-orbit"}
+                        href={"https://github.com/appen-isen/studysen"}
                         style={styles.link}
                     >
                         GitHub

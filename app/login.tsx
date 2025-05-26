@@ -233,8 +233,8 @@ export default function LoginScreen() {
                         <Text style={helpStyles.important}>
                             identifiant d'ENT
                         </Text>{" "}
-                        de l'<Bold>ISEN</Bold> qui vous permet l'accès à{" "}
-                        <Bold>WebAurion</Bold> et <Bold>Moodle</Bold>.
+                        qui vous permet l'accès à <Bold>WebAurion</Bold> et{" "}
+                        <Bold>Moodle</Bold>.
                     </Text>
                     <Text style={helpStyles.paragraph}>
                         L'identifiant est de la forme{" "}

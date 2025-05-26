@@ -24,7 +24,7 @@ export default function ClubsScreen() {
         try {
             //On récupère le X dernier post
             const response = await axios.get(
-                `${API_BASE_URL}/v1/posts/latest?offset=${offset}&campus=${campusToId(
+                `${API_BASE_URL}/posts/latest?offset=${offset}&campus=${campusToId(
                     settings.campus
                 )}`
             );

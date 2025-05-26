@@ -63,8 +63,8 @@ export const sendTestNotification = async () => {
     try {
         // Configure notification channel for Android
         await Notifications.setNotificationChannelAsync("default", {
-            name: "ISEN Orbit",
-            description: "Notifications pour ISEN Orbit",
+            name: "Studysen",
+            description: "Notifications pour Studysen",
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
             lightColor: "#FF231F7C",
@@ -76,7 +76,7 @@ export const sendTestNotification = async () => {
         // Send a local notification
         await Notifications.scheduleNotificationAsync({
             content: {
-                title: "ISEN Orbit",
+                title: "Studysen",
                 body: "Notification local de test",
                 sound: "default",
                 priority: "max"
@@ -101,7 +101,7 @@ export const sendTestNotification = async () => {
                 {
                     user_id: userId,
                     device_id: deviceId,
-                    title: "ISEN Orbit",
+                    title: "Studysen",
                     message: "Notification backend de test",
                     date: new Date()
                 }
