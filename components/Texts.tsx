@@ -16,7 +16,7 @@ export function Text(props: TextProps) {
 
         // Police par défaut
         let finalFontFamily = "OpenSans";
-        let finalFontWeight = "300";
+        let finalFontWeight = "400";
 
         if (props.style && typeof props.style === "object") {
             // On inverse pour prioriser les styles définis en dernier
