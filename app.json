@@ -72,18 +72,6 @@
                 }
             ],
             [
-                "expo-font",
-                {
-                    "fonts": [
-                        "assets/fonts/OpenSans-300.ttf",
-                        "assets/fonts/OpenSans-400.ttf",
-                        "assets/fonts/OpenSans-600.ttf",
-                        "assets/fonts/OpenSans-700.ttf",
-                        "assets/fonts/OpenSans.ttf"
-                    ]
-                }
-            ],
-            [
                 "expo-screen-orientation",
                 {
                     "initialOrientation": "DEFAULT"
