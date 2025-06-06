@@ -4,12 +4,10 @@ import { Href, useRouter } from "expo-router";
 import useSessionStore from "@/stores/sessionStore";
 import { removeSecureStoreItem } from "@/stores/secureStore";
 import Colors from "@/constants/Colors";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { AnimatedPressable } from "@/components/Buttons";
-import { ConfirmModal, Dropdown } from "@/components/Modals";
+import { ConfirmModal } from "@/components/Modals";
 import { useEffect, useState } from "react";
-import useSettingsStore, { CAMPUS } from "@/stores/settingsStore";
-import { SafeAreaView } from "react-native-safe-area-context";
+import useSettingsStore from "@/stores/settingsStore";
 import {
     useNotesStore,
     usePlanningStore,

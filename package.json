@@ -1,5 +1,5 @@
 {
-    "name": "isen-orbit",
+    "name": "studysen",
     "main": "expo-router/entry",
     "version": "1.0.0",
     "scripts": {
@@ -22,9 +22,9 @@
         "@gorhom/bottom-sheet": "^5.1.1",
         "@react-native-async-storage/async-storage": "2.1.2",
         "@react-navigation/native": "^7.0.0",
-        "axios": "^1.7.9",
+        "axios": "^1.9.0",
         "cheerio": "1.0.0-rc.12",
-        "expo": "^53.0.0",
+        "expo": "^53.0.10",
         "expo-application": "~6.1.4",
         "expo-constants": "~17.1.6",
         "expo-device": "~7.1.4",
@@ -39,7 +39,6 @@
         "expo-system-ui": "~5.0.8",
         "expo-updates": "~0.28.14",
         "expo-web-browser": "~14.1.6",
-        "fs-extra": "^11.3.0",
         "react": "19.0.0",
         "react-dom": "19.0.0",
         "react-native": "0.79.3",
@@ -49,15 +48,13 @@
         "react-native-safe-area-context": "5.4.0",
         "react-native-screens": "~4.11.1",
         "react-native-web": "^0.20.0",
-        "zustand": "^5.0.2"
+        "zustand": "^5.0.5"
     },
     "devDependencies": {
         "@babel/core": "^7.25.2",
-        "@types/react": "~18.3.12",
         "jest": "^29.2.1",
-        "jest-expo": "~52.0.6",
-        "react-test-renderer": "18.3.1",
-        "typescript": "~5.3.3"
+        "jest-expo": "~53.0.7",
+        "typescript": "~5.8.3"
     },
     "private": true
 }

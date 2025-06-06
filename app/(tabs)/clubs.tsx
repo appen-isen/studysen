@@ -1,6 +1,6 @@
 import { Page, PageHeader } from "@/components/Page";
 import { PostType } from "@/utils/types";
-import { FlatList, SafeAreaView, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { Post } from "../post-details";
 import { DotLoader } from "@/components/Sync";
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import axios from "axios";
 import Colors from "@/constants/Colors";
 import { Bold } from "@/components/Texts";
 import useSettingsStore, { campusToId } from "@/stores/settingsStore";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ClubsScreen() {
     const [posts, setPosts] = useState<PostType[]>([]);

@@ -164,7 +164,7 @@ ${username}
                 </Text>
             </View>
             <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                behavior={"padding"}
                 style={styles.contentView}
             >
                 <ScrollView
