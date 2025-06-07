@@ -25,18 +25,18 @@ export default function ClubsScreen() {
         try {
             //On récupère le X dernier post
             const response = await axios.get(
-                `${API_BASE_URL}/posts/latest?offset=${offset}&campus=${campusToId(
+                `${API_BASE_URL}/posts/last?offset=${offset}&campus=${campusToId(
                     settings.campus
                 )}`
             );
-            return response.data.post;
+            return response.data;
         } catch (error) {
             console.error("Erreur lors de la récupération des posts :", error);
             return null;
         }
     };
 
-    //On charge les posts un par un
+    // Fonction pour charger un post
     const loadPosts = async () => {
         setIsLoading(true);
         const newPost = await fetchLatestPost(offset);
@@ -49,14 +49,27 @@ export default function ClubsScreen() {
         setIsLoading(false);
     };
 
+    // Chargement initial des 3 premiers posts
     useEffect(() => {
-        //On charge les 3 premiers posts au démarrage
         const loadInitialPosts = async () => {
+            let localOffset = offset;
             for (let i = 0; i < 3; i++) {
-                await loadPosts();
+                const newPost = await fetchLatestPost(localOffset);
+                if (newPost) {
+                    // On ajoute le post à la liste des posts
+                    setPosts((prev) => [...prev, newPost]);
+
+                    localOffset += 1;
+                } else {
+                    setHasMore(false);
+                    break;
+                }
             }
+            setOffset(localOffset);
             setIsFirstLoading(false);
+            setIsLoading(false);
         };
+
         loadInitialPosts();
     }, []);
 

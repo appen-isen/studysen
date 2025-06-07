@@ -35,8 +35,17 @@ export default function PostDetailsScreen() {
 
 //Composant qui représente un post de club
 export function Post(props: { post: PostType; details?: boolean }) {
-    const { type, date, title, club, description, address, info, imageUri } =
-        props.post;
+    const {
+        type,
+        date,
+        title,
+        club,
+        description,
+        address,
+        info,
+        imageUri,
+        link
+    } = props.post;
 
     const router = useRouter();
     const { setCurrentPost } = usePostDetailsStore();
@@ -45,8 +54,8 @@ export function Post(props: { post: PostType; details?: boolean }) {
     const handleViewDetails = () => {
         if (props.details) {
             //On va sur le lien
-            if (props.post.link) {
-                router.push(props.post.link as Href);
+            if (link) {
+                router.push(link as Href);
             }
         } else {
             //On va sur le post
@@ -135,7 +144,7 @@ export function Post(props: { post: PostType; details?: boolean }) {
                                 ÂGE MINIMUM
                             </Text>
                             <Text style={postStyles.infoText}>
-                                {info.ageLimit}
+                                {info.ageLimit} ans
                             </Text>
                         </View>
                     )}
@@ -161,15 +170,22 @@ export function Post(props: { post: PostType; details?: boolean }) {
                 </AnimatedPressable>
             )}
 
-            {/* Réserver */}
+            {/* Réserver ou ouvrir le lien*/}
             {props.details && props.post.link && (
                 <AnimatedPressable
                     onPress={handleViewDetails}
                     scale={0.95}
                     style={postStyles.linkButton}
                 >
-                    <MaterialIcons name="sell" size={24} color="white" />
-                    <Text style={postStyles.linkText}>Réserver</Text>
+                    {/* Icône selon le type de post */}
+                    {type === "event" ? (
+                        <MaterialIcons name="sell" size={24} color="white" />
+                    ) : (
+                        <MaterialIcons name="link" size={24} color="white" />
+                    )}
+                    <Text style={postStyles.linkText}>
+                        {type === "event" ? "Réserver" : "Ouvrir le lien"}
+                    </Text>
                 </AnimatedPressable>
             )}
 
