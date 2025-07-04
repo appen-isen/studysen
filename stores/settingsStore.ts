@@ -32,7 +32,7 @@ function getDefaultSettings(): Settings {
         username: "",
         notificationsEnabled: true,
         notificationsDelay: "15min",
-        localNotifications: false,
+        localNotifications: true,
         deviceId: ""
     };
 }
