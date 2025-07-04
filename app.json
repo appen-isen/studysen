@@ -82,7 +82,8 @@
                 {
                     "photosPermission": "L'application accède à vos photos pour les rapports de bug."
                 }
-            ]
+            ],
+            "expo-web-browser"
         ],
         "experiments": {
             "typedRoutes": true
