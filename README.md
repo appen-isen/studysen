@@ -1,10 +1,10 @@
-# ISEN-Orbit
+# Studysen
 
-ISEN-Orbit est un projet d'application mobile développée en React Native avec Expo et TypeScript par le club Appen. L'objectif de ce projet est de fournir une expérience mobile intuitive pour les étudiants.
+Studysen est un projet d'application mobile développée en React Native avec Expo et TypeScript par le club Appen. L'objectif de ce projet est de fournir une expérience mobile intuitive pour les étudiants.
 
 ## 🎯 Fonctionnalités
 
--   Authentification avec ISEN - Page Login
+-   Authentification avec WebAurion - Page Login
 -   Emploi du temps WebAurion - Page Planning
 -   Notes WebAurion - Page Notes
 -   Affichage du cours actuel et à venir, ainsi que la moyenne de l'étudiant - Page Accueil
@@ -28,8 +28,8 @@ ISEN-Orbit est un projet d'application mobile développée en React Native avec 
 
 1. Clonez le dépôt :
     ```bash
-    git clone https://github.com/appen-isen/isen-orbit.git
-    cd ISEN-Orbit
+    git clone https://github.com/appen-isen/studysen.git
+    cd Studysen
     ```
 2. Installez les dépendances :
     ```bash

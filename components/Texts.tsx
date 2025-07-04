@@ -1,9 +1,4 @@
-import {
-    TextProps,
-    Text as NativeText,
-    TextStyle,
-    Platform
-} from "react-native";
+import { TextProps, Text as NativeText, TextStyle } from "react-native";
 
 // Fonction pour afficher du texte en gras
 export function Bold(props: TextProps) {
@@ -13,15 +8,13 @@ export function Bold(props: TextProps) {
 export function Text(props: TextProps) {
     const getFontFamily = () => {
         const styles = Array.isArray(props.style) ? props.style : [props.style];
-
-        // Police par défaut
-        let finalFontFamily = "OpenSans";
-        let finalFontWeight = "300";
-
+        let finalFontFamily = "OpenSans-400"; // Valeur par défaut
+        let finalFontWeight = "400"; // Valeur par défaut
         if (props.style && typeof props.style === "object") {
             // On inverse pour prioriser les styles définis en dernier
             const reversedStyles = [...styles].reverse();
 
+            // On récupère la valeur de fontWeight
             const fontWeight = reversedStyles
                 .map((style) =>
                     style && typeof style === "object" && "fontWeight" in style
@@ -31,7 +24,7 @@ export function Text(props: TextProps) {
                 .find((weight) => weight !== undefined);
 
             if (fontWeight) {
-                // On change la valeur de fontWeight en nombre valide
+                // On change la valeur de fontFamily en nombre valide
                 if (typeof fontWeight === "string") {
                     if (fontWeight === "normal") {
                         finalFontWeight = "400";
@@ -44,28 +37,22 @@ export function Text(props: TextProps) {
                     finalFontWeight = fontWeight.toString();
                 }
 
-                if (Platform.OS !== "ios") {
-                    // Pour Android, on doit mapper les valeurs de fontWeight
-                    const fontWeightMap: Record<string, string> = {
-                        "100": "OpenSans-300",
-                        "200": "OpenSans-300",
-                        "300": "OpenSans-300",
-                        "400": "OpenSans-400",
-                        "500": "OpenSans-400",
-                        "600": "OpenSans-600",
-                        "700": "OpenSans-700",
-                        "800": "OpenSans-700",
-                        "900": "OpenSans-700"
-                    };
-                    finalFontFamily =
-                        fontWeightMap[finalFontWeight] || "OpenSans-300";
-                }
+                // On doit mapper les valeurs de fontWeight
+                const fontWeightMap: Record<string, string> = {
+                    "400": "OpenSans-400",
+                    "500": "OpenSans-400",
+                    "600": "OpenSans-600",
+                    "700": "OpenSans-700",
+                    "800": "OpenSans-700",
+                    "900": "OpenSans-700"
+                };
+                finalFontFamily =
+                    fontWeightMap[finalFontWeight] || "OpenSans-400";
             }
         }
 
         return {
-            fontFamily: finalFontFamily,
-            fontWeight: finalFontWeight
+            fontFamily: finalFontFamily
         } as TextStyle;
     };
 
@@ -73,6 +60,7 @@ export function Text(props: TextProps) {
         const styles = Array.isArray(props.style) ? props.style : [props.style];
         const newStyles = styles.map((style) => {
             if (style && typeof style === "object") {
+                // On enlève la propriété fontWeight
                 const { fontWeight, ...newStyle } = style as TextStyle;
                 return newStyle;
             }
@@ -84,7 +72,7 @@ export function Text(props: TextProps) {
     return (
         <NativeText
             {...props}
-            style={[getFontFamily(), getStyleWithoutFontWeight()]}
+            style={[getFontFamily(), ...getStyleWithoutFontWeight()]}
         />
     );
 }

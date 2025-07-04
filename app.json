@@ -1,11 +1,11 @@
 {
     "expo": {
-        "name": "ISEN Orbit",
-        "slug": "isen-orbit",
+        "name": "Studysen",
+        "slug": "studysen",
         "version": "1.0.0",
         "orientation": "default",
         "icon": "./assets/images/icon.png",
-        "scheme": "isen-orbit",
+        "scheme": "studysen",
         "userInterfaceStyle": "automatic",
         "newArchEnabled": true,
         "splash": {
@@ -16,7 +16,7 @@
         "ios": {
             "supportsTablet": true,
             "requireFullScreen": true,
-            "bundleIdentifier": "com.appenisen.isenorbit",
+            "bundleIdentifier": "com.appen.studysen",
             "infoPlist": {
                 "UIViewControllerBasedStatusBarAppearance": true
             }
@@ -38,7 +38,7 @@
                 "android.permission.SCHEDULE_EXACT_ALARM",
                 "android.permission.USE_EXACT_ALARM"
             ],
-            "package": "com.appenisen.isenorbit",
+            "package": "com.appen.studysen",
             "googleServicesFile": "./google-services.json"
         },
         "web": {
@@ -50,25 +50,25 @@
             "expo-router",
             "expo-secure-store",
             [
+                "expo-splash-screen",
+                {
+                    "backgroundColor": "#ffffff",
+                    "image": "./assets/images/splash-icon.png",
+                    "dark": {
+                        "image": "./assets/images/splash-icon.png",
+                        "backgroundColor": "#ffffff"
+                    },
+                    "imageWidth": 200
+                }
+            ],
+            [
                 "expo-notifications",
                 {
                     "icon": "./assets/images/notification_icon.png",
                     "color": "#ffffff",
                     "androidMode": "default",
-                    "androidCollapsedTitle": "ISEN Orbit",
+                    "androidCollapsedTitle": "Studysen",
                     "allowsNotificationsEnabled": true
-                }
-            ],
-            [
-                "expo-font",
-                {
-                    "fonts": [
-                        "assets/fonts/OpenSans-300.ttf",
-                        "assets/fonts/OpenSans-400.ttf",
-                        "assets/fonts/OpenSans-600.ttf",
-                        "assets/fonts/OpenSans-700.ttf",
-                        "assets/fonts/OpenSans.ttf"
-                    ]
                 }
             ],
             [
@@ -82,7 +82,8 @@
                 {
                     "photosPermission": "L'application accède à vos photos pour les rapports de bug."
                 }
-            ]
+            ],
+            "expo-web-browser"
         ],
         "experiments": {
             "typedRoutes": true
@@ -95,7 +96,7 @@
                 "projectId": "15623357-9e22-4071-b51c-e03f519d5492"
             }
         },
-        "owner": "appen-isen",
+        "owner": "appen",
         "runtimeVersion": {
             "policy": "appVersion"
         },

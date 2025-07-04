@@ -19,8 +19,8 @@ import useSessionStore from "@/stores/sessionStore";
 import Session from "@/webAurion/api/Session";
 import { getSecureStoreItem, setSecureStoreItem } from "@/stores/secureStore";
 import useSettingsStore, { CAMPUS } from "@/stores/settingsStore";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Sheet } from "@/components/Sheet";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -138,7 +138,7 @@ export default function LoginScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                behavior={"padding"}
                 style={styles.containerView}
             >
                 {/* Bouton pour choisir le campus */}
@@ -233,8 +233,8 @@ export default function LoginScreen() {
                         <Text style={helpStyles.important}>
                             identifiant d'ENT
                         </Text>{" "}
-                        de l'<Bold>ISEN</Bold> qui vous permet l'accès à{" "}
-                        <Bold>WebAurion</Bold> et <Bold>Moodle</Bold>.
+                        qui vous permet l'accès à <Bold>WebAurion</Bold> et{" "}
+                        <Bold>Moodle</Bold>.
                     </Text>
                     <Text style={helpStyles.paragraph}>
                         L'identifiant est de la forme{" "}

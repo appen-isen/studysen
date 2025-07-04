@@ -5,8 +5,8 @@ import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { API_BASE_URL } from "@/utils/notificationConfig";
 import { Link } from "expo-router";
+import { API_BASE_URL } from "@/utils/config";
 
 //Les crédits
 export default function Credits() {
@@ -34,12 +34,12 @@ export default function Credits() {
         <Page style={styles.container} scrollable={true}>
             <PageHeader title="Application" returnTo="Profil"></PageHeader>
             {/* Information sur l'application */}
-            <View>
+            <View style={styles.responsiveContainer}>
                 <Bold style={styles.sectionTitle}>À propos</Bold>
                 <Text style={styles.paragraph}>
-                    <Text style={styles.important}>ISEN Orbit</Text> est une
-                    application crée par le club <Bold>Appen'ISEN</Bold> du
-                    campus de Nantes de l'école d'ingénieur ISEN.
+                    <Text style={styles.important}>Studysen</Text> est une
+                    application crée par le club <Bold>Appen</Bold> du campus de
+                    Nantes de l'école d'ingénieur ISEN.
                 </Text>
                 <Text style={styles.paragraph}>
                     L’objectif de cette application est de{" "}
@@ -51,7 +51,7 @@ export default function Credits() {
                     Notre projet est <Bold>open-source</Bold>, vous pouvez le
                     retrouver sur{" "}
                     <Link
-                        href={"https://github.com/appen-isen/isen-orbit"}
+                        href={"https://github.com/appen-isen/studysen"}
                         style={styles.link}
                     >
                         GitHub
@@ -59,7 +59,7 @@ export default function Credits() {
                 </Text>
             </View>
             {/* Crédits */}
-            <View>
+            <View style={styles.responsiveContainer}>
                 <Bold style={styles.sectionTitle}>Derrière l'application</Bold>
                 <Text style={styles.subtitle}>DÉVELOPPEMENT</Text>
                 <View style={styles.nameContainer}>
@@ -80,7 +80,7 @@ export default function Credits() {
                 </View>
             </View>
             {/* Informations complémentaires */}
-            <View>
+            <View style={styles.responsiveContainer}>
                 <Bold style={styles.sectionTitle}>
                     Informations complémentaires
                 </Bold>
@@ -105,6 +105,11 @@ export default function Credits() {
 const styles = StyleSheet.create({
     container: {
         gap: 25
+    },
+    responsiveContainer: {
+        width: "100%",
+        alignSelf: "center",
+        maxWidth: 600
     },
     //Sections
     sectionTitle: {

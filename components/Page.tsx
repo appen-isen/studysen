@@ -5,16 +5,29 @@ import Colors from "@/constants/Colors";
 import { AnimatedPressable } from "./Buttons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export function Page(props: { children?: ReactNode; style?: any, scrollable?: boolean }) {
+export function Page(props: {
+    children?: ReactNode;
+    style?: any;
+    scrollable?: boolean;
+}) {
     const contentStyle = [
         pageStyles.content,
         props.scrollable ? { flexGrow: 1 } : { flex: 1 },
         props.style
-    ]
-    return <ScrollView style={pageStyles.container} contentContainerStyle={contentStyle} scrollEnabled={props.scrollable}>
-        {props.children}
-    </ScrollView>;
+    ];
+    return (
+        <SafeAreaView style={pageStyles.container}>
+            <ScrollView
+                style={pageStyles.container}
+                contentContainerStyle={contentStyle}
+                scrollEnabled={props.scrollable}
+            >
+                {props.children}
+            </ScrollView>
+        </SafeAreaView>
+    );
 }
 
 type PageHeaderProps = {

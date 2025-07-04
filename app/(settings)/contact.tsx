@@ -18,6 +18,7 @@ import useSettingsStore from "@/stores/settingsStore";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import * as Device from "expo-device";
+import { API_BASE_URL } from "@/utils/config";
 
 export default function Contact() {
     const { settings } = useSettingsStore();
@@ -125,16 +126,13 @@ ${username}
 
             // Créer l'issue sur GitHub
 
-            const response = await axios.post(
-                "https://api.isen-orbit.fr/v1/github",
-                {
-                    title,
-                    body: bodyContent,
-                    image: selectedImage,
-                    labels: [`${contactType === 0 ? "bug" : "suggestion"}`],
-                    assignees: ["dd060606", "BreizhHardware"]
-                }
-            );
+            const response = await axios.post(`${API_BASE_URL}/github`, {
+                title,
+                body: bodyContent,
+                image: selectedImage,
+                labels: [`${contactType === 0 ? "bug" : "suggestion"}`],
+                assignees: ["dd060606", "BreizhHardware"]
+            });
 
             // Succès
             setSuccessVisible(true);
@@ -157,120 +155,127 @@ ${username}
     return (
         <Page style={styles.container} scrollable={true}>
             <PageHeader title="Contact" returnTo="Profil"></PageHeader>
-            <View>
+            <View style={styles.responsiveContainer}>
                 <Bold style={styles.sectionTitle}>Formulaire de contact</Bold>
                 <Text style={styles.paragraph}>
                     J'ai un problème, une suggestion ou une question concernant
                     l'application
-                    <Bold> ISEN Orbit.</Bold>
+                    <Bold> Studysen.</Bold>
                 </Text>
             </View>
             <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                behavior={"padding"}
                 style={styles.contentView}
             >
-                <View>
-                    <Text style={styles.subtitle}>TYPE DE REQUÊTE</Text>
-                    <MultiToggle
-                        options={["Bug", "Suggestion & Autre"]}
-                        selectedIndex={contactType}
-                        onSelect={setContactType}
-                    ></MultiToggle>
-                </View>
-                <View>
-                    <Text style={styles.subtitle}>
-                        VOTRE{" "}
-                        {contactType === 0 ? "PROBLÈME" : "SUGGESTION"}
-                    </Text>
-                    <Input
-                        textInputStyle={styles.input}
-                        placeholder="Décrivez votre problème ou suggestion ici."
-                        value={description}
-                        onChangeText={setDescription}
-                        numberOfLines={5}
-                        multiline
-                    />
-                </View>
-                {/* Si problème, on affiche le champ pour les étapes de reproduction */}
-                {contactType === 0 && (
+                <ScrollView
+                    contentContainerStyle={[
+                        styles.scrollContainer,
+                        styles.responsiveContainer
+                    ]}
+                >
+                    <View>
+                        <Text style={styles.subtitle}>TYPE DE REQUÊTE</Text>
+                        <MultiToggle
+                            options={["Bug", "Suggestion & Autre"]}
+                            selectedIndex={contactType}
+                            onSelect={setContactType}
+                        ></MultiToggle>
+                    </View>
                     <View>
                         <Text style={styles.subtitle}>
-                            ÉTAPES DE REPRODUCTION
+                            VOTRE{" "}
+                            {contactType === 0 ? "PROBLÈME" : "SUGGESTION"}
                         </Text>
                         <Input
                             textInputStyle={styles.input}
-                            placeholder="Décrivez étapes par étapes comment faire pour reproduire ce problème."
-                            value={reproductionSteps}
-                            onChangeText={setReproductionSteps}
+                            placeholder="Décrivez votre problème ou suggestion ici."
+                            value={description}
+                            onChangeText={setDescription}
                             numberOfLines={5}
                             multiline
                         />
-                        <Text style={styles.subtitle}>CAPTURE D'ÉCRAN</Text>
+                    </View>
+                    {/* Si problème, on affiche le champ pour les étapes de reproduction */}
+                    {contactType === 0 && (
+                        <View>
+                            <Text style={styles.subtitle}>
+                                ÉTAPES DE REPRODUCTION
+                            </Text>
+                            <Input
+                                textInputStyle={styles.input}
+                                placeholder="Décrivez étapes par étapes comment faire pour reproduire ce problème."
+                                value={reproductionSteps}
+                                onChangeText={setReproductionSteps}
+                                numberOfLines={5}
+                                multiline
+                            />
+                            <Text style={styles.subtitle}>CAPTURE D'ÉCRAN</Text>
+                            <AnimatedPressable
+                                onPress={pickImage}
+                                style={styles.infoButton}
+                            >
+                                <MaterialIcons
+                                    name="insert-photo"
+                                    size={24}
+                                    color="black"
+                                />
+                                <Text>
+                                    {selectedImage
+                                        ? "Changer la capture d'écran"
+                                        : "Ajouter une capture d'écran"}
+                                </Text>
+                            </AnimatedPressable>
+                        </View>
+                    )}
+                    {/* Informations complémentaires */}
+                    <View>
+                        <Text style={styles.subtitle}>
+                            INFORMATIONS SUPLÉMENTAIRES
+                        </Text>
+                        <Text style={styles.paragraph}>
+                            Pour <Bold>mieux identifier</Bold> le problème, lors
+                            de l'envoi du formulaire, Studysen
+                            <Bold> peut</Bold> collecter des
+                            <Bold> données supplémentaires.</Bold>
+                        </Text>
                         <AnimatedPressable
-                            onPress={pickImage}
+                            onPress={() => setInfoVisible(true)}
                             style={styles.infoButton}
                         >
                             <MaterialIcons
-                                name="insert-photo"
-                                size={24}
+                                name="candlestick-chart"
+                                size={20}
                                 color="black"
                             />
-                            <Text>
-                                {selectedImage
-                                    ? "Changer la capture d'écran"
-                                    : "Ajouter une capture d'écran"}
-                            </Text>
+                            <Text>En savoir plus</Text>
                         </AnimatedPressable>
-                    </View>
-                )}
-                {/* Informations complémentaires */}
-                <View>
-                    <Text style={styles.subtitle}>
-                        INFORMATIONS SUPLÉMENTAIRES
-                    </Text>
-                    <Text style={styles.paragraph}>
-                        Pour <Bold>mieux identifier</Bold> le problème, lors
-                        de l'envoi du formulaire, ISEN Orbit
-                        <Bold> peut</Bold> collecter des
-                        <Bold> données supplémentaires.</Bold>
-                    </Text>
-                    <AnimatedPressable
-                        onPress={() => setInfoVisible(true)}
-                        style={styles.infoButton}
-                    >
-                        <MaterialIcons
-                            name="candlestick-chart"
-                            size={20}
-                            color="black"
+                        <Checkbox
+                            status={additionnalData ? "checked" : "unchecked"}
+                            onPress={() => setAdditionnalData(!additionnalData)}
+                            containerStyle={styles.checkboxContainer}
+                            textStyle={styles.checkboxLabel}
+                            color={Colors.primary}
+                            text="J’accepte que des données supplémentaires soient récoltées."
                         />
-                        <Text>En savoir plus</Text>
-                    </AnimatedPressable>
-                    <Checkbox
-                        status={additionnalData ? "checked" : "unchecked"}
-                        onPress={() => setAdditionnalData(!additionnalData)}
-                        containerStyle={styles.checkboxContainer}
-                        textStyle={styles.checkboxLabel}
-                        color={Colors.primary}
-                        text="J’accepte que des données supplémentaires soient récoltées."
-                    />
-                </View>
-                <Button
-                    onPress={handleSubmit}
-                    title=""
-                    style={styles.sendButton}
-                    JSX={
-                        <View style={styles.sendButtonView}>
-                            <MaterialIcons
-                                name="ios-share"
-                                size={24}
-                                color={Colors.white}
-                            />
-                            <Text style={styles.sendButtonText}>
-                                Envoyer le formulaire
-                            </Text>
-                        </View>
-                    }
-                ></Button>
+                    </View>
+                    <Button
+                        onPress={handleSubmit}
+                        title=""
+                        style={styles.sendButton}
+                        JSX={
+                            <View style={styles.sendButtonView}>
+                                <MaterialIcons
+                                    name="ios-share"
+                                    size={24}
+                                    color={Colors.white}
+                                />
+                                <Text style={styles.sendButtonText}>
+                                    Envoyer le formulaire
+                                </Text>
+                            </View>
+                        }
+                    ></Button>
+                </ScrollView>
             </KeyboardAvoidingView>
             {/* Modal d'informations sur les données supplémentaires */}
             <Sheet
@@ -320,6 +325,12 @@ const styles = StyleSheet.create({
     container: {
         gap: 25
     },
+    responsiveContainer: {
+        width: "100%",
+        alignSelf: "center",
+        gap: 10,
+        maxWidth: 600
+    },
     //Sections
     sectionTitle: {
         fontSize: 20,
@@ -365,9 +376,8 @@ const styles = StyleSheet.create({
         alignSelf: "flex-start"
     },
     checkboxContainer: {
-        marginHorizontal: 10,
-        marginTop: 5,
-        gap: 5
+        marginLeft: 15,
+        marginTop: 5
     },
     checkboxLabel: {
         fontSize: 14,

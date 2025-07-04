@@ -2,13 +2,16 @@ import useSettingsStore from "@/stores/settingsStore";
 import * as Notifications from "expo-notifications";
 import axios from "axios";
 import { Linking, Platform } from "react-native";
+import { API_BASE_URL } from "@/utils/config";
 import Constants from "expo-constants";
-
-// Define the API base URL for development and production
-export const API_BASE_URL = "https://api.isen-orbit.fr/v1";
 
 // Request permission for notifications
 export const requestPermissions = async (openSettings = false) => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return false;
+    }
+
     const status = await Notifications.getPermissionsAsync();
     if (status.status !== "granted") {
         const { status: newStatus } =
@@ -52,13 +55,16 @@ Notifications.setNotificationHandler({
 });
 
 export const sendTestNotification = async () => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
     const { settings } = useSettingsStore.getState();
-
     try {
         // Configure notification channel for Android
         await Notifications.setNotificationChannelAsync("default", {
-            name: "ISEN Orbit",
-            description: "Notifications pour ISEN Orbit",
+            name: "Studysen",
+            description: "Notifications pour Studysen",
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
             lightColor: "#FF231F7C",
@@ -70,7 +76,7 @@ export const sendTestNotification = async () => {
         // Send a local notification
         await Notifications.scheduleNotificationAsync({
             content: {
-                title: "ISEN Orbit",
+                title: "Studysen",
                 body: "Notification local de test",
                 sound: "default",
                 priority: "max"
@@ -95,7 +101,7 @@ export const sendTestNotification = async () => {
                 {
                     user_id: userId,
                     device_id: deviceId,
-                    title: "ISEN Orbit",
+                    title: "Studysen",
                     message: "Notification backend de test",
                     date: new Date()
                 }
@@ -107,6 +113,11 @@ export const sendTestNotification = async () => {
 };
 
 export const cancelAllScheduledNotifications = async () => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
+
     console.log("Annulation de toutes les notifications planifiées");
     const { settings } = useSettingsStore.getState();
     let userId = undefined;
@@ -152,6 +163,10 @@ export const cancelAllScheduledNotifications = async () => {
 };
 
 export const registerForPushNotificationsAsync = async () => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
     const { settings, setSettings } = useSettingsStore.getState();
 
     try {
@@ -201,6 +216,10 @@ export const scheduleCourseNotification = async (
     courseTime: Date,
     email: string
 ) => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
     const { settings } = useSettingsStore.getState();
     const notificationTime = new Date(
         courseTime.getTime() -
@@ -258,6 +277,10 @@ export const scheduleLocalNotification = async (
     body: string,
     date: Date
 ) => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
     try {
         await Notifications.scheduleNotificationAsync({
             content: {

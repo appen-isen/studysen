@@ -217,150 +217,137 @@ export default function HomeScreen() {
 
     return (
         <Page style={styles.container} scrollable={true}>
-                {/* En tête de la page */}
-                <PageHeader title="Accueil" />
-                {/* Affichage prénom */}
-                <View style={[sectionStyles.section, styles.welcomeBox]}>
-                    <Text style={styles.heyText}>
-                        Salut,{" "}
-                        <Text style={styles.firstnameText}>
-                            {settings.username.split(" ")[0]}
-                        </Text>
+            {/* En tête de la page */}
+            <PageHeader title="Accueil" />
+            {/* Affichage prénom */}
+            <View style={[sectionStyles.section, styles.welcomeBox]}>
+                <Text style={styles.heyText}>
+                    Salut,{" "}
+                    <Text style={styles.firstnameText}>
+                        {settings.username.split(" ")[0]}
                     </Text>
-                </View>
-                {/* événement en cours */}
-                <View style={sectionStyles.section}>
-                    {/* Titre de la section */}
-                    <Text style={sectionStyles.titleText}>EN CE MOMENT</Text>
-                    {/* Si le planning est chargé, on affiche l'événement */}
-                    {isPlanningLoaded ? (
-                        <View style={sectionStyles.content}>
-                            {/* Événement en cours */}
-                            {getCurrentEvent(formattedPlanning) !== null && (
-                                <ListEvent
-                                    event={getCurrentEvent(formattedPlanning)!}
-                                    handleLayout={() => {}}
-                                    //Affiche les informations d'un cours dans une modal
-                                    onPress={(planningEvent) => {
-                                        //Si c'est un congé, on affiche directement les informations
-                                        if (
-                                            planningEvent.className === "CONGES"
-                                        ) {
-                                            setSelectedEvent(planningEvent);
-                                        } else {
-                                            //Sinon on affiche les informations complètes de l'événement
-                                            setSelectedEvent(
-                                                findEvent(
-                                                    planning,
-                                                    planningEvent
-                                                )
-                                            );
-                                        }
-                                        setEventModalInfoVisible(true);
-                                    }}
-                                />
-                            )}
-                            {/* Événement à venir */}
-                            {getNextEventToday(formattedPlanning) !== null && (
-                                <ListEvent
-                                    event={
-                                        getNextEventToday(formattedPlanning)!
-                                    }
-                                    handleLayout={() => {}}
-                                    //Affiche les informations d'un cours dans une modal
-                                    onPress={(planningEvent) => {
-                                        //Si c'est un congé, on affiche directement les informations
-                                        if (
-                                            planningEvent.className === "CONGES"
-                                        ) {
-                                            setSelectedEvent(planningEvent);
-                                        } else {
-                                            //Sinon on affiche les informations complètes de l'événement
-                                            setSelectedEvent(
-                                                findEvent(
-                                                    planning,
-                                                    planningEvent
-                                                )
-                                            );
-                                        }
-                                        setEventModalInfoVisible(true);
-                                    }}
-                                />
-                            )}
-                            {/* Si aucun événement n'est trouvé, on affiche un message */}
-                            {getCurrentEvent(formattedPlanning) === null &&
-                                getNextEventToday(formattedPlanning) ===
-                                    null && (
-                                    <Text style={styles.noEventText}>
-                                        Aucun événement à venir aujourd'hui
-                                    </Text>
-                                )}
-                        </View>
-                    ) : (
-                        //Sinon on affiche un loader
-                        <ActivityIndicator
-                            animating={true}
-                            color={Colors.primary}
-                            size={50}
-                        />
-                    )}
-                </View>
-                {/* Notes */}
-                <View style={sectionStyles.section}>
-                    {/* Titre de la section */}
-                    <Text style={sectionStyles.titleText}>NOTES RÉCENTES</Text>
-                    {/* Contenu de la section */}
+                </Text>
+            </View>
+            {/* événement en cours */}
+            <View style={sectionStyles.section}>
+                {/* Titre de la section */}
+                <Text style={sectionStyles.titleText}>EN CE MOMENT</Text>
+                {/* Si le planning est chargé, on affiche l'événement */}
+                {isPlanningLoaded ? (
                     <View style={sectionStyles.content}>
-                        {/* On récupère et affiche les trois dernières notes */}
-                        <View>
-                            {getLatestNotes(notes, 3).map((note, index) => (
-                                <NoteElement
-                                    key={note.code + index}
-                                    note={note}
-                                    onPress={() => {
-                                        setSelectedNote(note);
-                                        setNoteModalInfoVisible(true);
-                                    }}
-                                />
-                            ))}
-                        </View>
-                        {/* Bouton pour voir toutes les notes */}
-                        <AnimatedPressable
-                            style={styles.allNotesButton}
-                            //On redirige vers l'onglet notes
-                            onPress={handleViewNotes}
-                            scale={0.9}
-                        >
-                            <View style={styles.allNotesButtonContent}>
-                                <MaterialCommunityIcons
-                                    name="dots-horizontal"
-                                    size={20}
-                                    color={Colors.black}
-                                />
-                                <Text style={styles.allNotesButtonText}>
-                                    Voir plus
+                        {/* Événement en cours */}
+                        {getCurrentEvent(formattedPlanning) !== null && (
+                            <ListEvent
+                                event={getCurrentEvent(formattedPlanning)!}
+                                handleLayout={() => {}}
+                                //Affiche les informations d'un cours dans une modal
+                                onPress={(planningEvent) => {
+                                    //Si c'est un congé, on affiche directement les informations
+                                    if (planningEvent.className === "CONGES") {
+                                        setSelectedEvent(planningEvent);
+                                    } else {
+                                        //Sinon on affiche les informations complètes de l'événement
+                                        setSelectedEvent(
+                                            findEvent(planning, planningEvent)
+                                        );
+                                    }
+                                    setEventModalInfoVisible(true);
+                                }}
+                            />
+                        )}
+                        {/* Événement à venir */}
+                        {getNextEventToday(formattedPlanning) !== null && (
+                            <ListEvent
+                                event={getNextEventToday(formattedPlanning)!}
+                                handleLayout={() => {}}
+                                //Affiche les informations d'un cours dans une modal
+                                onPress={(planningEvent) => {
+                                    //Si c'est un congé, on affiche directement les informations
+                                    if (planningEvent.className === "CONGES") {
+                                        setSelectedEvent(planningEvent);
+                                    } else {
+                                        //Sinon on affiche les informations complètes de l'événement
+                                        setSelectedEvent(
+                                            findEvent(planning, planningEvent)
+                                        );
+                                    }
+                                    setEventModalInfoVisible(true);
+                                }}
+                            />
+                        )}
+                        {/* Si aucun événement n'est trouvé, on affiche un message */}
+                        {getCurrentEvent(formattedPlanning) === null &&
+                            getNextEventToday(formattedPlanning) === null && (
+                                <Text style={styles.noEventText}>
+                                    Aucun événement à venir aujourd'hui
                                 </Text>
-                            </View>
-                        </AnimatedPressable>
+                            )}
                     </View>
+                ) : (
+                    //Sinon on affiche un loader
+                    <ActivityIndicator
+                        animating={true}
+                        color={Colors.primary}
+                        size={50}
+                    />
+                )}
+            </View>
+            {/* Notes */}
+            <View style={sectionStyles.section}>
+                {/* Titre de la section */}
+                <Text style={sectionStyles.titleText}>NOTES RÉCENTES</Text>
+                {/* Contenu de la section */}
+                <View style={sectionStyles.content}>
+                    {/* On récupère et affiche les trois dernières notes */}
+                    <View style={{ width: "100%" }}>
+                        {getLatestNotes(notes, 3).map((note, index) => (
+                            <NoteElement
+                                key={note.code + index}
+                                note={note}
+                                onPress={() => {
+                                    setSelectedNote(note);
+                                    setNoteModalInfoVisible(true);
+                                }}
+                            />
+                        ))}
+                    </View>
+                    {/* Bouton pour voir toutes les notes */}
+                    <AnimatedPressable
+                        style={styles.allNotesButton}
+                        //On redirige vers l'onglet notes
+                        onPress={handleViewNotes}
+                        scale={0.9}
+                    >
+                        <View style={styles.allNotesButtonContent}>
+                            <MaterialCommunityIcons
+                                name="dots-horizontal"
+                                size={20}
+                                color={Colors.black}
+                            />
+                            <Text style={styles.allNotesButtonText}>
+                                Voir plus
+                            </Text>
+                        </View>
+                    </AnimatedPressable>
                 </View>
-                {/* Modal pour afficher les informations d'un cours */}
-                {selectedEvent && (
-                    <EventModal
-                        event={selectedEvent}
-                        visible={eventModalInfoVisible}
-                        setVisible={setEventModalInfoVisible}
-                    ></EventModal>
-                )}
-                {/* Modal pour afficher les informations d'une note */}
-                {selectedNote && (
-                    <NoteModal
-                        note={selectedNote}
-                        visible={noteModalInfoVisible}
-                        setVisible={setNoteModalInfoVisible}
-                    ></NoteModal>
-                )}
-                {/* Modal pour afficher les informations d'une note */}
+            </View>
+            {/* Modal pour afficher les informations d'un cours */}
+            {selectedEvent && (
+                <EventModal
+                    event={selectedEvent}
+                    visible={eventModalInfoVisible}
+                    setVisible={setEventModalInfoVisible}
+                ></EventModal>
+            )}
+            {/* Modal pour afficher les informations d'une note */}
+            {selectedNote && (
+                <NoteModal
+                    note={selectedNote}
+                    visible={noteModalInfoVisible}
+                    setVisible={setNoteModalInfoVisible}
+                ></NoteModal>
+            )}
+            {/* Modal pour afficher les informations d'une note */}
         </Page>
     );
 }
@@ -380,7 +367,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 25,
         fontWeight: "bold",
-        color: Colors.primary,
+        color: Colors.primary
     },
     //Texte de bienvenue
     welcomeBox: {
@@ -425,8 +412,9 @@ const sectionStyles = StyleSheet.create({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        alignSelf: "center",
         width: "100%",
-        maxWidth: 600,
+        maxWidth: 600
     },
     titleText: {
         fontSize: 16,
@@ -441,6 +429,6 @@ const sectionStyles = StyleSheet.create({
         justifyContent: "center",
         minHeight: 140,
         width: "100%",
-        gap: 15,
+        gap: 15
     }
 });

@@ -311,6 +311,7 @@ const styles = StyleSheet.create({
     // Moyenne générale
     noteAverageView: {
         width: "100%",
+        maxWidth: 600,
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -366,27 +367,27 @@ const styles = StyleSheet.create({
 const notesGroupStyles = StyleSheet.create({
     container: {
         width: "100%",
+        maxWidth: 600,
         marginTop: 30
     },
     // En-tête du groupe de notes
     header: {
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center",
+        alignItems: "center"
     },
     headerSubject: {
         flex: 1,
         flexDirection: "row",
         gap: 10,
-        alignItems: "center",
+        alignItems: "center"
     },
     // Textes de l'en-tête
     headerSubjectText: {
         flex: 1,
         fontSize: 16,
         fontWeight: 600,
-        color: Colors.black,
-
+        color: Colors.black
     },
     headerIcon: {
         width: 30,
@@ -433,7 +434,7 @@ const notesGroupStyles = StyleSheet.create({
     },
     noteRow: {
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "center"
     },
     noteCol: {
         flex: 1,
