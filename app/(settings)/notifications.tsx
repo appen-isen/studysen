@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Pressable } from "react-native";
-import { useRouter } from "expo-router";
-import { Button, ISENSwitch, MultiToggle } from "@/components/Buttons";
+import { View, StyleSheet } from "react-native";
+import { Button, MultiToggle } from "@/components/Buttons";
 import { MaterialIcons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
 import {
     cancelAllScheduledNotifications,
+    registerDeviceForNotifications,
     requestPermissions,
-    sendTestNotification
+    sendTestNotification,
+    unregisterDeviceForNotifications
 } from "@/utils/notificationConfig";
-import useSettingsStore, { NotificationDelay } from "@/stores/settingsStore";
+import useSettingsStore, {
+    campusToId,
+    NotificationDelay
+} from "@/stores/settingsStore";
 import { Page, PageHeader } from "@/components/Page";
 
 // Paramètres des notifications
@@ -26,8 +30,8 @@ export default function NotifSettings() {
             ? delays.indexOf(settings.notificationsDelay)
             : 0
     );
-    const [localNotifEnabled, setLocalNotifEnabled] = useState<boolean>(
-        settings.localNotifications
+    const [clubsNotifEnabled, setClubsNotifEnabled] = useState<boolean>(
+        settings.clubsNotifications
     );
 
     useEffect(() => {
@@ -42,9 +46,15 @@ export default function NotifSettings() {
         }
     }, []);
 
-    const toggleLocalNotifications = (index: number) => {
-        setLocalNotifEnabled(index === 1);
-        setSettings("localNotifications", index === 1);
+    const toggleClubsNotifications = (index: number) => {
+        setClubsNotifEnabled(index === 1);
+        setSettings("clubsNotifications", index === 1);
+        // On gère l'enregistrement de l'appareil pour les notifications de clubs
+        if (index === 1) {
+            registerDeviceForNotifications(campusToId(settings.campus));
+        } else {
+            unregisterDeviceForNotifications();
+        }
     };
 
     // Changement de la valeur du délai de notification
@@ -110,12 +120,12 @@ export default function NotifSettings() {
                     selectedIndex={notifDelayIndex}
                     onSelect={handleDelayChange}
                 ></MultiToggle>
-                {/* Sélecteur pour activer/désactiver les notifications en mode local*/}
-                <Text style={styles.subtitle}>NOTIFICATIONS LOCALES</Text>
+                {/* Sélecteur pour activer/désactiver les notifications des clubs */}
+                <Text style={styles.subtitle}>NOTIFICATIONS DES CLUBS</Text>
                 <MultiToggle
                     options={["Désactivé", "Activé"]}
-                    selectedIndex={settings.localNotifications ? 1 : 0}
-                    onSelect={toggleLocalNotifications}
+                    selectedIndex={settings.clubsNotifications ? 1 : 0}
+                    onSelect={toggleClubsNotifications}
                 ></MultiToggle>
 
                 {/* Bouton pour envoyer une notification de test */}

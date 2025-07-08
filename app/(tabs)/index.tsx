@@ -21,18 +21,15 @@ import {
 } from "@/utils/planning";
 import { ListEvent } from "@/components/planning/PlanningList";
 import EventModal from "@/components/modals/EventModal";
-import {
-    calculateAverage,
-    filterNotesBySemester,
-    getLatestNotes
-} from "@/utils/notes";
+import { filterNotesBySemester, getLatestNotes } from "@/utils/notes";
 import { useRouter } from "expo-router";
 import {
     cancelAllScheduledNotifications,
+    registerDeviceForNotifications,
     requestPermissions,
     scheduleCourseNotification
 } from "@/utils/notificationConfig";
-import useSettingsStore from "@/stores/settingsStore";
+import useSettingsStore, { campusToId } from "@/stores/settingsStore";
 import { getSemester } from "@/utils/date";
 import { Page, PageHeader } from "@/components/Page";
 import { NoteElement } from "@/components/Note";
@@ -43,10 +40,6 @@ export default function HomeScreen() {
     const { session } = useSessionStore();
     const { notes, setNotes } = useNotesStore();
     const { settings } = useSettingsStore();
-    const [noteAverageValue, setNoteAverageValue] = useState<string>(
-        //On calcule la moyenne des notes du semestre actuel
-        calculateAverage(filterNotesBySemester(notes, getSemester()))
-    );
     // Gestion du planning
     const { planning, setPlanning } = usePlanningStore();
     const [isPlanningLoaded, setPlanningLoaded] = useState(false);
@@ -66,7 +59,12 @@ export default function HomeScreen() {
 
     //Lorsque la page est chargée
     useEffect(() => {
-        requestPermissions();
+        requestPermissions().then((granted) => {
+            // On enregistre l'appareil pour les notifications
+            if (granted && settings.clubsNotifications) {
+                registerDeviceForNotifications(campusToId(settings.campus));
+            }
+        });
         updateNotes();
         autoUpdatePlanningIfNeeded();
 
@@ -173,8 +171,7 @@ export default function HomeScreen() {
                                     scheduleCourseNotification(
                                         event.title || event.subject,
                                         event.room,
-                                        new Date(event.start),
-                                        email
+                                        new Date(event.start)
                                     );
                                 }
                             });
@@ -202,7 +199,6 @@ export default function HomeScreen() {
                         fetchedNotes,
                         getSemester()
                     );
-                    setNoteAverageValue(calculateAverage(filteredNotes));
                 })
                 .catch((error) => {
                     console.error(error);

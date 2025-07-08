@@ -5,7 +5,16 @@ import { Linking, Platform } from "react-native";
 import { API_BASE_URL } from "@/utils/config";
 import Constants from "expo-constants";
 
-// Request permission for notifications
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+        shouldShowBanner: true,
+        shouldShowList: true
+    })
+});
+
+// On demande la permission pour les notifications
 export const requestPermissions = async (openSettings = false) => {
     //Si on est sur l'application de bureau, les notifications ne sont pas gérées
     if (Platform.OS === "web") {
@@ -45,21 +54,11 @@ export const requestPermissions = async (openSettings = false) => {
     return true;
 };
 
-// Configure notification handler
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true
-    })
-});
-
 export const sendTestNotification = async () => {
     //Si on est sur l'application de bureau, les notifications ne sont pas gérées
     if (Platform.OS === "web") {
         return;
     }
-    const { settings } = useSettingsStore.getState();
     try {
         // Configure notification channel for Android
         await Notifications.setNotificationChannelAsync("default", {
@@ -84,22 +83,13 @@ export const sendTestNotification = async () => {
             trigger: null
         });
 
-        // Get user information for backend notification
-        if (settings.username) {
-            const normalizedName = settings.username
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toLowerCase();
-            const email =
-                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
-
-            const deviceId = await registerForPushNotificationsAsync();
-            const userId = await getUserIdByEmail(email);
+        // Send a push notification through the backend
+        const deviceId = await registerForPushNotificationsAsync();
+        if (deviceId) {
             // Send notification through backend
             await axios.post(
                 `${API_BASE_URL}/notifications/send-notifications`,
                 {
-                    user_id: userId,
                     device_id: deviceId,
                     title: "Studysen",
                     message: "Notification backend de test",
@@ -117,42 +107,17 @@ export const cancelAllScheduledNotifications = async () => {
     if (Platform.OS === "web") {
         return;
     }
-
     console.log("Annulation de toutes les notifications planifiées");
-    const { settings } = useSettingsStore.getState();
-    let userId = undefined;
-
     try {
+        // Suppression de toutes les notifications planifiées localement
         await Notifications.cancelAllScheduledNotificationsAsync();
         console.log(
             "Toutes les notifications planifiées en local ont été annulées"
         );
-        if (settings.username) {
-            const normalizedName = settings.username
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toLowerCase();
-            const email =
-                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr";
-
-            const response = await axios.get(`${API_BASE_URL}/users/${email}`);
-            if (response.data.message[0] !== undefined) {
-                userId = response.data.message[0].user_id;
-            }
-            if (userId === undefined) {
-                console.error("L'utilisateur n'a pas été trouvé");
-                const response = await axios.post(
-                    `${API_BASE_URL}/users/${email}`
-                );
-                userId = response.data.message.user_id;
-            }
-
-            if (userId) {
-                await deleteNotifications(userId);
-                console.log(
-                    "Toutes les notifications planifiées du backend ont été annulées"
-                );
-            }
+        // Suppression des notifications planifiées sur le backend
+        const token = await registerForPushNotificationsAsync();
+        if (token) {
+            await deleteNotifications(token);
         }
     } catch (error) {
         console.error(
@@ -168,12 +133,12 @@ export const registerForPushNotificationsAsync = async () => {
         return;
     }
     const { settings, setSettings } = useSettingsStore.getState();
+    // Si le deviceId est déjà enregistré, on le retourne
+    if (settings.deviceId) {
+        return settings.deviceId;
+    }
 
     try {
-        if (settings.deviceId) {
-            return settings.deviceId;
-        }
-
         const { status: existingStatus } =
             await Notifications.getPermissionsAsync();
 
@@ -187,8 +152,14 @@ export const registerForPushNotificationsAsync = async () => {
             return;
         }
 
+        const projectId =
+            Constants?.expoConfig?.extra?.eas?.projectId ??
+            Constants?.easConfig?.projectId;
+        if (!projectId) {
+            return;
+        }
         const tokenData = await Notifications.getExpoPushTokenAsync({
-            projectId: "15623357-9e22-4071-b51c-e03f519d5492"
+            projectId
         });
 
         const token = tokenData.data;
@@ -196,31 +167,21 @@ export const registerForPushNotificationsAsync = async () => {
         setSettings("deviceId", token);
         return token;
     } catch (error) {
-        throw error;
-    }
-};
-
-export const getUserIdByEmail = async (email: string) => {
-    try {
-        const response = await axios.get(`${API_BASE_URL}/users/${email}`);
-        return response.data.message[0].user_id;
-    } catch (error) {
-        console.error("Error fetching user ID:", error);
-        throw error;
+        console.error("Error registering for push notifications:", error);
     }
 };
 
 export const scheduleCourseNotification = async (
     courseName: string,
     courseRoom: string,
-    courseTime: Date,
-    email: string
+    courseTime: Date
 ) => {
     //Si on est sur l'application de bureau, les notifications ne sont pas gérées
     if (Platform.OS === "web") {
         return;
     }
     const { settings } = useSettingsStore.getState();
+    // Date de notification
     const notificationTime = new Date(
         courseTime.getTime() -
             getDelayInMilliseconds(settings.notificationsDelay)
@@ -229,31 +190,12 @@ export const scheduleCourseNotification = async (
         courseRoom ? " en " + courseRoom : ""
     } commence dans ${settings.notificationsDelay}.`;
     try {
-        //Plannification en local
-        if (settings.localNotifications) {
-            await scheduleLocalNotification(
-                "Rappel de cours",
-                notifMessage,
-                notificationTime
-            );
-        }
-        //Plannification via le backend
-        else {
-            const deviceId = await registerForPushNotificationsAsync();
-            const userId = await getUserIdByEmail(email);
-
-            await axios.post(
-                `${API_BASE_URL}/notifications/add-notifications`,
-                {
-                    user_id: userId,
-                    device_id: deviceId,
-                    title: "Rappel de cours",
-                    message: notifMessage,
-                    date: notificationTime
-                }
-            );
-        }
-
+        // On plannifie la notification locale
+        await scheduleLocalNotification(
+            "Rappel de cours",
+            notifMessage,
+            notificationTime
+        );
         console.log(
             `Notification planifiée pour ${courseName} à ${notificationTime}`
         );
@@ -261,12 +203,6 @@ export const scheduleCourseNotification = async (
         console.error(
             "Erreur lors de la planification de la notification:",
             error
-        );
-        // S'il y a une erreur, on essaye de re-plannifier la notification en local
-        await scheduleLocalNotification(
-            "Rappel de cours",
-            notifMessage,
-            notificationTime
         );
     }
 };
@@ -297,16 +233,56 @@ export const scheduleLocalNotification = async (
     }
 };
 
-export const deleteNotifications = async (userId: string) => {
+export const deleteNotifications = async (device_id: string) => {
     try {
-        const response = await axios.delete(
-            `${API_BASE_URL}/notifications/delete-notifications/${userId}`
+        await axios.delete(
+            `${API_BASE_URL}/notifications/delete-notifications/${device_id}`
         );
     } catch (error) {
         console.error(
             "Erreur lors de la suppression de la notification depuis le backend:",
             error
         );
+    }
+};
+
+export const registerDeviceForNotifications = async (campus_id: number) => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
+    const token = await registerForPushNotificationsAsync();
+    if (token) {
+        try {
+            await axios.post(`${API_BASE_URL}/notifications/add-device`, {
+                device_id: token,
+                campus_id: campus_id
+            });
+            console.log("Device registered for notifications:", token);
+        } catch (error) {
+            console.error("Error registering device for notifications:", error);
+        }
+    }
+};
+
+export const unregisterDeviceForNotifications = async () => {
+    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
+    if (Platform.OS === "web") {
+        return;
+    }
+    const token = await registerForPushNotificationsAsync();
+    if (token) {
+        try {
+            await axios.delete(
+                `${API_BASE_URL}/notifications/delete-device/${token}`
+            );
+            console.log("Device unregistered for notifications:", token);
+        } catch (error) {
+            console.error(
+                "Error unregistering device for notifications:",
+                error
+            );
+        }
     }
 };
 

@@ -21,6 +21,7 @@ import {
     groupNotesBySubject
 } from "@/utils/notes";
 import { getSemester } from "@/utils/date";
+import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
 
 export default function SettingsScreen() {
     const router = useRouter();
@@ -181,12 +182,14 @@ export default function SettingsScreen() {
                 message={confirmMessage}
                 setVisible={(visible) => setConfirmVisible(visible)}
                 onConfirm={() => {
+                    // Lors de la déconnexion, on supprime les données de l'utilisateur
                     clearSession();
                     clearPlanning();
                     clearSyncedPlanning();
                     clearNotes();
                     removeSecureStoreItem("username");
                     removeSecureStoreItem("password");
+                    unregisterDeviceForNotifications();
                     router.replace("/login");
                 }}
             />
