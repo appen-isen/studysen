@@ -6,6 +6,7 @@ import { AnimatedPressable } from "./Buttons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getResponsivePadding } from "@/utils/responsive";
 
 export function Page(props: {
     children?: ReactNode;
@@ -77,7 +78,7 @@ const pageStyles = StyleSheet.create({
     },
     content: {
         paddingBlock: 10,
-        paddingInline: 20,
+        paddingInline: getResponsivePadding(),
         backgroundColor: Colors.white
     }
 });

@@ -24,6 +24,7 @@ import { getSemester } from "@/utils/date";
 import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { getEmailFromName, getFirstLetters } from "@/utils/account";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
 
 export default function SettingsScreen() {
     const router = useRouter();
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
     responsiveContainer: {
         width: "100%",
         alignSelf: "center",
-        maxWidth: 600
+        maxWidth: getResponsiveMaxWidth()
     },
     //
     // Profile

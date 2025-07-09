@@ -16,6 +16,7 @@ import useSettingsStore, {
     NotificationDelay
 } from "@/stores/settingsStore";
 import { Page, PageHeader } from "@/components/Page";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
 
 // Paramètres des notifications
 export default function NotifSettings() {
@@ -147,12 +148,12 @@ const styles = StyleSheet.create({
         width: "100%",
         alignSelf: "center",
         gap: 10,
-        maxWidth: 600
+        maxWidth: getResponsiveMaxWidth()
     },
     //Sections
     section: {
         marginTop: 15,
-        maxWidth: 600
+        maxWidth: getResponsiveMaxWidth()
     },
     sectionTitle: {
         fontSize: 20,

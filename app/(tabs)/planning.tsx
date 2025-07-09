@@ -26,6 +26,7 @@ import {
 } from "@/stores/webaurionStore";
 import { SyncMessage } from "@/components/Sync";
 import { Page, PageHeader } from "@/components/Page";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
 
 export default function PlanningScreen() {
     const { session } = useSessionStore();
@@ -309,7 +310,7 @@ const styles = StyleSheet.create({
     responsiveContainer: {
         width: "100%",
         alignSelf: "center",
-        maxWidth: 600
+        maxWidth: getResponsiveMaxWidth()
     }
 });
 

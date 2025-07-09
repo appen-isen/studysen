@@ -14,6 +14,7 @@ import { ReactNode, useEffect, useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
 import { FontAwesome6 } from "@expo/vector-icons";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
 
 type ModalProps = {
     visible: boolean;
@@ -22,9 +23,6 @@ type ModalProps = {
     modalBoxStyle?: object;
 };
 
-type BottomModalProps = ModalProps & {
-    flexSize?: number;
-};
 type PopupModalProps = ModalProps & {
     message: string;
     onConfirm?: () => void;
@@ -56,78 +54,6 @@ function ModalBase(props: ModalProps) {
                 <View style={[styles.modalContent, props.modalBoxStyle]}>
                     {props.children}
                 </View>
-            </View>
-        </Modal>
-    );
-}
-
-// Modal qui s'ouvre depuis le bas de l'écran pour les informations supplémentaires
-export function BottomModal(props: BottomModalProps) {
-    const slideAnim = useRef(new Animated.Value(800)).current; // Valeur initiale (hors de l'écran)
-
-    useEffect(() => {
-        if (props.visible) {
-            // Animation pour faire glisser la modal vers le haut
-            Animated.timing(slideAnim, {
-                toValue: 0, // Position finale (visible)
-                duration: 300,
-                useNativeDriver: true
-            }).start();
-        }
-    }, [props.visible]);
-
-    // Fermeture de la modal
-    const handleDismiss = () => {
-        // Animation pour faire glisser la modal vers le bas
-        Animated.timing(slideAnim, {
-            toValue: 800, // Position initiale (hors de l'écran)
-            duration: 300,
-            useNativeDriver: true
-        }).start();
-        props.setVisible(false);
-    };
-    return (
-        <Modal
-            animationType="fade"
-            transparent={true}
-            visible={props.visible}
-            onRequestClose={handleDismiss}
-        >
-            <View style={[styles.modalOverlay, bottomModalStyles.modalOverlay]}>
-                {/* Overlay pour fermer la modal en cliquant à l'extérieur */}
-                <TouchableWithoutFeedback onPress={handleDismiss}>
-                    <Animated.View style={styles.modalBackground} />
-                </TouchableWithoutFeedback>
-
-                {/* Contenu de la modal */}
-                <Animated.View
-                    style={[
-                        styles.modalContent,
-                        bottomModalStyles.modalContent,
-                        {
-                            // Animation de la modal
-                            transform: [{ translateY: slideAnim }],
-                            // Taille de la modal
-                            flex:
-                                props.flexSize !== undefined
-                                    ? props.flexSize
-                                    : 0.7
-                        }
-                    ]}
-                >
-                    {/* Bouton pour fermer la modal */}
-                    <AnimatedPressable
-                        onPress={handleDismiss}
-                        style={bottomModalStyles.closeIconPressable}
-                    >
-                        <FontAwesome6
-                            name="xmark"
-                            style={bottomModalStyles.closeIcon}
-                        />
-                    </AnimatedPressable>
-                    {/* Contenu de la modal */}
-                    {props.children}
-                </Animated.View>
             </View>
         </Modal>
     );
@@ -262,7 +188,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         width: "90%",
-        maxWidth: 600,
+        maxWidth: getResponsiveMaxWidth(),
         backgroundColor: "white",
         borderRadius: 10,
         elevation: 10,
@@ -317,27 +243,5 @@ const styles = StyleSheet.create({
     },
     flatList: {
         width: "100%"
-    }
-});
-
-const bottomModalStyles = StyleSheet.create({
-    modalOverlay: {
-        justifyContent: "flex-end"
-    },
-    modalContent: {
-        justifyContent: "flex-start",
-        alignItems: "flex-start",
-        width: "100%",
-        borderTopRightRadius: 10,
-        borderTopLeftRadius: 10
-    },
-    // Bouton pour fermer la modal
-    closeIconPressable: {
-        justifyContent: "flex-start",
-        padding: 10
-    },
-    closeIcon: {
-        fontSize: 40,
-        color: Colors.primary
     }
 });

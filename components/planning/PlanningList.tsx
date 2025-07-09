@@ -3,7 +3,6 @@ import { PlanningEvent } from "@/webAurion/utils/types";
 import {
     FlatList,
     LayoutChangeEvent,
-    Pressable,
     ScrollView,
     StyleSheet,
     View
@@ -11,10 +10,11 @@ import {
 import { Text } from "@/components/Texts";
 import { groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
-import { AnimatedPressable } from "../Buttons";
 import { getSubjectColor, getSubjectIcon } from "@/utils/colors";
+import { AnimatedPressable } from "../Buttons";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { useState, useEffect } from "react";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function PlanningList(props: {
     events: PlanningEvent[];
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
         width: "100%",
-        maxWidth: 600,
+        maxWidth: getResponsiveMaxWidth(),
         alignSelf: "center",
         gap: 15
     },

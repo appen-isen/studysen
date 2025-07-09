@@ -1,12 +1,5 @@
 import { PlanningEvent } from "@/webAurion/utils/types";
-import {
-    ActivityIndicator,
-    Dimensions,
-    LayoutChangeEvent,
-    Pressable,
-    StyleSheet,
-    View
-} from "react-native";
+import { Dimensions, LayoutChangeEvent, StyleSheet, View } from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
 import {
@@ -17,6 +10,7 @@ import {
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { AnimatedPressable } from "../Buttons";
 import { getSubjectColor } from "@/utils/colors";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
 import { useState } from "react";
 
 const HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
@@ -151,7 +145,7 @@ const calendarStyles = StyleSheet.create({
     container: {
         flex: 6,
         width: "100%",
-        maxWidth: 600,
+        maxWidth: getResponsiveMaxWidth(),
         alignSelf: "center",
         marginHorizontal: "auto",
         flexDirection: "row",

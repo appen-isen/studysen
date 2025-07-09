@@ -7,6 +7,7 @@ import { PostType } from "@/utils/types";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Href, useRouter } from "expo-router";
 import { Image, StyleSheet, View } from "react-native";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
 
 export default function PostDetailsScreen() {
     const { currentPost } = usePostDetailsStore();
@@ -201,7 +202,7 @@ const postStyles = StyleSheet.create({
         alignItems: "center"
     },
     responsiveContainer: {
-        maxWidth: 600,
+        maxWidth: getResponsiveMaxWidth(),
         width: "100%",
         alignSelf: "center"
     },

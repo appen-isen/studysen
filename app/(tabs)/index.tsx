@@ -34,6 +34,7 @@ import { getSemester } from "@/utils/date";
 import { Page, PageHeader } from "@/components/Page";
 import { NoteElement } from "@/components/Note";
 import NoteModal from "@/components/modals/NoteModal";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
 import { getFirstNameFromName } from "@/utils/account";
 
 export default function HomeScreen() {
@@ -392,7 +393,7 @@ const sectionStyles = StyleSheet.create({
         justifyContent: "center",
         alignSelf: "center",
         width: "100%",
-        maxWidth: 600
+        maxWidth: getResponsiveMaxWidth()
     },
     titleText: {
         fontSize: 16,

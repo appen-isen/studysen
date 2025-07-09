@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "expo-router";
 import { API_BASE_URL } from "@/utils/config";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
 
 //Les crédits
 export default function Credits() {
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
     responsiveContainer: {
         width: "100%",
         alignSelf: "center",
-        maxWidth: 600
+        maxWidth: getResponsiveMaxWidth()
     },
     //Sections
     sectionTitle: {

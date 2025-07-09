@@ -19,6 +19,7 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Page, PageHeader } from "@/components/Page";
 import { getColorFromNoteCode, getIconFromNoteCode } from "@/utils/colors";
 import { Sheet } from "@/components/Sheet";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
 
 export default function NotesScreen() {
     const router = useRouter();
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
     // Moyenne générale
     noteAverageView: {
         width: "100%",
-        maxWidth: 600,
+        maxWidth: getResponsiveMaxWidth(),
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -367,7 +368,7 @@ const styles = StyleSheet.create({
 const notesGroupStyles = StyleSheet.create({
     container: {
         width: "100%",
-        maxWidth: 600,
+        maxWidth: getResponsiveMaxWidth(),
         marginTop: 30
     },
     // En-tête du groupe de notes
