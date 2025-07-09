@@ -21,6 +21,7 @@ import { getSecureStoreItem, setSecureStoreItem } from "@/stores/secureStore";
 import useSettingsStore, { CAMPUS } from "@/stores/settingsStore";
 import { Sheet } from "@/components/Sheet";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -57,6 +58,9 @@ export default function LoginScreen() {
                         params: { offlineMode: 1 }
                     });
                 }
+            } else {
+                // On supprime l'enregistrement pour les notifications si l'utilisateur se connecte manuellement
+                unregisterDeviceForNotifications();
             }
         };
         fetchStoredCredentials();

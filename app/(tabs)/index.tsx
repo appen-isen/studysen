@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import { AnimatedPressable } from "@/components/Buttons";
@@ -58,7 +58,7 @@ export default function HomeScreen() {
     const [selectedNote, setSelectedNote] = useState<Note | null>();
     const [noteModalInfoVisible, setNoteModalInfoVisible] = useState(false);
 
-    //Lorsque la page est chargée
+    // Lorsque la page est chargée, on demande les permissions pour les notifications
     useEffect(() => {
         requestPermissions().then((granted) => {
             // On enregistre l'appareil pour les notifications
@@ -66,6 +66,10 @@ export default function HomeScreen() {
                 registerDeviceForNotifications(campusToId(settings.campus));
             }
         });
+    }, []);
+
+    //Lorsque la page est chargée / rechargée
+    useEffect(() => {
         updateNotes();
         autoUpdatePlanningIfNeeded();
 

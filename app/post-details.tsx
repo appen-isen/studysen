@@ -295,6 +295,7 @@ const postStyles = StyleSheet.create({
         paddingHorizontal: 20,
         borderRadius: 5,
         flexDirection: "row",
+        alignItems: "center",
         alignSelf: "flex-start",
         gap: 15,
         marginTop: 20

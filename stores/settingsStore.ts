@@ -4,7 +4,6 @@ import {
     loadStateFromStorage,
     saveStateToStorage
 } from "./storage";
-import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
 
 // Liste des campus
 export const CAMPUS = ["Nantes", "Brest", "Caen", "Rennes", "Paris"] as const;
@@ -42,10 +41,6 @@ function getDefaultSettings(): Settings {
 const useSettingsStore = create<SettingsState>()((set) => ({
     settings: getDefaultSettings(), // Paramètres par défaut de l'application
     setSettings: (key, value) => {
-        if (key === "campus") {
-            // Si le campus change, on suppression les notifications de l'appareil
-            unregisterDeviceForNotifications();
-        }
         set((state) => {
             const updatedSettings = { ...state.settings, [key]: value };
             saveStateToStorage("settings", updatedSettings); // On sauvegarde les réglages dans le stockage

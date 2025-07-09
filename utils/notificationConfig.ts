@@ -258,9 +258,12 @@ export const registerDeviceForNotifications = async (campus_id: number) => {
                 device_id: token,
                 campus_id: campus_id
             });
-            console.log("Device registered for notifications:", token);
+            console.log("Appareil enregistré pour les notifications:", token);
         } catch (error) {
-            console.error("Error registering device for notifications:", error);
+            console.error(
+                "Erreur lors de l'enregistrement de l'appareil pour les notifications:",
+                error
+            );
         }
     }
 };
@@ -276,10 +279,13 @@ export const unregisterDeviceForNotifications = async () => {
             await axios.delete(
                 `${API_BASE_URL}/notifications/delete-device/${token}`
             );
-            console.log("Device unregistered for notifications:", token);
+            console.log(
+                "Appareil désenregistré pour les notifications:",
+                token
+            );
         } catch (error) {
             console.error(
-                "Error unregistering device for notifications:",
+                "Erreur lors du désenregistrement de l'appareil pour les notifications:",
                 error
             );
         }
