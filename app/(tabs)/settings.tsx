@@ -22,6 +22,8 @@ import {
 } from "@/utils/notes";
 import { getSemester } from "@/utils/date";
 import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import { getEmailFromName, getFirstLetters } from "@/utils/account";
 
 export default function SettingsScreen() {
     const router = useRouter();
@@ -53,17 +55,9 @@ export default function SettingsScreen() {
             const username = settings.username;
             setUsername(username);
             //Initiales du prénom et du nom
-            const firstLetters = username.split(" ");
-            setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
-
-            //On convertit le Prénom Nom en email valide
-            const normalizedName = username
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toLowerCase();
-            setEmail(
-                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
-            );
+            setFirstLetters(getFirstLetters(username));
+            //Email de l'utilisateur
+            setEmail(getEmailFromName(username));
         }
     }, [settings]);
     return (

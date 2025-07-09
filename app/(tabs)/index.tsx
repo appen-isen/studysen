@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View, ScrollView } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
-import { AnimatedPressable, Button } from "@/components/Buttons";
+import { AnimatedPressable } from "@/components/Buttons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
@@ -34,6 +34,7 @@ import { getSemester } from "@/utils/date";
 import { Page, PageHeader } from "@/components/Page";
 import { NoteElement } from "@/components/Note";
 import NoteModal from "@/components/modals/NoteModal";
+import { getFirstNameFromName } from "@/utils/account";
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -74,29 +75,6 @@ export default function HomeScreen() {
 
         return () => clearInterval(interval); // Cleanup interval on unmount
     }, [lastUpdateTime]);
-
-    //Nom de l'utilisateur et email
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [firstLetters, setFirstLetters] = useState("");
-    useEffect(() => {
-        if (settings.username) {
-            const username = settings.username;
-            setUsername(username);
-            //Initiales du prénom et du nom
-            const firstLetters = username.split(" ");
-            setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
-
-            //On convertit le Prénom Nom en email valide
-            const normalizedName = username
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toLowerCase();
-            setEmail(
-                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
-            );
-        }
-    }, [settings]);
 
     // Mettre à jour le planning toutes les 10 minutes
     const autoUpdatePlanningIfNeeded = () => {
@@ -220,7 +198,7 @@ export default function HomeScreen() {
                 <Text style={styles.heyText}>
                     Salut,{" "}
                     <Text style={styles.firstnameText}>
-                        {settings.username.split(" ")[0]}
+                        {getFirstNameFromName(settings.username)}
                     </Text>
                 </Text>
             </View>
