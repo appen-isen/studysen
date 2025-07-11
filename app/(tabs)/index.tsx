@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View, ScrollView } from "react-native";
+import { use, useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
-import { AnimatedPressable, Button } from "@/components/Buttons";
+import { AnimatedPressable } from "@/components/Buttons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
@@ -21,32 +21,27 @@ import {
 } from "@/utils/planning";
 import { ListEvent } from "@/components/planning/PlanningList";
 import EventModal from "@/components/modals/EventModal";
-import {
-    calculateAverage,
-    filterNotesBySemester,
-    getLatestNotes
-} from "@/utils/notes";
+import { filterNotesBySemester, getLatestNotes } from "@/utils/notes";
 import { useRouter } from "expo-router";
 import {
     cancelAllScheduledNotifications,
+    registerDeviceForNotifications,
     requestPermissions,
     scheduleCourseNotification
 } from "@/utils/notificationConfig";
-import useSettingsStore from "@/stores/settingsStore";
+import useSettingsStore, { campusToId } from "@/stores/settingsStore";
 import { getSemester } from "@/utils/date";
 import { Page, PageHeader } from "@/components/Page";
 import { NoteElement } from "@/components/Note";
 import NoteModal from "@/components/modals/NoteModal";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { getFirstNameFromName } from "@/utils/account";
 
 export default function HomeScreen() {
     const router = useRouter();
     const { session } = useSessionStore();
     const { notes, setNotes } = useNotesStore();
     const { settings } = useSettingsStore();
-    const [noteAverageValue, setNoteAverageValue] = useState<string>(
-        //On calcule la moyenne des notes du semestre actuel
-        calculateAverage(filterNotesBySemester(notes, getSemester()))
-    );
     // Gestion du planning
     const { planning, setPlanning } = usePlanningStore();
     const [isPlanningLoaded, setPlanningLoaded] = useState(false);
@@ -64,9 +59,18 @@ export default function HomeScreen() {
     const [selectedNote, setSelectedNote] = useState<Note | null>();
     const [noteModalInfoVisible, setNoteModalInfoVisible] = useState(false);
 
-    //Lorsque la page est chargée
+    // Lorsque la page est chargée, on demande les permissions pour les notifications
     useEffect(() => {
-        requestPermissions();
+        requestPermissions().then((granted) => {
+            // On enregistre l'appareil pour les notifications
+            if (granted && settings.clubsNotifications) {
+                registerDeviceForNotifications(campusToId(settings.campus));
+            }
+        });
+    }, []);
+
+    //Lorsque la page est chargée / rechargée
+    useEffect(() => {
         updateNotes();
         autoUpdatePlanningIfNeeded();
 
@@ -76,29 +80,6 @@ export default function HomeScreen() {
 
         return () => clearInterval(interval); // Cleanup interval on unmount
     }, [lastUpdateTime]);
-
-    //Nom de l'utilisateur et email
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [firstLetters, setFirstLetters] = useState("");
-    useEffect(() => {
-        if (settings.username) {
-            const username = settings.username;
-            setUsername(username);
-            //Initiales du prénom et du nom
-            const firstLetters = username.split(" ");
-            setFirstLetters(firstLetters[0][0] + firstLetters[1][0]);
-
-            //On convertit le Prénom Nom en email valide
-            const normalizedName = username
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toLowerCase();
-            setEmail(
-                normalizedName.replace(" ", ".") + "@isen-ouest.yncrea.fr"
-            );
-        }
-    }, [settings]);
 
     // Mettre à jour le planning toutes les 10 minutes
     const autoUpdatePlanningIfNeeded = () => {
@@ -173,8 +154,7 @@ export default function HomeScreen() {
                                     scheduleCourseNotification(
                                         event.title || event.subject,
                                         event.room,
-                                        new Date(event.start),
-                                        email
+                                        new Date(event.start)
                                     );
                                 }
                             });
@@ -202,7 +182,6 @@ export default function HomeScreen() {
                         fetchedNotes,
                         getSemester()
                     );
-                    setNoteAverageValue(calculateAverage(filteredNotes));
                 })
                 .catch((error) => {
                     console.error(error);
@@ -224,7 +203,7 @@ export default function HomeScreen() {
                 <Text style={styles.heyText}>
                     Salut,{" "}
                     <Text style={styles.firstnameText}>
-                        {settings.username.split(" ")[0]}
+                        {getFirstNameFromName(settings.username)}
                     </Text>
                 </Text>
             </View>
@@ -414,7 +393,7 @@ const sectionStyles = StyleSheet.create({
         justifyContent: "center",
         alignSelf: "center",
         width: "100%",
-        maxWidth: 600
+        maxWidth: getResponsiveMaxWidth()
     },
     titleText: {
         fontSize: 16,

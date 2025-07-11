@@ -15,7 +15,7 @@ type Settings = {
     username: string;
     notificationsEnabled: boolean;
     notificationsDelay: NotificationDelay;
-    localNotifications: boolean;
+    clubsNotifications: boolean;
     deviceId: string;
 };
 
@@ -32,7 +32,7 @@ function getDefaultSettings(): Settings {
         username: "",
         notificationsEnabled: true,
         notificationsDelay: "15min",
-        localNotifications: true,
+        clubsNotifications: true,
         deviceId: ""
     };
 }

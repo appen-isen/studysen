@@ -10,6 +10,7 @@ import Colors from "@/constants/Colors";
 import { Bold } from "@/components/Texts";
 import useSettingsStore, { campusToId } from "@/stores/settingsStore";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
 
 export default function ClubsScreen() {
     const [posts, setPosts] = useState<PostType[]>([]);
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
         gap: 25
     },
     scrollContainer: {
-        maxWidth: 600,
+        maxWidth: getResponsiveMaxWidth(),
         width: "100%",
         alignSelf: "center"
     },

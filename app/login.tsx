@@ -21,6 +21,8 @@ import { getSecureStoreItem, setSecureStoreItem } from "@/stores/secureStore";
 import useSettingsStore, { CAMPUS } from "@/stores/settingsStore";
 import { Sheet } from "@/components/Sheet";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
+import { getResponsiveMaxWidth } from "@/utils/responsive";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -57,6 +59,9 @@ export default function LoginScreen() {
                         params: { offlineMode: 1 }
                     });
                 }
+            } else {
+                // On supprime l'enregistrement pour les notifications si l'utilisateur se connecte manuellement
+                unregisterDeviceForNotifications();
             }
         };
         fetchStoredCredentials();
@@ -286,7 +291,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "space-between",
         alignItems: "center",
-        maxWidth: 500,
+        maxWidth: getResponsiveMaxWidth(),
         marginHorizontal: "auto",
         padding: 20
     },

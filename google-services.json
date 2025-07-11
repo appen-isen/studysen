@@ -1,29 +1,29 @@
 {
-    "project_info": {
-        "project_number": "274519219143",
-        "project_id": "studysen",
-        "storage_bucket": "studysen.firebasestorage.app"
-    },
-    "client": [
-        {
-            "client_info": {
-                "mobilesdk_app_id": "1:274519219143:android:2e341c67abef1b48c757e2",
-                "android_client_info": {
-                    "package_name": "com.appen.studysen"
-                }
-            },
-            "oauth_client": [],
-            "api_key": [
-                {
-                    "current_key": "AIzaSyBCpGMerRmJRVZjSYieRTgkkl7bpGJmjIc"
-                }
-            ],
-            "services": {
-                "appinvite_service": {
-                    "other_platform_oauth_client": []
-                }
-            }
+  "project_info": {
+    "project_number": "381040059519",
+    "project_id": "studysen-c78b1",
+    "storage_bucket": "studysen-c78b1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:381040059519:android:0e154d19309fdc31494b4a",
+        "android_client_info": {
+          "package_name": "com.appen.studysen"
         }
-    ],
-    "configuration_version": "1"
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjef00_Ri-PoJ9U5HDYWvUvyQdBRzlIug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
 }
