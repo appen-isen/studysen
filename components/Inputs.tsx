@@ -112,6 +112,7 @@ const inputStyles = StyleSheet.create({
     input: {
         flex: 1,
         fontSize: 18,
+        color: Colors.black,
         backgroundColor: "transparent"
     },
     //
