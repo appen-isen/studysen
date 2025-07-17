@@ -11,15 +11,14 @@ import { getResponsiveMaxWidth } from "@/utils/responsive";
 
 //Les crédits
 export default function Credits() {
-    const [statusColor, setStatusColor] = useState("");
+    const [statusColor, setStatusColor] = useState("#5ebc0bff");
     useEffect(() => {
         //On regarde si le backend est disponible
         const checkBackend = async () => {
             try {
-                const response = await axios.get(API_BASE_URL);
+                const response = await axios.head(`${API_BASE_URL}/ping/`);
                 if (response.status === 200) {
                     console.log("Backend disponible");
-                    setStatusColor("#6BE500");
                 } else {
                     console.log("Backend indisponible");
                     setStatusColor(Colors.primary);
@@ -85,15 +84,17 @@ export default function Credits() {
                 <Bold style={styles.sectionTitle}>
                     Informations complémentaires
                 </Bold>
-                <Text style={styles.subtitle}>
-                    CONNEXION EN LIGNE{"  "}
-                    <View
-                        style={[
-                            styles.statusCircle,
-                            { backgroundColor: statusColor }
-                        ]}
-                    ></View>
-                </Text>
+                <View style={styles.statusContainer}>
+                    <Text style={styles.subtitle}>
+                        CONNEXION EN LIGNE{" "}
+                        <View
+                            style={[
+                                styles.statusCircle,
+                                { backgroundColor: statusColor }
+                            ]}
+                        />
+                    </Text>
+                </View>
                 <Text style={styles.subtitle}>
                     VERSION {nativeApplicationVersion}
                 </Text>
@@ -146,6 +147,11 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 8,
         marginTop: 10
+    },
+    statusContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8
     },
     statusCircle: {
         width: 10,

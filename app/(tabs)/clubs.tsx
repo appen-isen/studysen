@@ -1,6 +1,6 @@
 import { Page, PageHeader } from "@/components/Page";
 import { PostType } from "@/utils/types";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View, RefreshControl } from "react-native";
 import { Post } from "../post-details";
 import { DotLoader } from "@/components/Sync";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ export default function ClubsScreen() {
     const [posts, setPosts] = useState<PostType[]>([]);
     const [isFirstLoading, setIsFirstLoading] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const { settings } = useSettingsStore();
@@ -35,6 +36,35 @@ export default function ClubsScreen() {
             console.error("Erreur lors de la récupération des posts :", error);
             return null;
         }
+    };
+
+    // Fonction pour rafraîchir les posts
+    const onRefresh = async () => {
+        setIsRefreshing(true);
+
+        // Réinitialiser les états
+        setPosts([]);
+        setOffset(0);
+        setHasMore(true);
+
+        // Recharger les 3 premiers posts
+        let localOffset = 0;
+        const newPosts: PostType[] = [];
+
+        for (let i = 0; i < 3; i++) {
+            const newPost = await fetchLatestPost(localOffset);
+            if (newPost) {
+                newPosts.push(newPost);
+                localOffset += 1;
+            } else {
+                setHasMore(false);
+                break;
+            }
+        }
+
+        setPosts(newPosts);
+        setOffset(localOffset);
+        setIsRefreshing(false);
     };
 
     // Fonction pour charger un post
@@ -83,6 +113,14 @@ export default function ClubsScreen() {
                     contentContainerStyle={styles.scrollContainer}
                     keyExtractor={(_, index) => index.toString()}
                     renderItem={({ item }) => <Post post={item} />}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={isRefreshing}
+                            onRefresh={onRefresh}
+                            colors={[Colors.primary]} // Android
+                            tintColor={Colors.primary} // iOS
+                        />
+                    }
                     onEndReached={() => {
                         // Si le chargement initial est terminé, on charge les nouveaux posts
                         // On ne charge plus si le dernier fetch n'a rien ramené
