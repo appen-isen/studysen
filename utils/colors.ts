@@ -1,5 +1,9 @@
 import Colors from "@/constants/Colors";
+import { useSentUnknownSubjectStore } from "@/stores/telemetryStore";
+import { NotesList, PlanningEvent } from "@/webAurion/utils/types";
 import { MaterialIcons } from "@expo/vector-icons";
+import axios from "axios";
+import { API_BASE_URL } from "./config";
 
 // Correspondance entre les différents noms et code de matière
 const subjectMapping: Record<string, string> = {
@@ -97,4 +101,71 @@ export function getIconFromNoteCode(
         return getSubjectIcon(subjectKey);
     }
     return "grade";
+}
+
+// Fonction pour envoyer les noms de matière des notes inconnues
+export function sendUnknownNotesTelemetry(notes: NotesList[]): void {
+    let unknownSubjects: string[] = [];
+    notes.forEach((note) => {
+        const knownSubjects =
+            useSentUnknownSubjectStore.getState().unknownSubjects;
+        // On vérifie si le sujet ou le code est déjà connu
+        if (
+            !knownSubjects.includes(note.code) &&
+            extractSubjectFromCode(note.code) === null
+        ) {
+            // Si ce n'est pas connu, on l'ajoute à la liste des sujets inconnus
+            unknownSubjects.push(note.code);
+        }
+    });
+    if (unknownSubjects.length > 0) {
+        // On met à jour le store avec les nouveaux sujets inconnus
+        useSentUnknownSubjectStore.setState((state) => ({
+            unknownSubjects: [...state.unknownSubjects, ...unknownSubjects]
+        }));
+        // On envoie les données de télémétrie
+        sendUnknownSubjectsTelemetry(unknownSubjects);
+    }
+}
+
+// Fonction pour envoyer les noms de matière inconnus pour les événements du planning
+export function sendUnknownPlanningSubjectsTelemetry(
+    planning: PlanningEvent[]
+): void {
+    let unknownSubjects: string[] = [];
+    planning.forEach((event) => {
+        const knownSubjects =
+            useSentUnknownSubjectStore.getState().unknownSubjects;
+        // On vérifie si la matière est déjà connue
+        if (
+            !knownSubjects.includes(event.subject) &&
+            getSubjectIcon(event.subject) === "event"
+        ) {
+            // On l'ajoute à la liste des sujets inconnus
+            unknownSubjects.push(event.subject);
+        }
+    });
+    if (unknownSubjects.length > 0) {
+        // On met à jour le store avec les nouvelles matières inconnues
+        useSentUnknownSubjectStore.setState((state) => ({
+            unknownSubjects: [...state.unknownSubjects, ...unknownSubjects]
+        }));
+        // On envoie les données de télémétrie
+        sendUnknownSubjectsTelemetry(unknownSubjects);
+    }
+}
+
+// Fonction pour envoyer des données de télémétrie pour les matières ou les codes de notes inconnus
+export async function sendUnknownSubjectsTelemetry(subjects: string[]) {
+    try {
+        await axios.post(`${API_BASE_URL}/telemetry/submit`, {
+            type: "unknownSubjects",
+            data: subjects
+        });
+    } catch (error) {
+        console.error(
+            "Erreur lors de l'envoi des données de télémétrie :",
+            error
+        );
+    }
 }

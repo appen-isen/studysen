@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import { AnimatedPressable } from "@/components/Buttons";
@@ -21,7 +21,7 @@ import {
 } from "@/utils/planning";
 import { ListEvent } from "@/components/planning/PlanningList";
 import EventModal from "@/components/modals/EventModal";
-import { filterNotesBySemester, getLatestNotes } from "@/utils/notes";
+import { getLatestNotes } from "@/utils/notes";
 import { useRouter } from "expo-router";
 import {
     cancelAllScheduledNotifications,
@@ -30,12 +30,15 @@ import {
     scheduleCourseNotification
 } from "@/utils/notificationConfig";
 import useSettingsStore, { campusToId } from "@/stores/settingsStore";
-import { getSemester } from "@/utils/date";
 import { Page, PageHeader } from "@/components/Page";
 import { NoteElement } from "@/components/Note";
 import NoteModal from "@/components/modals/NoteModal";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
 import { getFirstNameFromName } from "@/utils/account";
+import {
+    sendUnknownNotesTelemetry,
+    sendUnknownPlanningSubjectsTelemetry
+} from "@/utils/colors";
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -121,14 +124,13 @@ export default function HomeScreen() {
                 .getPlanningApi()
                 .fetchPlanning(weekOffset)
                 .then((currentWeekPlanning: PlanningEvent[]) => {
-                    // Concaténer le nouveau planning avec l'existant sans doublons
-                    setPlanning(
-                        // On met à jour le planning en fusionnant les événements
-                        mergePlanning(
-                            usePlanningStore.getState().planning,
-                            currentWeekPlanning
-                        )
+                    // On met à jour le planning en fusionnant les événements
+                    const updatedPlanning = mergePlanning(
+                        usePlanningStore.getState().planning,
+                        currentWeekPlanning
                     );
+                    setPlanning(updatedPlanning);
+                    sendUnknownPlanningSubjectsTelemetry(updatedPlanning);
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé
                     setSyncedPlanning(
@@ -177,11 +179,7 @@ export default function HomeScreen() {
                 .fetchNotes()
                 .then((fetchedNotes) => {
                     setNotes(fetchedNotes);
-                    // On affiche la moyenne du semestre actuel
-                    const filteredNotes = filterNotesBySemester(
-                        fetchedNotes,
-                        getSemester()
-                    );
+                    sendUnknownNotesTelemetry(fetchedNotes);
                 })
                 .catch((error) => {
                     console.error(error);

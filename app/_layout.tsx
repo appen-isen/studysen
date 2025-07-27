@@ -1,4 +1,5 @@
 import { initializeSettingsStore } from "@/stores/settingsStore";
+import { initializeTelemetryStores } from "@/stores/telemetryStore";
 import { initializeWebaurionStores } from "@/stores/webaurionStore";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
@@ -39,6 +40,7 @@ export default function RootLayout() {
         const initStores = async () => {
             await initializeWebaurionStores();
             await initializeSettingsStore();
+            await initializeTelemetryStores();
         };
         //On initialise les stores
         initStores().then(() => setStoreLoaded(true));
