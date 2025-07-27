@@ -9,9 +9,9 @@ Studysen est un projet d'application mobile développée en React Native avec Ex
 -   Notes WebAurion par semestre avec moyenne générale
 -   Affichage du cours actuel et à venir sur la page d'accueil
 -   Sauvegarde du planning et des notes en local - Mode hors ligne
--   Posts et événements des clubs pour la vie étudiante 
+-   Posts et événements des clubs pour la vie étudiante
 -   Notifications rappels de cours et pour les nouveaux posts de clubs
--   Demande de nouvelles fonctionnalités et rapports de bugs directement depuis l'application 
+-   Demande de nouvelles fonctionnalités et rapports de bugs directement depuis l'application
 
 ## 🚀 Installation et configuration
 
@@ -25,7 +25,7 @@ Studysen est un projet d'application mobile développée en React Native avec Ex
 1. Clonez le dépôt :
     ```bash
     git clone https://github.com/appen-isen/studysen.git
-    cd Studysen
+    cd studysen
     ```
 2. Installez les dépendances :
     ```bash
@@ -46,6 +46,10 @@ Studysen est un projet d'application mobile développée en React Native avec Ex
     ```
 3. Après cela, vous pourrez scanner le QR code avec l'application Expo Go et tout devrait fonctionner.
 
+## Backend
+
+Le backend de l'application permet de gérer la partie vie étudiante (posts, événements, etc.) et est développé en Express.js. Il est facilement déployable en utilisant Docker. Le code source du backend est disponible dans le dépôt [studysen-backend](https://github.com/appen-isen/studysen-backend)
+
 ## 🤖 Technologies utilisées
 
 -   **React Native** : Framework pour le développement d'applications mobiles (Android et iOS).
@@ -57,7 +61,6 @@ Studysen est un projet d'application mobile développée en React Native avec Ex
 
 -   **[Axios](https://github.com/axios/axios)** : Pour effectuer les requêtes HTTP
 -   **[Zustand](https://github.com/pmndrs/zustand)** : Pour la gestion des variables globales de l'application
--   **[React Native Paper](https://github.com/callstack/react-native-paper)** : Pour des composants graphiques animés
 -   **[WebAurion API](https://github.com/dd060606/WebAurion-API)** : Pour communiquer avec WebAurion
 
 ## 🤝 Contribution
