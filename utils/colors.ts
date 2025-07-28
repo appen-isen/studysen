@@ -158,6 +158,7 @@ export function sendUnknownPlanningSubjectsTelemetry(
 // Fonction pour envoyer des données de télémétrie pour les matières ou les codes de notes inconnus
 export async function sendUnknownSubjectsTelemetry(subjects: string[]) {
     try {
+        console.log("Nouveaux noms de matière inconnus envoyés :", subjects);
         await axios.post(`${API_BASE_URL}/telemetry/submit`, {
             type: "unknownSubjects",
             data: subjects

@@ -27,6 +27,7 @@ import {
 import { SyncMessage } from "@/components/Sync";
 import { Page, PageHeader } from "@/components/Page";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { sendUnknownPlanningSubjectsTelemetry } from "@/utils/colors";
 
 export default function PlanningScreen() {
     const { session } = useSessionStore();
@@ -108,14 +109,13 @@ export default function PlanningScreen() {
                 .getPlanningApi()
                 .fetchPlanning(weekOffset)
                 .then((currentWeekPlanning: PlanningEvent[]) => {
-                    // Concaténer le nouveau planning avec l'existant sans doublons
-                    setPlanning(
-                        // On met à jour le planning en fusionnant les événements
-                        mergePlanning(
-                            usePlanningStore.getState().planning,
-                            currentWeekPlanning
-                        )
+                    // On met à jour le planning en fusionnant les événements
+                    const updatedPlanning = mergePlanning(
+                        usePlanningStore.getState().planning,
+                        currentWeekPlanning
                     );
+                    setPlanning(updatedPlanning);
+                    sendUnknownPlanningSubjectsTelemetry(updatedPlanning);
                     setPlanningLoaded(true);
                     // Mettre à jour le planning synchronisé
                     setSyncedPlanning(
