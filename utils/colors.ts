@@ -20,7 +20,9 @@ const subjectMapping: Record<string, string> = {
     ENVT: "Environnement",
     SI: "Sciences de l'Ingénieur",
     ANGLAIS: "Anglais",
-    FHS: "FHS"
+    FHS: "FHS",
+    PROJET_INFO: "Informatique",
+    RESEAUX: "Informatique"
 };
 // Fonction pour obtenir la couleur d'un événement en fonction de la matière
 export function getSubjectColor(subject: string): string {
