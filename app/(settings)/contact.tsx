@@ -1,10 +1,4 @@
-import {
-    View,
-    StyleSheet,
-    KeyboardAvoidingView,
-    ScrollView,
-    Platform
-} from "react-native";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { Bold, Text } from "@/components/Texts";
 import { Page, PageHeader } from "@/components/Page";
 import Colors from "@/constants/Colors";
@@ -29,6 +23,7 @@ export default function Contact() {
     const [reproductionSteps, setReproductionSteps] = useState<string>("");
     const [additionnalData, setAdditionnalData] = useState<boolean>(true);
     const [selectedImage, setSelectedImage] = useState<string>("");
+    const [isLoading, setLoading] = useState<boolean>(false);
 
     //Modals
     const [infoVisible, setInfoVisible] = useState<boolean>(false);
@@ -81,6 +76,8 @@ export default function Contact() {
     };
     // Envoi du formulaire
     const handleSubmit = async () => {
+        if (isLoading) return; // Si déjà en cours de chargement, on ne fait rien
+        setLoading(true);
         try {
             //On vérifie si le champ de description est rempli
             if (!description) {
@@ -149,7 +146,9 @@ ${username}
         } catch (error) {
             setErrorMessage("Impossible de créer l'issue: " + error);
             setErrorVisible(true);
-            console.error("mpossible de créer l'issue:", error);
+            console.error("Impossible de créer l'issue:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -251,11 +250,19 @@ ${username}
                 style={styles.sendButton}
                 JSX={
                     <View style={styles.sendButtonView}>
-                        <MaterialIcons
-                            name="ios-share"
-                            size={24}
-                            color={Colors.white}
-                        />
+                        {isLoading && (
+                            <ActivityIndicator
+                                size="small"
+                                color={Colors.white}
+                            />
+                        )}
+                        {!isLoading && (
+                            <MaterialIcons
+                                name="ios-share"
+                                size={24}
+                                color={Colors.white}
+                            />
+                        )}
                         <Text style={styles.sendButtonText}>
                             Envoyer le formulaire
                         </Text>
