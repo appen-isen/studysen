@@ -42,5 +42,5 @@ yarn-error.*
 .idea/*
 
 # Images de issues
-images/
+images/*
 !images/.gitkeep
