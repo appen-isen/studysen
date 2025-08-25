@@ -7,41 +7,80 @@ export type DayEvents = {
 
 // Fonction pour grouper les événements par jour
 export function groupEventsByDay(events: PlanningEvent[]): DayEvents {
+    // Définition de la fenêtre d'affichage quotidienne (07:00 -> 19:00)
+    const DAY_START_HOUR = 7;
+    const DAY_END_HOUR = 19;
+
+    const atHour = (dateKey: string, hour: number): Date =>
+        new Date(`${dateKey}T${hour.toString().padStart(2, "0")}:00:00+0100`);
+    const startOfDay = (dateKey: string): Date => atHour(dateKey, 0);
+    const endOfDayExclusive = (dateKey: string): Date => {
+        const d = startOfDay(dateKey);
+        d.setDate(d.getDate() + 1);
+        return d;
+    };
+
     return events.reduce<DayEvents>((grouped, event) => {
-        // S'il s'agit d'un événement de type "CONGES", on le décompose pour qu'il soit sur plusieurs jours
-        if (event.className === "CONGES") {
-            // Calculer les jours entre event.start et event.end
-            const startDate = new Date(event.start);
-            const endDate = new Date(event.end);
-            //On génère les dates entre startDate et endDate
-            for (
-                let currentDate = new Date(startDate);
-                currentDate <= endDate;
-                currentDate.setDate(currentDate.getDate() + 1)
-            ) {
-                const dateKey = currentDate.toISOString().split("T")[0];
+        const start = new Date(event.start);
+        const end = new Date(event.end);
 
-                // Initialiser le tableau pour cette date si nécessaire
-                if (!grouped[dateKey]) {
-                    grouped[dateKey] = [];
-                }
+        // Fonction utilitaire: ajoute une tranche quotidienne bornée aux heures visibles
+        const addSlice = (
+            dateKey: string,
+            sliceStart: Date,
+            sliceEnd: Date
+        ) => {
+            // Borne aux heures d'affichage (important pour la vue semaine)
+            const visibleStart = new Date(
+                Math.max(
+                    sliceStart.getTime(),
+                    atHour(dateKey, DAY_START_HOUR).getTime()
+                )
+            );
+            const visibleEnd = new Date(
+                Math.min(
+                    sliceEnd.getTime(),
+                    atHour(dateKey, DAY_END_HOUR).getTime()
+                )
+            );
 
-                // Ajouter une copie de l'événement pour ce jour
-                grouped[dateKey].push({
-                    ...event,
-                    start: new Date(currentDate).toISOString(),
-                    end: new Date(endDate).toISOString()
-                });
-            }
+            // Si la tranche est hors de la fenêtre d'affichage, on ignore
+            if (visibleStart >= visibleEnd) return;
+
+            if (!grouped[dateKey]) grouped[dateKey] = [];
+            grouped[dateKey].push({
+                ...event,
+                start: visibleStart.toISOString(),
+                end: visibleEnd.toISOString()
+            });
+        };
+
+        // Parcours des jours couverts par l'événement et découpe en tranches quotidiennes
+        const startDateKey = start.toISOString().split("T")[0];
+        const endDateKey = end.toISOString().split("T")[0];
+
+        if (startDateKey === endDateKey) {
+            // Événement sur une seule journée
+            addSlice(startDateKey, start, end);
         } else {
-            // Gestion des événements normaux
-            const dateKey = new Date(event.start).toISOString().split("T")[0];
+            // Première journée: de start -> fin de journée (exclusif)
+            addSlice(startDateKey, start, endOfDayExclusive(startDateKey));
 
-            if (!grouped[dateKey]) {
-                grouped[dateKey] = [];
+            // Jours intermédiaires
+            let cursor = new Date(startDateKey);
+            cursor.setDate(cursor.getDate() + 1);
+            while (cursor.toISOString().split("T")[0] < endDateKey) {
+                const dateKey = cursor.toISOString().split("T")[0];
+                addSlice(
+                    dateKey,
+                    startOfDay(dateKey),
+                    endOfDayExclusive(dateKey)
+                );
+                cursor.setDate(cursor.getDate() + 1);
             }
 
-            grouped[dateKey].push(event);
+            // Dernière journée: début de journée -> end
+            addSlice(endDateKey, startOfDay(endDateKey), end);
         }
 
         return grouped;
@@ -137,10 +176,9 @@ export function createBlankEvent(start: Date, end: Date): PlanningEvent {
 
 // Fonction pour retrouver un événement dans le planning
 export function findEvent(planning: PlanningEvent[], event: PlanningEvent) {
-    return planning.find(
-        (e) =>
-            e.id === event.id && e.start === event.start && e.end === event.end
-    );
+    // Avec la découpe multi-jours, start/end des tranches diffèrent de l'original
+    // On matche donc uniquement par id, supposé unique pour un événement.
+    return planning.find((e) => e.id === event.id);
 }
 
 // Fonction pour obtenir l'événement en cours si disponible

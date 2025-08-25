@@ -33,11 +33,11 @@ export default function PlanningList(props: {
 
     // Liste contenant les hauteurs des éléments "ListEvent", handleLayout permet de les mettre à jour
     const [eventSizes, setEventSizes] = useState<{ [key: string]: number }>({});
-    const handleLayout = (event: LayoutChangeEvent, id: any) => {
+    const handleLayout = (event: LayoutChangeEvent, key: string) => {
         const { height } = event.nativeEvent.layout;
         setEventSizes((prevSizes) => ({
             ...prevSizes,
-            [id]: height
+            [key]: height
         }));
     };
 
@@ -47,12 +47,13 @@ export default function PlanningList(props: {
         let height: number = 0;
         for (let i = 0; i < planning[selectedDateISO].length; i++) {
             const event = planning[selectedDateISO][i];
+            const key = `${event.id}-${event.start}`;
             // Si l'événement n'a pas encore commencé
             if (now < new Date(event.start)) {
                 break;
                 // Si l'événement est terminé
             } else if (now > new Date(event.end)) {
-                height += eventSizes[event.id];
+                height += eventSizes[key] || 0;
                 const nextEvent = planning[selectedDateISO][i + 1];
                 if (!nextEvent) break;
                 // Si l'événement suivant a déjà commencé
@@ -69,7 +70,7 @@ export default function PlanningList(props: {
                 // Si l'événement est en cours
             } else {
                 height +=
-                    eventSizes[event.id] *
+                    (eventSizes[key] || 0) *
                     ((now.getTime() - new Date(event.start).getTime()) /
                         (new Date(event.end).getTime() -
                             new Date(event.start).getTime()));
@@ -98,13 +99,13 @@ export default function PlanningList(props: {
                     </View>
                     <FlatList
                         data={planning[selectedDateISO]}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item) => `${item.id}-${item.start}`}
                         renderItem={({ item }) => (
                             <ListEvent
                                 event={item}
                                 onPress={props.setSelectedEvent}
                                 handleLayout={(e: LayoutChangeEvent) =>
-                                    handleLayout(e, item.id)
+                                    handleLayout(e, `${item.id}-${item.start}`)
                                 }
                             />
                         )}

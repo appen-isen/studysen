@@ -53,10 +53,10 @@ export default function PlanningWeek(props: {
                     {/* For each events of the day */}
                     {planning[
                         getWorkdayFromOffset(props.startDate, offset)
-                    ]?.map((event, eventIndex) => {
+                    ]?.map((event) => {
                         return (
                             <WeekEvent
-                                key={eventIndex}
+                                key={`${event.id}-${event.start}`}
                                 event={event}
                                 onPress={props.setSelectedEvent}
                                 PIXEL_PER_HOUR={PIXEL_PER_HOUR}
@@ -76,40 +76,65 @@ export function WeekEvent(props: {
 }) {
     const startHour = formatDateToLocalTime(props.event.start);
     const endHour = formatDateToLocalTime(props.event.end);
+
     // Calcul de la hauteur de l'événement en fonction de sa durée
     const durationInHours =
         (new Date(props.event.end).getTime() -
             new Date(props.event.start).getTime()) /
         (1000 * 60 * 60);
     const eventHeight = durationInHours * props.PIXEL_PER_HOUR;
+    const isVeryShort = durationInHours <= 0.5;
 
-    //Si l'événement est vide alors on affiche une case vide
+    // Si l'événement est vide alors on affiche une case vide
     if (props.event.id === "blank") {
         return (
             <View style={[eventStyles.blankEvent, { height: eventHeight }]} />
         );
     }
-    //On n'affiche pas les congés
+    // On n'affiche pas les congés
     if (props.event.className === "CONGES") {
         return;
     }
+
     return (
         <AnimatedPressable
-            style={[eventStyles.container, { height: eventHeight }]}
+            style={[
+                eventStyles.container,
+                { height: eventHeight },
+                // Mode compact: seulement le texte pour les très courts événements
+                isVeryShort && {
+                    paddingBlock: 0,
+                    gap: 0,
+                    justifyContent: "center"
+                }
+            ]}
             onPress={() => props.onPress && props.onPress(props.event)}
             scale={0.9}
         >
-            <View
+            {!isVeryShort && (
+                <View
+                    style={[
+                        eventStyles.colorBar,
+                        {
+                            backgroundColor: getSubjectColor(
+                                props.event.subject
+                            )
+                        }
+                    ]}
+                />
+            )}
+            <Text
                 style={[
-                    eventStyles.colorBar,
-                    { backgroundColor: getSubjectColor(props.event.subject) }
+                    eventStyles.subject,
+                    isVeryShort && { fontSize: 9, paddingHorizontal: 2 }
                 ]}
-            />
-            <Text style={eventStyles.subject} numberOfLines={1}>
+                numberOfLines={1}
+            >
                 {props.event.subject || props.event.title}
             </Text>
-            {/* On affiche l'heure de début et de fin de l'événement si la durée est supérieure à 30 minutes*/}
-            {durationInHours > 0.5 && (
+
+            {/* On affiche l'heure de début et de fin de l'événement si la durée est supérieure à 45 minutes */}
+            {durationInHours > 0.75 && (
                 <View style={eventStyles.tags}>
                     <Text
                         style={[eventStyles.tag, eventStyles.tagWhite]}
