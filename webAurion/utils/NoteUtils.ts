@@ -15,7 +15,7 @@ export function getNotesFromResponse(htmlReponse: string): NotesList[] {
             note: "",
             absence: "",
             description: "",
-            instructor: "",
+            instructor: ""
         };
         const fields = [
             "date",
@@ -24,14 +24,17 @@ export function getNotesFromResponse(htmlReponse: string): NotesList[] {
             "note",
             "absence",
             "description",
-            "instructor",
+            "instructor"
         ];
         // On construit l'objet note avec les informations de la ligne
         load(element)("td").each((index, element) => {
             let value = load(element).text().trim();
             note[fields[index]] = value;
         });
-        notes.push(note);
+        // Ignorer les notes vides
+        if (note.code.trim() !== "") {
+            notes.push(note);
+        }
     });
     // On regroupe les notes par matière
     const notesByCode: NotesList[] = [];
@@ -44,7 +47,7 @@ export function getNotesFromResponse(htmlReponse: string): NotesList[] {
         } else {
             notesByCode.push({
                 code,
-                notes: [note],
+                notes: [note]
             });
         }
     });

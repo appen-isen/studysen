@@ -287,6 +287,12 @@ export default function HomeScreen() {
                                 }}
                             />
                         ))}
+                        {/* S'il n'y a pas de notes */}
+                        {notes.length === 0 && (
+                            <Text style={styles.noEventText}>
+                                Aucune note récente pour le moment
+                            </Text>
+                        )}
                     </View>
                     {/* Bouton pour voir toutes les notes */}
                     <AnimatedPressable
@@ -369,6 +375,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.light,
         alignSelf: "flex-start",
         paddingVertical: 5,
+        marginTop: 10,
         paddingHorizontal: 10
     },
     allNotesButtonContent: {

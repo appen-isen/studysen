@@ -105,56 +105,54 @@ export function getIconFromNoteCode(
     return "grade";
 }
 
-// Fonction pour envoyer les noms de matière des notes inconnues
-export function sendUnknownNotesTelemetry(notes: NotesList[]): void {
-    let unknownSubjects: string[] = [];
-    notes.forEach((note) => {
-        const knownSubjects =
-            useSentUnknownSubjectStore.getState().unknownSubjects;
-        // On vérifie si le sujet ou le code est déjà connu
+// Fonction générique pour envoyer des noms de matières inconnues
+function sendUnknownSubjects<T>(
+    items: T[],
+    extractSubject: (item: T) => string | null,
+    validateSubject: (subject: string) => boolean = () => true
+): void {
+    const knownSubjects = useSentUnknownSubjectStore.getState().unknownSubjects;
+    const newSubjects = new Set<string>();
+
+    items.forEach((item) => {
+        const subject = extractSubject(item);
         if (
-            !knownSubjects.includes(note.code) &&
-            extractSubjectFromCode(note.code) === null
+            subject !== null &&
+            !knownSubjects.includes(subject) &&
+            validateSubject(subject)
         ) {
-            // Si ce n'est pas connu, on l'ajoute à la liste des sujets inconnus
-            unknownSubjects.push(note.code);
+            // Si la matière est inconnue, on l'ajoute à la liste
+            newSubjects.add(subject);
         }
     });
-    if (unknownSubjects.length > 0) {
-        // On met à jour le store avec les nouveaux sujets inconnus
+
+    if (newSubjects.size > 0) {
+        const subjectsArray = Array.from(newSubjects);
+        // On met à jour le store avec les nouvelles matières inconnues
         useSentUnknownSubjectStore.setState((state) => ({
-            unknownSubjects: [...state.unknownSubjects, ...unknownSubjects]
+            unknownSubjects: [...state.unknownSubjects, ...subjectsArray]
         }));
         // On envoie les données de télémétrie
-        sendUnknownSubjectsTelemetry(unknownSubjects);
+        sendUnknownSubjectsTelemetry(subjectsArray);
     }
+}
+
+// Fonction pour envoyer les noms de matière des notes inconnues
+export function sendUnknownNotesTelemetry(notes: NotesList[]): void {
+    sendUnknownSubjects(notes, (note) =>
+        extractSubjectFromCode(note.code) === null ? note.code : null
+    );
 }
 
 // Fonction pour envoyer les noms de matière inconnus pour les événements du planning
 export function sendUnknownPlanningSubjectsTelemetry(
     planning: PlanningEvent[]
 ): void {
-    let unknownSubjects: string[] = [];
-    planning.forEach((event) => {
-        const knownSubjects =
-            useSentUnknownSubjectStore.getState().unknownSubjects;
-        // On vérifie si la matière est déjà connue
-        if (
-            !knownSubjects.includes(event.subject) &&
-            getSubjectIcon(event.subject) === "event"
-        ) {
-            // On l'ajoute à la liste des sujets inconnus
-            unknownSubjects.push(event.subject);
-        }
-    });
-    if (unknownSubjects.length > 0) {
-        // On met à jour le store avec les nouvelles matières inconnues
-        useSentUnknownSubjectStore.setState((state) => ({
-            unknownSubjects: [...state.unknownSubjects, ...unknownSubjects]
-        }));
-        // On envoie les données de télémétrie
-        sendUnknownSubjectsTelemetry(unknownSubjects);
-    }
+    sendUnknownSubjects(
+        planning,
+        (event) => event.subject,
+        (subject) => getSubjectIcon(subject) === "event"
+    );
 }
 
 // Fonction pour envoyer des données de télémétrie pour les matières ou les codes de notes inconnus
