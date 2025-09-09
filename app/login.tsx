@@ -1,7 +1,6 @@
 import {
     ActivityIndicator,
     KeyboardAvoidingView,
-    Platform,
     Pressable,
     StyleSheet,
     View

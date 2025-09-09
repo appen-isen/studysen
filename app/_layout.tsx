@@ -56,27 +56,30 @@ export default function RootLayout() {
 //Il s'agit de la navigation principale de l'application
 function RootLayoutNav() {
     return (
-        <Stack
-            screenOptions={{
-                headerShown: false,
-                //Barre de status
-                statusBarBackgroundColor: "#fff",
-                statusBarStyle: "dark"
-            }}
-        >
-            <Stack.Screen name="login" />
-            {/* Les parenthèrese permettent de faire comme si les routes étaient directement à la racine de /app 
+        <>
+            <Stack
+                screenOptions={{
+                    headerShown: false,
+                    // Barre de statut
+                    statusBarStyle: "dark",
+                    statusBarTranslucent: true,
+                    statusBarBackgroundColor: "transparent"
+                }}
+            >
+                <Stack.Screen name="login" />
+                {/* Les parenthèrese permettent de faire comme si les routes étaient directement à la racine de /app 
             Par exemple, <Link href="notes-help" /> est possible au lieu de <Link href="(modals)/notes-help" /> 
             */}
-            <Stack.Screen name="(tabs)" />
-            {/* //On définit ici les modales */}
-            <Stack.Screen
-                name="(settings)"
-                options={{
-                    presentation: "modal",
-                    animation: "slide_from_right"
-                }}
-            />
-        </Stack>
+                <Stack.Screen name="(tabs)" />
+                {/* //On définit ici les modales */}
+                <Stack.Screen
+                    name="(settings)"
+                    options={{
+                        presentation: "modal",
+                        animation: "slide_from_right"
+                    }}
+                />
+            </Stack>
+        </>
     );
 }
