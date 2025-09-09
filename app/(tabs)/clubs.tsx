@@ -7,10 +7,13 @@ import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/utils/config";
 import axios from "axios";
 import Colors from "@/constants/Colors";
-import { Bold } from "@/components/Texts";
-import useSettingsStore, { campusToId } from "@/stores/settingsStore";
+import { Bold, Text } from "@/components/Texts";
+import useSettingsStore, { CAMPUS, campusToId } from "@/stores/settingsStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { AnimatedPressable } from "@/components/Buttons";
+import { Dropdown } from "@/components/Modals";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function ClubsScreen() {
     const [posts, setPosts] = useState<PostType[]>([]);
@@ -19,7 +22,8 @@ export default function ClubsScreen() {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true);
-    const { settings } = useSettingsStore();
+    const [campusMenuVisible, setCampusMenuVisible] = useState(false);
+    const { settings, setSettings } = useSettingsStore();
 
     const fetchLatestPost = async (
         offset: number
@@ -28,7 +32,7 @@ export default function ClubsScreen() {
             //On récupère le X dernier post
             const response = await axios.get(
                 `${API_BASE_URL}/posts/last?offset=${offset}&campus=${campusToId(
-                    settings.campus
+                    useSettingsStore.getState().settings.campus
                 )}`
             );
             return response.data;
@@ -107,7 +111,18 @@ export default function ClubsScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
-                <PageHeader title="Clubs"></PageHeader>
+                <PageHeader title="Clubs">
+                    {/* Bouton pour choisir le campus */}
+                    <AnimatedPressable
+                        style={styles.campusSelect}
+                        onPress={() => setCampusMenuVisible(true)}
+                    >
+                        <Text style={styles.campusSelectText}>
+                            Campus de {settings.campus}
+                        </Text>
+                        <MaterialIcons name="keyboard-arrow-down" size={24} />
+                    </AnimatedPressable>
+                </PageHeader>
                 <FlatList
                     data={posts}
                     contentContainerStyle={styles.scrollContainer}
@@ -139,6 +154,22 @@ export default function ClubsScreen() {
                         ) : null
                     }
                 />
+                {/* Menu pour choisir le campus */}
+                <Dropdown
+                    visible={campusMenuVisible}
+                    setVisible={setCampusMenuVisible}
+                    options={[...CAMPUS]}
+                    selectedItem={settings.campus}
+                    setSelectedItem={(newCampus) => {
+                        setSettings(
+                            "campus",
+                            newCampus as (typeof CAMPUS)[number]
+                        );
+                        // On rafraîchit les posts après le changement de campus
+                        onRefresh();
+                    }}
+                    modalBoxStyle={styles.dropdownBoxStyle}
+                ></Dropdown>
             </View>
         </SafeAreaView>
     );
@@ -164,5 +195,29 @@ const styles = StyleSheet.create({
     noPostsText: {
         fontSize: 20,
         alignSelf: "center"
+    },
+    //
+    // Campus selection
+    //
+    campusSelect: {
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 15,
+        paddingVertical: 8,
+        backgroundColor: Colors.light,
+        borderRadius: 999,
+        gap: 5
+    },
+    campusSelectText: {
+        color: Colors.black,
+        fontSize: 14,
+        fontWeight: 600
+    },
+    dropdownBoxStyle: {
+        width: 250,
+        display: "flex",
+        justifyContent: "flex-start",
+        alignItems: "flex-start"
     }
 });
