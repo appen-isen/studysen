@@ -81,10 +81,7 @@ export default function PlanningList(props: {
     };
 
     return (
-        <ScrollView
-            contentContainerStyle={styles.container}
-            showsVerticalScrollIndicator={false}
-        >
+        <ScrollView contentContainerStyle={styles.container}>
             {!planning[selectedDateISO] ? (
                 <Text style={styles.noData}>Aucun événement à afficher</Text>
             ) : (
