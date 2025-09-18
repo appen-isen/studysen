@@ -19,11 +19,16 @@ export function Page(props: {
         props.style
     ];
     return (
-        <SafeAreaView style={pageStyles.container}>
+        <SafeAreaView
+            style={pageStyles.container}
+            // On exclut le bottom pour éviter le double padding avec la Bottom Tab Bar (SDK 54)
+            edges={["top", "left", "right"]}
+        >
             <ScrollView
                 style={pageStyles.container}
                 contentContainerStyle={contentStyle}
                 scrollEnabled={props.scrollable}
+                keyboardShouldPersistTaps="handled"
             >
                 {props.children}
             </ScrollView>
@@ -77,9 +82,11 @@ const pageStyles = StyleSheet.create({
         backgroundColor: Colors.white
     },
     content: {
-        paddingBlock: 10,
+        paddingTop: 10,
+        paddingBottom: 10,
         paddingInline: getResponsivePadding(),
-        backgroundColor: Colors.white
+        backgroundColor: Colors.white,
+        flexGrow: 1
     }
 });
 

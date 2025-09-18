@@ -90,7 +90,8 @@
           "photosPermission": "L'application accède à vos photos pour les rapports de bug."
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
