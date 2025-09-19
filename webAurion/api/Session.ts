@@ -27,6 +27,7 @@ export class Session {
     constructor() {
         this.client = axios.create({
             baseURL: this.baseURL,
+            timeout: 8000,
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8",
