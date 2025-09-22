@@ -9,8 +9,11 @@ import { API_BASE_URL } from "./config";
 const subjectMapping: Record<string, string> = {
     MATH: "Mathématiques",
     PROBA: "Mathématiques",
+    PROBABILITES: "Mathématiques",
+    Graphes: "Mathématiques",
     PHYS: "Physique",
     ALGO: "Informatique",
+    Algorithmique: "Informatique",
     WEB: "Informatique",
     LINUX: "Informatique",
     CULTURE_NUM: "Informatique",
@@ -20,9 +23,14 @@ const subjectMapping: Record<string, string> = {
     ENVT: "Environnement",
     SI: "Sciences de l'Ingénieur",
     ANGLAIS: "Anglais",
+    LV2: "Anglais",
     FHS: "FHS",
     PROJET_INFO: "Informatique",
-    RESEAUX: "Informatique"
+    RESEAUX: "Informatique",
+    Réseaux: "Informatique",
+    "Gestion de projet": "Entrepreneuriat",
+    Electronique: "Energie",
+    "Traitement du signal": "Energie"
 };
 // Fonction pour obtenir la couleur d'un événement en fonction de la matière
 export function getSubjectColor(subject: string): string {
@@ -40,6 +48,16 @@ export function getSubjectColor(subject: string): string {
             return "#FFA3E3";
         case "FHS":
             return "#B1E8BB";
+        case "Environnement":
+            return "#18bd4aff";
+        case "Entrepreneuriat":
+            return "#ff745cff";
+        case "Economie":
+            return "#e5ec18ff";
+        case "Energie":
+            return "#155bf4ff";
+        case "Sport":
+            return "#6a4e2cff";
         default:
             return Colors.lightGray;
     }
@@ -68,6 +86,21 @@ export function getSubjectIcon(
             break;
         case "FHS":
             icon = "record-voice-over";
+            break;
+        case "Environnement":
+            icon = "eco";
+            break;
+        case "Entrepreneuriat":
+            icon = "groups";
+            break;
+        case "Economie":
+            icon = "attach-money";
+            break;
+        case "Energie":
+            icon = "electric-bolt";
+            break;
+        case "Sport":
+            icon = "sports-baseball";
             break;
         default:
             icon = "event";
