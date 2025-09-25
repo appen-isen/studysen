@@ -294,24 +294,26 @@ export default function HomeScreen() {
                             </Text>
                         )}
                     </View>
-                    {/* Bouton pour voir toutes les notes */}
-                    <AnimatedPressable
-                        style={styles.allNotesButton}
-                        //On redirige vers l'onglet notes
-                        onPress={handleViewNotes}
-                        scale={0.9}
-                    >
-                        <View style={styles.allNotesButtonContent}>
-                            <MaterialCommunityIcons
-                                name="dots-horizontal"
-                                size={20}
-                                color={Colors.black}
-                            />
-                            <Text style={styles.allNotesButtonText}>
-                                Voir plus
-                            </Text>
-                        </View>
-                    </AnimatedPressable>
+                    {notes.length > 0 && (
+                        // Bouton pour voir toutes les notes
+                        <AnimatedPressable
+                            style={styles.allNotesButton}
+                            //On redirige vers l'onglet notes
+                            onPress={handleViewNotes}
+                            scale={0.9}
+                        >
+                            <View style={styles.allNotesButtonContent}>
+                                <MaterialCommunityIcons
+                                    name="dots-horizontal"
+                                    size={20}
+                                    color={Colors.black}
+                                />
+                                <Text style={styles.allNotesButtonText}>
+                                    Voir plus
+                                </Text>
+                            </View>
+                        </AnimatedPressable>
+                    )}
                 </View>
             </View>
             {/* Modal pour afficher les informations d'un cours */}
@@ -375,7 +377,6 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.light,
         alignSelf: "flex-start",
         paddingVertical: 5,
-        marginTop: 10,
         paddingHorizontal: 10
     },
     allNotesButtonContent: {

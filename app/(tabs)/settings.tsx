@@ -22,8 +22,7 @@ import {
 } from "@/utils/notes";
 import { getSemester } from "@/utils/date";
 import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
-import { getEmailFromName, getFirstLetters } from "@/utils/account";
+import { getFirstLetters } from "@/utils/account";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
 
 export default function SettingsScreen() {
@@ -47,9 +46,8 @@ export default function SettingsScreen() {
     const [confirmVisible, setConfirmVisible] = useState(false);
     const confirmMessage = "Êtes-vous sûr de vouloir vous déconnecter ?";
 
-    //Nom de l'utilisateur et email
+    //Nom de l'utilisateur
     const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
     const [firstLetters, setFirstLetters] = useState("");
     useEffect(() => {
         if (settings.username) {
@@ -57,8 +55,6 @@ export default function SettingsScreen() {
             setUsername(username);
             //Initiales du prénom et du nom
             setFirstLetters(getFirstLetters(username));
-            //Email de l'utilisateur
-            setEmail(getEmailFromName(username));
         }
     }, [settings]);
     return (
@@ -67,10 +63,12 @@ export default function SettingsScreen() {
                 <View style={styles.profilePart}>
                     {/* Avatar de l'utilisateur avec les initiales */}
                     <Text style={styles.profileAvatar}>{firstLetters}</Text>
-                    {/* Informations de l'utilisateur (Nom et email) */}
+                    {/* Informations de l'utilisateur (Nom et campus) */}
                     <View style={styles.profileContent}>
                         <Text style={styles.profileName}>{username}</Text>
-                        <Text style={styles.profileMail}>{email}</Text>
+                        <Text style={styles.profileCampus}>
+                            Campus de {settings.campus}
+                        </Text>
                     </View>
                 </View>
                 {/* Bouton de déconnexion */}
@@ -263,7 +261,7 @@ const styles = StyleSheet.create({
         fontWeight: 600,
         textAlign: "center"
     },
-    profileMail: {
+    profileCampus: {
         fontSize: 10,
         textAlign: "center",
         maxWidth: "100%",
