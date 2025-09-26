@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "381040059519",
-    "project_id": "studysen-c78b1",
-    "storage_bucket": "studysen-c78b1.firebasestorage.app"
+    "project_number": "718705042421",
+    "project_id": "studysen-firebase",
+    "storage_bucket": "studysen-firebase.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:381040059519:android:0e154d19309fdc31494b4a",
+        "mobilesdk_app_id": "1:718705042421:android:2e6965525d5277aced76bc",
         "android_client_info": {
-          "package_name": "com.appen.studysen"
+          "package_name": "fr.appen.studysen"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAjef00_Ri-PoJ9U5HDYWvUvyQdBRzlIug"
+          "current_key": "AIzaSyDlpmY5TDRuvmWxzddtDkWjTu7Ubrd0yWc"
         }
       ],
       "services": {
