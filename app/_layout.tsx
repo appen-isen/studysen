@@ -6,6 +6,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
+import { StatusBar } from "react-native";
 import "react-native-reanimated";
 
 //Layout par défaut de l'application
@@ -57,13 +58,14 @@ export default function RootLayout() {
 function RootLayoutNav() {
     return (
         <>
+            <StatusBar
+                barStyle="dark-content"
+                backgroundColor="transparent"
+                translucent
+            />
             <Stack
                 screenOptions={{
-                    headerShown: false,
-                    // Barre de statut
-                    statusBarStyle: "dark",
-                    statusBarTranslucent: true,
-                    statusBarBackgroundColor: "transparent"
+                    headerShown: false
                 }}
             >
                 <Stack.Screen name="login" />
