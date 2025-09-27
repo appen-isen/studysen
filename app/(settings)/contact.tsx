@@ -316,7 +316,8 @@ ${username}
 
 const styles = StyleSheet.create({
     container: {
-        gap: 25
+        gap: 25,
+        paddingBottom: 50
     },
     responsiveContainer: {
         width: "100%",

@@ -1,6 +1,7 @@
 import { getSemesterFromCode } from "@/utils/notes";
 import { NotesList, PlanningEvent } from "./types";
 import { mergePlanning } from "@/utils/planning";
+import { getCloserMonday } from "@/utils/date";
 
 export function generateDemoNotes(): NotesList[] {
     let notes = [
@@ -14,9 +15,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "17.83",
                     absence: "",
                     description: "",
-                    instructor: "MENEU Jean-Jacques",
-                },
-            ],
+                    instructor: "MENEU Jean-Jacques"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_ALGO_C_DS2",
@@ -28,9 +29,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "19.50",
                     absence: "",
                     description: "",
-                    instructor: "BESCHER Florian",
-                },
-            ],
+                    instructor: "BESCHER Florian"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_ANGLAIS_DS",
@@ -43,9 +44,9 @@ export function generateDemoNotes(): NotesList[] {
                     absence: "",
                     description: "",
                     instructor:
-                        "TURMERO MORIN Maria Virginia, BILES Karina, BODEN Nina",
-                },
-            ],
+                        "TURMERO MORIN Maria Virginia, BILES Karina, BODEN Nina"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_CULTURE_NUM_CC",
@@ -57,9 +58,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "19.00",
                     absence: "",
                     description: "",
-                    instructor: "OULD AMER Khadidja",
-                },
-            ],
+                    instructor: "OULD AMER Khadidja"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_LINUX_CC",
@@ -71,9 +72,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "18.96",
                     absence: "",
                     description: "",
-                    instructor: "BEAUSSÉ Nils",
-                },
-            ],
+                    instructor: "BEAUSSÉ Nils"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_MATH_CC",
@@ -85,9 +86,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "18.80",
                     absence: "",
                     description: "",
-                    instructor: "RAIMBAULT Nathaniel",
-                },
-            ],
+                    instructor: "RAIMBAULT Nathaniel"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_MATH_DS1",
@@ -99,9 +100,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "18.00",
                     absence: "",
                     description: "",
-                    instructor: "RAIMBAULT Nathaniel",
-                },
-            ],
+                    instructor: "RAIMBAULT Nathaniel"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_MATH_DS2",
@@ -113,9 +114,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "17.00",
                     absence: "",
                     description: "",
-                    instructor: "RAIMBAULT Nathaniel",
-                },
-            ],
+                    instructor: "RAIMBAULT Nathaniel"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_MATH_DS3",
@@ -127,9 +128,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "19.50",
                     absence: "",
                     description: "",
-                    instructor: "RAIMBAULT Nathaniel",
-                },
-            ],
+                    instructor: "RAIMBAULT Nathaniel"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_PHYSIQUE_CC",
@@ -141,9 +142,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "20.00",
                     absence: "",
                     description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
+                    instructor: "COLIN Vincent"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_PHYSIQUE_DS1",
@@ -155,9 +156,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "20.00",
                     absence: "",
                     description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
+                    instructor: "COLIN Vincent"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_PHYSIQUE_DS2",
@@ -169,9 +170,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "18.50",
                     absence: "",
                     description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
+                    instructor: "COLIN Vincent"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_PHYSIQUE_DS3",
@@ -183,9 +184,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "20.00",
                     absence: "",
                     description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
+                    instructor: "COLIN Vincent"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_PHYSIQUE_DSS",
@@ -197,9 +198,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "16.25",
                     absence: "",
                     description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
+                    instructor: "COLIN Vincent"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_PHYSIQUE_TP",
@@ -211,9 +212,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "15.25",
                     absence: "",
                     description: "",
-                    instructor: "COLIN Vincent",
-                },
-            ],
+                    instructor: "COLIN Vincent"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_SI_DS",
@@ -225,9 +226,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "20.00",
                     absence: "",
                     description: "",
-                    instructor: "BOUERY Charbel",
-                },
-            ],
+                    instructor: "BOUERY Charbel"
+                }
+            ]
         },
         {
             code: "24_CIR1N_A1_S1_WEB_FRONT_DS",
@@ -239,9 +240,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "18.75",
                     absence: "",
                     description: "",
-                    instructor: "ABDALLAH SAAB Nadine",
-                },
-            ],
+                    instructor: "ABDALLAH SAAB Nadine"
+                }
+            ]
         },
         {
             code: "24_CIPA3N_CARTO_S5",
@@ -253,9 +254,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "16.99",
                     absence: "",
                     description: "",
-                    instructor: "Mr TEST",
-                },
-            ],
+                    instructor: "Mr TEST"
+                }
+            ]
         },
         {
             code: "24_CIPA3N_ENTREPRENEURIAT_S6",
@@ -267,9 +268,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "15.99",
                     absence: "",
                     description: "",
-                    instructor: "Mr TEST",
-                },
-            ],
+                    instructor: "Mr TEST"
+                }
+            ]
         },
         {
             code: "24_CSI2N_A2_S3_INFO_DS",
@@ -281,9 +282,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "15.99",
                     absence: "",
                     description: "",
-                    instructor: "Mr TEST",
-                },
-            ],
+                    instructor: "Mr TEST"
+                }
+            ]
         },
         {
             code: "24_CSI2N_A2_S3_MATH_DS1",
@@ -295,9 +296,9 @@ export function generateDemoNotes(): NotesList[] {
                     note: "15.99",
                     absence: "",
                     description: "",
-                    instructor: "Mr TEST",
-                },
-            ],
+                    instructor: "Mr TEST"
+                }
+            ]
         },
         {
             code: "24_CSI2N_A2_S3_MATH_DS2",
@@ -309,10 +310,10 @@ export function generateDemoNotes(): NotesList[] {
                     note: "15.99",
                     absence: "",
                     description: "",
-                    instructor: "Mr TEST",
-                },
-            ],
-        },
+                    instructor: "Mr TEST"
+                }
+            ]
+        }
     ];
     return notes;
 }
@@ -328,7 +329,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-06T08:00:00+0100",
             end: "2025-01-06T10:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15716705",
@@ -339,7 +340,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-06T10:15:00+0100",
             end: "2025-01-06T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689457",
@@ -350,7 +351,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-06T13:30:00+0100",
             end: "2025-01-06T15:30:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "14676049",
@@ -361,7 +362,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-06T15:40:00+0100",
             end: "2025-01-06T17:40:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15836659",
@@ -372,7 +373,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CIR1 Nantes 2024-2025",
             start: "2025-01-07T08:00:00+0100",
             end: "2025-01-07T10:00:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15446586",
@@ -383,7 +384,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-07T10:15:00+0100",
             end: "2025-01-07T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15447135",
@@ -394,7 +395,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CIR1 Nantes 2024-2025",
             start: "2025-01-07T13:30:00+0100",
             end: "2025-01-07T15:30:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15780828",
@@ -405,7 +406,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CIR1 Nantes 2024-2025",
             start: "2025-01-08T08:00:00+0100",
             end: "2025-01-08T10:00:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "14997890",
@@ -416,7 +417,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-08T10:15:00+0100",
             end: "2025-01-08T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15062563",
@@ -427,7 +428,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
             start: "2025-01-08T15:45:00+0100",
             end: "2025-01-08T17:45:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15448889",
@@ -439,7 +440,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
                 "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",
             start: "2025-01-09T08:00:00+0100",
             end: "2025-01-09T10:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15448937",
@@ -451,7 +452,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
                 "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",
             start: "2025-01-09T10:15:00+0100",
             end: "2025-01-09T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15348524",
@@ -463,7 +464,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
                 "CENT1 Nantes 2024-2025 Groupe Sport / CENT2 Nantes 2024-2025 Groupe Sport / CEST1 Nantes 2024-2025 Groupe Sport / CEST2 Nantes 2024-2025 Groupe Sport / CIR1 Nantes 2024-2025 Groupe Sport / CIR2 Nantes 2024-2025 Groupe Sport / CSI1 Nantes 2024-2025 Groupe Sport / CSI2 Nantes 2024-2025 Groupe Sport",
             start: "2025-01-09T16:00:00+0100",
             end: "2025-01-09T17:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689502",
@@ -474,7 +475,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-10T08:30:00+0100",
             end: "2025-01-10T08:45:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689502",
@@ -485,7 +486,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-10T09:00:00+0100",
             end: "2025-01-10T09:30:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15446630",
@@ -496,7 +497,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-10T09:45:00+0100",
             end: "2025-01-10T11:45:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15062584",
@@ -507,7 +508,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
             start: "2025-01-10T15:45:00+0100",
             end: "2025-01-10T17:45:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15062584",
@@ -518,8 +519,8 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
             start: "2025-01-10T15:45:00+0100",
             end: "2025-01-10T17:45:00+0100",
-            className: "TP",
-        },
+            className: "TP"
+        }
     ];
     let newPlanning = [
         {
@@ -531,7 +532,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-06T08:00:00+0100",
             end: "2025-01-06T10:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15716705",
@@ -542,7 +543,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-06T10:15:00+0100",
             end: "2025-01-06T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689457",
@@ -553,7 +554,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-06T13:30:00+0100",
             end: "2025-01-06T15:30:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "14676049",
@@ -564,7 +565,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-06T15:40:00+0100",
             end: "2025-01-06T17:40:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15836659",
@@ -575,7 +576,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CIR1 Nantes 2024-2025",
             start: "2025-01-07T08:00:00+0100",
             end: "2025-01-07T10:00:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15446586",
@@ -586,7 +587,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-07T10:15:00+0100",
             end: "2025-01-07T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15447135",
@@ -597,7 +598,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CIR1 Nantes 2024-2025",
             start: "2025-01-07T13:30:00+0100",
             end: "2025-01-07T15:30:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15780828",
@@ -608,7 +609,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CIR1 Nantes 2024-2025",
             start: "2025-01-08T08:00:00+0100",
             end: "2025-01-08T10:00:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "14997890",
@@ -619,7 +620,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-08T10:15:00+0100",
             end: "2025-01-08T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15062563",
@@ -630,7 +631,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
             start: "2025-01-08T15:45:00+0100",
             end: "2025-01-08T17:45:00+0100",
-            className: "TP",
+            className: "TP"
         },
         {
             id: "15448889",
@@ -642,7 +643,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
                 "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",
             start: "2025-01-09T08:00:00+0100",
             end: "2025-01-09T10:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15448937",
@@ -654,7 +655,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
                 "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",
             start: "2025-01-09T10:15:00+0100",
             end: "2025-01-09T12:15:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15348524",
@@ -666,7 +667,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
                 "CENT1 Nantes 2024-2025 Groupe Sport / CENT2 Nantes 2024-2025 Groupe Sport / CEST1 Nantes 2024-2025 Groupe Sport / CEST2 Nantes 2024-2025 Groupe Sport / CIR1 Nantes 2024-2025 Groupe Sport / CIR2 Nantes 2024-2025 Groupe Sport / CSI1 Nantes 2024-2025 Groupe Sport / CSI2 Nantes 2024-2025 Groupe Sport",
             start: "2025-01-09T16:00:00+0100",
             end: "2025-01-09T17:00:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689502",
@@ -677,7 +678,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-10T08:30:00+0100",
             end: "2025-01-10T08:45:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15689502",
@@ -688,7 +689,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-10T09:00:00+0100",
             end: "2025-01-10T09:30:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15446630",
@@ -699,7 +700,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025",
             start: "2025-01-10T09:45:00+0100",
             end: "2025-01-10T11:45:00+0100",
-            className: "COURS",
+            className: "COURS"
         },
         {
             id: "15062584",
@@ -710,36 +711,36 @@ export function generateDemoPlanning(): PlanningEvent[] {
             learners: "CIR1 Nantes 2024-2025 TP Groupe 4",
             start: "2025-01-10T15:45:00+0100",
             end: "2025-01-10T17:45:00+0100",
-            className: "TP",
-        },
+            className: "TP"
+        }
     ];
 
     // Fonction pour ajuster la date
     const adjustDate = (dateStr: string) => {
-        const date = new Date(dateStr);
-        const now = new Date();
+        const weekStart = getCloserMonday(new Date());
 
-        // Création d'une nouvelle date en conservant le jour de la semaine mais avec l'année, le mois et le jour actuels
-        const adjustedDate = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate() + (date.getDay() - now.getDay()),
-        );
+        const original = new Date(dateStr);
+        const adjusted = new Date(weekStart);
 
-        // Copie des heures et minutes de la date originale
-        adjustedDate.setHours(date.getHours() + 1, date.getMinutes());
-        return adjustedDate.toISOString().replace("Z", "+0100");
+        // Jour de la semaine 0‑6 (lundi = 1)
+        const dayOfWeek = original.getDay();
+        const offset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        adjusted.setDate(weekStart.getDate() + offset);
+
+        adjusted.setHours(original.getHours(), original.getMinutes(), 0, 0);
+
+        return adjusted.toISOString();
     };
 
     const adjustedPlanning = planning.map((event) => ({
         ...event,
         start: adjustDate(event.start),
-        end: adjustDate(event.end),
+        end: adjustDate(event.end)
     }));
     const newAdjustedPlanning = newPlanning.map((event) => ({
         ...event,
         start: adjustDate(event.start),
-        end: adjustDate(event.end),
+        end: adjustDate(event.end)
     }));
 
     return mergePlanning(adjustedPlanning, newAdjustedPlanning);
