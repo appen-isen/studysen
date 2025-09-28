@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-**Décrivez la solution que vous souhaitez**
+**Votre idée**
 Une description claire et concise de ce que vous voulez voir se produire.
 
 **Contexte supplémentaire**
