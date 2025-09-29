@@ -17,9 +17,6 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
     const [loaded, error] = useFonts({
-        "OpenSans-400": require("../assets/fonts/OpenSans-400.ttf"),
-        "OpenSans-600": require("../assets/fonts/OpenSans-600.ttf"),
-        "OpenSans-700": require("../assets/fonts/OpenSans-700.ttf"),
         ...FontAwesome.font
     });
 

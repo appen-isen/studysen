@@ -335,8 +335,7 @@ const settingStyles = StyleSheet.create({
     },
     text: {
         color: Colors.darkGray,
-
-        fontWeight: 500
+        fontWeight: 400
     },
     action: {
         flexDirection: "row",
