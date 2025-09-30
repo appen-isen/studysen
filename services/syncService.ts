@@ -46,6 +46,7 @@ function clearPendingRetry() {
 async function syncData() {
     if (isSyncInProgress) return;
     isSyncInProgress = true;
+    console.log("Début de la synchronisation");
     try {
         const { session } = useSessionStore.getState();
         const { settings } = useSettingsStore.getState();
@@ -92,6 +93,7 @@ async function syncData() {
 
         // On plannifie ou supprime un retry en fonction du nouveau statut
         if (useSyncStore.getState().syncStatus === "success") {
+            console.log("Synchronisation réussie");
             clearPendingRetry();
         } else if (useSyncStore.getState().syncStatus === "error") {
             scheduleRetryIfNeeded();

@@ -19,23 +19,29 @@ export function SyncBadge() {
     useEffect(() => {
         // Animation d'apparition ou de rétractation en fonction de `isVisible`
         Animated.timing(heightValue, {
-            toValue: isVisible ? 20 : 0, // Hauteur cible (50 pour affiché, 0 pour caché)
+            toValue: isVisible ? 30 : 0, // Hauteur cible (30 pour affiché, 0 pour caché)
             duration: 300, // Durée de l'animation
             easing: Easing.ease,
             useNativeDriver: false // `height` n'est pas pris en charge par useNativeDriver
         }).start();
     }, [isVisible, heightValue]);
     return (
-        <Animated.View style={[styles.syncView, { height: heightValue }]}>
-            {syncStatus === "syncing" ? (
+        <Animated.View
+            style={[
+                styles.syncView,
+                { height: heightValue, borderBottomWidth: isVisible ? 1 : 0 }
+            ]}
+        >
+            {syncStatus === "syncing" && (
                 // En cours de synchronisation
                 <>
-                    <ActivityIndicator size={15} />
+                    <ActivityIndicator size={15} color={Colors.black} />
                     <Text style={styles.syncText}>
                         Synchronisation depuis Internet
                     </Text>
                 </>
-            ) : (
+            )}
+            {syncStatus === "error" && (
                 // Erreur de synchronisation
                 <>
                     <MaterialIcons
@@ -65,7 +71,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        boxShadow: "0px 4px 15px rgba(0,0,0,0.1)",
+        boxShadow: "0px 4px 40px rgba(0,0,0,0.25)",
+        borderBottomColor: Colors.lightGray,
         overflow: "hidden", // Cache le contenu quand la hauteur diminue
         zIndex: 1000
     },

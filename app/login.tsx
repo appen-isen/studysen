@@ -90,7 +90,8 @@ export default function LoginScreen() {
                     }
                     //On sauvegarde le nom d'utilisateur dans les paramètres
                     setSettings("username", session.getUsername());
-
+                    //On lance la synchronisation en arrière plan
+                    startAutoSync();
                     router.replace("/(tabs)");
                 } else {
                     setErrorMessage(

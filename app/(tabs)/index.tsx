@@ -77,58 +77,56 @@ export default function HomeScreen() {
             <View style={sectionStyles.section}>
                 {/* Titre de la section */}
                 <Text style={sectionStyles.titleText}>EN CE MOMENT</Text>
-                {/* Si le planning n'est pas vide, on affiche les événements */}
-                {formattedPlanning.length > 0 && (
-                    <View style={sectionStyles.content}>
-                        {/* Événement en cours */}
-                        {getCurrentEvent(formattedPlanning) !== null && (
-                            <ListEvent
-                                event={getCurrentEvent(formattedPlanning)!}
-                                handleLayout={() => {}}
-                                //Affiche les informations d'un cours dans une modal
-                                onPress={(planningEvent) => {
-                                    //Si c'est un congé, on affiche directement les informations
-                                    if (planningEvent.className === "CONGES") {
-                                        setSelectedEvent(planningEvent);
-                                    } else {
-                                        //Sinon on affiche les informations complètes de l'événement
-                                        setSelectedEvent(
-                                            findEvent(planning, planningEvent)
-                                        );
-                                    }
-                                    setEventModalInfoVisible(true);
-                                }}
-                            />
+
+                <View style={sectionStyles.content}>
+                    {/* Événement en cours */}
+                    {getCurrentEvent(formattedPlanning) !== null && (
+                        <ListEvent
+                            event={getCurrentEvent(formattedPlanning)!}
+                            handleLayout={() => {}}
+                            //Affiche les informations d'un cours dans une modal
+                            onPress={(planningEvent) => {
+                                //Si c'est un congé, on affiche directement les informations
+                                if (planningEvent.className === "CONGES") {
+                                    setSelectedEvent(planningEvent);
+                                } else {
+                                    //Sinon on affiche les informations complètes de l'événement
+                                    setSelectedEvent(
+                                        findEvent(planning, planningEvent)
+                                    );
+                                }
+                                setEventModalInfoVisible(true);
+                            }}
+                        />
+                    )}
+                    {/* Événement à venir */}
+                    {getNextEventToday(formattedPlanning) !== null && (
+                        <ListEvent
+                            event={getNextEventToday(formattedPlanning)!}
+                            handleLayout={() => {}}
+                            //Affiche les informations d'un cours dans une modal
+                            onPress={(planningEvent) => {
+                                //Si c'est un congé, on affiche directement les informations
+                                if (planningEvent.className === "CONGES") {
+                                    setSelectedEvent(planningEvent);
+                                } else {
+                                    //Sinon on affiche les informations complètes de l'événement
+                                    setSelectedEvent(
+                                        findEvent(planning, planningEvent)
+                                    );
+                                }
+                                setEventModalInfoVisible(true);
+                            }}
+                        />
+                    )}
+                    {/* Si aucun événement n'est trouvé, on affiche un message */}
+                    {getCurrentEvent(formattedPlanning) === null &&
+                        getNextEventToday(formattedPlanning) === null && (
+                            <Text style={styles.noEventText}>
+                                Aucun événement à venir aujourd'hui
+                            </Text>
                         )}
-                        {/* Événement à venir */}
-                        {getNextEventToday(formattedPlanning) !== null && (
-                            <ListEvent
-                                event={getNextEventToday(formattedPlanning)!}
-                                handleLayout={() => {}}
-                                //Affiche les informations d'un cours dans une modal
-                                onPress={(planningEvent) => {
-                                    //Si c'est un congé, on affiche directement les informations
-                                    if (planningEvent.className === "CONGES") {
-                                        setSelectedEvent(planningEvent);
-                                    } else {
-                                        //Sinon on affiche les informations complètes de l'événement
-                                        setSelectedEvent(
-                                            findEvent(planning, planningEvent)
-                                        );
-                                    }
-                                    setEventModalInfoVisible(true);
-                                }}
-                            />
-                        )}
-                        {/* Si aucun événement n'est trouvé, on affiche un message */}
-                        {getCurrentEvent(formattedPlanning) === null &&
-                            getNextEventToday(formattedPlanning) === null && (
-                                <Text style={styles.noEventText}>
-                                    Aucun événement à venir aujourd'hui
-                                </Text>
-                            )}
-                    </View>
-                )}
+                </View>
             </View>
             {/* Notes */}
             <View style={sectionStyles.section}>
