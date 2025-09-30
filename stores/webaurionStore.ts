@@ -3,7 +3,7 @@ import { create } from "zustand";
 import {
     clearStateFromStorage,
     loadStateFromStorage,
-    saveStateToStorage,
+    saveStateToStorage
 } from "./storage";
 
 type PlanningState = {
@@ -11,11 +11,7 @@ type PlanningState = {
     setPlanning: (planning: PlanningEvent[]) => void;
     clearPlanning: () => void;
 };
-type SyncedPlanningState = {
-    syncedPlanning: PlanningEvent[];
-    setSyncedPlanning: (planning: PlanningEvent[]) => void;
-    clearSyncedPlanning: () => void;
-};
+
 type NotesState = {
     notes: NotesList[];
     setNotes: (notes: NotesList[]) => void;
@@ -32,14 +28,7 @@ export const usePlanningStore = create<PlanningState>()((set) => ({
     clearPlanning: () => {
         set({ planning: [] });
         clearStateFromStorage("planning");
-    }, // Supprime le planning
-}));
-
-// Planning synchronisé avec Internet (pas de persistance pour celui ci)
-export const useSyncedPlanningStore = create<SyncedPlanningState>((set) => ({
-    syncedPlanning: [],
-    setSyncedPlanning: (syncedPlanning) => set({ syncedPlanning }),
-    clearSyncedPlanning: () => set({ syncedPlanning: [] }),
+    } // Supprime le planning
 }));
 
 // Notes de l'utilisateur
@@ -52,7 +41,7 @@ export const useNotesStore = create<NotesState>()((set) => ({
     clearNotes: () => {
         set({ notes: [] });
         clearStateFromStorage("notes");
-    }, // Supprime les notes
+    } // Supprime les notes
 }));
 
 // On charge les stores depuis le stockage

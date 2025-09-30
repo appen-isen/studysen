@@ -22,6 +22,7 @@ import { Sheet } from "@/components/Sheet";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { startAutoSync } from "@/services/syncService";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -30,34 +31,16 @@ export default function LoginScreen() {
     const { settings, setSettings } = useSettingsStore();
 
     //Connexion automatique
-    const [autoLogin, setAutoLogin] = useState(false);
     useEffect(() => {
         const fetchStoredCredentials = async () => {
             //On récupère les identifiants stockés dans le secure store
             const storedUsername = await getSecureStoreItem("username");
             const storedPassword = await getSecureStoreItem("password");
             if (storedUsername && storedPassword) {
-                setAutoLogin(true);
-                //On connecte l'utilisateur automatiquement
-                const session = new Session();
-                try {
-                    await session.login(storedUsername, storedPassword, 6000);
-                    //On sauvegarde la session dans le store
-                    setSession(session);
-                    //On sauvegarde le nom d'utilisateur dans les paramètres
-                    setSettings("username", session.getUsername());
-
-                    //On redirige l'utilisateur vers la page principale
-                    router.replace("/(tabs)");
-                } catch (err) {
-                    //Probablement un timeout, donc on considère que l'utilisateur est hors ligne
-                    console.log("Offline mode enabled!");
-                    console.error(err);
-                    router.replace({
-                        pathname: "/(tabs)",
-                        params: { offlineMode: 1 }
-                    });
-                }
+                //On lance la synchronisation en arrière plan
+                startAutoSync();
+                //On redirige l'utilisateur vers la page principale
+                router.replace("/(tabs)");
             } else {
                 // On supprime l'enregistrement pour les notifications si l'utilisateur se connecte manuellement
                 unregisterDeviceForNotifications();
@@ -127,18 +110,6 @@ export default function LoginScreen() {
             });
     };
 
-    // Chargement de la connexion automatique
-    if (autoLogin) {
-        return (
-            <View style={styles.container}>
-                <ActivityIndicator
-                    animating={true}
-                    color={Colors.primary}
-                    size={50}
-                />
-            </View>
-        );
-    }
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
