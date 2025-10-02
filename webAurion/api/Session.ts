@@ -33,10 +33,7 @@ export class Session {
                 "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8",
                 Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "User-Agent":
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
-                // Evite que iOS cache les requêtes
-                "Cache-Control": "no-cache",
-                Pragma: "no-cache"
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36"
             },
             withCredentials: true
         });
@@ -222,14 +219,7 @@ export class Session {
                 params: paramsToHashMap(data)
             }).then((response) => response);
         }
-        // On ajoute un cache buster pour éviter que certaines requêtes soient mises en cache par iOS
-        const cacheBuster = Date.now();
-        const userAgent = `Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36 cb/${cacheBuster}`;
-        return this.client
-            .post<T>(url, data, {
-                headers: { "User-Agent": userAgent }
-            })
-            .then((response) => response.data);
+        return this.client.post<T>(url, data).then((response) => response.data);
     }
 }
 
