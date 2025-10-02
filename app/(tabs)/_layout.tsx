@@ -35,6 +35,7 @@ export default function TabLayout() {
                 ) {
                     // Plus de 5 minutes se sont écoulées depuis la dernière synchronisation
                     stopAutoSync();
+                    useSyncStore.getState().clearAlreadySyncedPlanning();
                     startAutoSync();
                 }
             }

@@ -40,24 +40,23 @@ export default function PlanningScreen() {
 
     // Fonction pour changer la semaine affichée
     const handleWeekChange = (previous: boolean) => {
-        setSelectedMonday((prevStart) => {
-            const closestMonday = getCloserMonday(new Date());
+        // Calcul de la nouvelle date
+        const closestMonday = getCloserMonday(new Date());
+        let newDate = new Date(selectedMonday);
+        newDate.setDate(newDate.getDate() + (previous ? -7 : 7));
+        if (previous && newDate < closestMonday) {
+            newDate = closestMonday;
+        }
 
-            const newDate = new Date(prevStart);
-            newDate.setDate(newDate.getDate() + (previous ? -7 : 7)); // On avance ou recule d'une semaine
+        // Mise à jour des states locaux
+        setSelectedMonday(newDate);
+        setSelectedDayIndex(
+            isSameWorkWeek(newDate) ? getDayNumberInWeek(new Date()) : 0
+        );
 
-            // Si on recule et que la date est antérieure au lundi le plus proche, on reste sur le lundi le plus proche
-            if (previous && newDate < closestMonday) {
-                return closestMonday;
-            }
-
-            // On met à jour l'emploi du temps
-            updatePlanning(weekFromNow(getCloserMonday(new Date()), newDate));
-            setSelectedDayIndex(
-                isSameWorkWeek(newDate) ? getDayNumberInWeek(new Date()) : 0
-            );
-            return newDate;
-        });
+        // Mise à jour du planning déclenchée après avoir déterminé la date
+        const offset = weekFromNow(getCloserMonday(new Date()), newDate);
+        updatePlanning(offset);
     };
 
     return (

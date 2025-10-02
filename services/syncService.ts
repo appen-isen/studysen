@@ -13,6 +13,7 @@ import {
 } from "@/utils/notificationConfig";
 import { mergePlanning } from "@/utils/planning";
 import Session from "@/webAurion/api/Session";
+import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import { PlanningEvent } from "@/webAurion/utils/types";
 
 const SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
@@ -90,14 +91,6 @@ async function syncData() {
                 }
             });
         }
-
-        // On plannifie ou supprime un retry en fonction du nouveau statut
-        if (useSyncStore.getState().syncStatus === "success") {
-            console.log("Synchronisation réussie");
-            clearPendingRetry();
-        } else if (useSyncStore.getState().syncStatus === "error") {
-            scheduleRetryIfNeeded();
-        }
     } finally {
         isSyncInProgress = false;
     }
@@ -150,8 +143,14 @@ export async function updatePlanning(
     weekOffset: number = 0
 ): Promise<PlanningEvent[] | null> {
     const { session } = useSessionStore.getState();
-    const { setSyncStatus, setLastSyncDate, syncStatus } =
-        useSyncStore.getState();
+    const {
+        setSyncStatus,
+        setLastSyncDate,
+        syncStatus,
+        alreadySyncedPlanning,
+        setAlreadySyncedPlanning
+    } = useSyncStore.getState();
+    const { planning, setPlanning } = usePlanningStore.getState();
 
     // Ne pas écraser le badge d'erreur si on est en retry après erreur
     if (syncStatus !== "error") {
@@ -163,22 +162,41 @@ export async function updatePlanning(
         return null;
     }
 
-    const { planning, setPlanning } = usePlanningStore.getState();
+    // Calcul de la plage de dates pour la semaine
+    const { startTimestamp, endTimestamp } = getScheduleDates(weekOffset);
+    // On vérifie si les événements sont déjà synchronisés avec Internet
+    const isWeekInSyncedPlanning = alreadySyncedPlanning.some(
+        (event) =>
+            new Date(event.start).getTime() >= startTimestamp &&
+            new Date(event.end).getTime() <= endTimestamp
+    );
+    if (isWeekInSyncedPlanning) {
+        console.log("Semaine déjà synchronisée, pas de nouvelle requête");
+        setSyncStatus("success");
+        return [...planning];
+    }
     try {
         const currentWeekPlanning = await session
             .getPlanningApi()
             .fetchPlanning(weekOffset);
         const updatedPlanning = mergePlanning(planning, currentWeekPlanning);
         setPlanning(updatedPlanning);
+        setAlreadySyncedPlanning(
+            // On met à jour le planning synchronisé (pour éviter de re-télécharger les mêmes semaines)
+            mergePlanning(alreadySyncedPlanning, currentWeekPlanning)
+        );
         sendUnknownPlanningSubjectsTelemetry(updatedPlanning);
         // Synchronisation réussie
         setSyncStatus("success");
         setLastSyncDate(new Date());
+        console.log("Synchronisation réussie");
+        clearPendingRetry();
         return currentWeekPlanning;
     } catch (error) {
         console.error("Failed to update planning:", error);
     }
     setSyncStatus("error");
+    scheduleRetryIfNeeded();
     return null;
 }
 
@@ -186,6 +204,7 @@ export async function updatePlanning(
 export function startAutoSync() {
     if (syncIntervalId) return;
     // Première synchro immédiate
+    useSyncStore.getState().clearAlreadySyncedPlanning();
     syncData();
     syncIntervalId = setInterval(() => {
         syncData();

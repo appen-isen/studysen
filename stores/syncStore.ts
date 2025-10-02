@@ -13,6 +13,10 @@ type SyncState = {
     lastSyncDate: Date | null;
     setSyncStatus: (status: SyncStatus) => void;
     setLastSyncDate: (date: Date | null) => void;
+    // Planning déjà synchronisé - non persistant (pour éviter de re télécharger le planning quand on retourne une semaine déjà vue)
+    alreadySyncedPlanning: PlanningEvent[];
+    setAlreadySyncedPlanning: (planning: PlanningEvent[]) => void;
+    clearAlreadySyncedPlanning: () => void;
 };
 
 // Status de la synchronisation
@@ -28,7 +32,11 @@ export const useSyncStore = create<SyncState>((set) => ({
         } else {
             clearStateFromStorage("syncDate");
         }
-    }
+    },
+    alreadySyncedPlanning: [],
+    setAlreadySyncedPlanning: (alreadySyncedPlanning: PlanningEvent[]) =>
+        set({ alreadySyncedPlanning }),
+    clearAlreadySyncedPlanning: () => set({ alreadySyncedPlanning: [] })
 }));
 
 // On charge les stores depuis le stockage
