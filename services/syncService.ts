@@ -23,7 +23,7 @@ let retryTimeoutId: ReturnType<typeof setTimeout> | null = null;
 let isSyncInProgress = false;
 
 // Plannifie une nouvelle tentative de synchronisation si on est en erreur
-function scheduleRetryIfNeeded() {
+function scheduleRetryIfNeeded(weekOffset: number) {
     const { syncStatus } = useSyncStore.getState();
     // Seulement si on est en erreur
     if (syncStatus !== "error") return;
@@ -31,7 +31,7 @@ function scheduleRetryIfNeeded() {
     if (retryTimeoutId) return;
     retryTimeoutId = setTimeout(() => {
         retryTimeoutId = null;
-        syncData();
+        syncData(weekOffset);
     }, RETRY_DELAY_MS);
 }
 
@@ -44,7 +44,7 @@ function clearPendingRetry() {
 }
 
 // Permet de synchroniser l'agenda et les notes depuis WebAurion
-async function syncData() {
+async function syncData(weekOffset: number = 0) {
     if (isSyncInProgress) return;
     isSyncInProgress = true;
     console.log("Début de la synchronisation");
@@ -61,7 +61,7 @@ async function syncData() {
         // Si pas de session, on tente une connexion automatique
         if (!session && !(await autoLogin())) {
             setSyncStatus("error");
-            scheduleRetryIfNeeded();
+            scheduleRetryIfNeeded(weekOffset);
             return;
         }
 
@@ -69,7 +69,7 @@ async function syncData() {
         await updateNotes();
 
         // Puis mise à jour du planning
-        const currentWeekPlanning = await updatePlanning();
+        const currentWeekPlanning = await updatePlanning(weekOffset);
 
         if (currentWeekPlanning) {
             // On planifie les notifications pour les cours
@@ -140,7 +140,7 @@ async function updateNotes() {
 
 // Met à jour le planning depuis WebAurion
 export async function updatePlanning(
-    weekOffset: number = 0
+    weekOffset: number
 ): Promise<PlanningEvent[] | null> {
     const { session } = useSessionStore.getState();
     const {
@@ -196,7 +196,7 @@ export async function updatePlanning(
         console.error("Failed to update planning:", error);
     }
     setSyncStatus("error");
-    scheduleRetryIfNeeded();
+    scheduleRetryIfNeeded(weekOffset);
     return null;
 }
 
