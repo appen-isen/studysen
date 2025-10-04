@@ -1,4 +1,5 @@
 import { initializeSettingsStore } from "@/stores/settingsStore";
+import { initializeSyncStores } from "@/stores/syncStore";
 import { initializeTelemetryStores } from "@/stores/telemetryStore";
 import { initializeWebaurionStores } from "@/stores/webaurionStore";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -37,6 +38,7 @@ export default function RootLayout() {
     useEffect(() => {
         const initStores = async () => {
             await initializeWebaurionStores();
+            await initializeSyncStores();
             await initializeSettingsStore();
             await initializeTelemetryStores();
         };

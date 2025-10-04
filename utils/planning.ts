@@ -122,8 +122,8 @@ export function fillDayWithBlankEvents(dayEvents: DayEvents): DayEvents {
 
     Object.entries(dayEvents).forEach(([date, events]) => {
         // Début et fin de la journée avec le bon décalage
-        const startOfDay = new Date(`${date}T07:00:00+0100`);
-        const endOfDay = new Date(`${date}T19:00:00+0100`);
+        const startOfDay = new Date(`${date}T08:00:00`);
+        const endOfDay = new Date(`${date}T20:00:00`);
 
         // Trier les événements existants par heure de début
         const sortedEvents = events.sort(

@@ -1,10 +1,9 @@
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import PlanningList from "@/components/planning/PlanningList";
 import PlanningWeek from "@/components/planning/PlanningWeek";
-import useSessionStore from "@/stores/sessionStore";
 import { PlanningEvent } from "@/webAurion/utils/types";
 import {
     formatDate,
@@ -17,28 +16,16 @@ import {
 } from "@/utils/date";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AnimatedPressable, Toggle } from "@/components/Buttons";
-import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import EventModal from "@/components/modals/EventModal";
-import { findEvent, mergePlanning } from "@/utils/planning";
-import {
-    usePlanningStore,
-    useSyncedPlanningStore
-} from "@/stores/webaurionStore";
-import { SyncMessage } from "@/components/Sync";
+import { findEvent } from "@/utils/planning";
+import { usePlanningStore } from "@/stores/webaurionStore";
+import { SyncBadge } from "@/components/Sync";
 import { Page, PageHeader } from "@/components/Page";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
-import { sendUnknownPlanningSubjectsTelemetry } from "@/utils/colors";
+import { updatePlanning } from "@/services/syncService";
 
 export default function PlanningScreen() {
-    const { session } = useSessionStore();
-
-    const { planning, setPlanning } = usePlanningStore();
-    const { syncedPlanning, setSyncedPlanning, clearSyncedPlanning } =
-        useSyncedPlanningStore();
-    const [lastUpdateTime, setLastUpdateTime] = useState<Date>(new Date(0));
-
-    const [isPlanningLoaded, setPlanningLoaded] = useState(false);
-    const [isSyncing, setSyncing] = useState(planning.length == 0);
+    const { planning } = usePlanningStore();
 
     const [planningView, setPlanningView] = useState<"list" | "week">("list");
 
@@ -51,116 +38,30 @@ export default function PlanningScreen() {
 
     const [selectedEvent, setSelectedEvent] = useState<PlanningEvent | null>();
 
-    useEffect(() => {
-        autoUpdatePlanningIfNeeded();
-
-        const interval = setInterval(() => {
-            autoUpdatePlanningIfNeeded();
-        }, 15 * 1000);
-
-        return () => clearInterval(interval);
-    }, [lastUpdateTime]);
-
-    // Mettre à jour le planning toutes les 10 minutes
-    const autoUpdatePlanningIfNeeded = () => {
-        const now = new Date();
-        const elapsedTime = now.getTime() - lastUpdateTime.getTime();
-
-        // Si plus de 10 minutes se sont écoulées depuis la dernière mise à jour, on met à jour
-        if (elapsedTime > 10 * 60 * 1000) {
-            clearSyncedPlanning();
-            updatePlanning();
-        }
-    };
-
-    // Fonction pour mettre à jour l'emploi du temps
-    const updatePlanning = (weekOffset: number = 0) => {
-        setPlanningLoaded(false);
-        // Calcul de la plage de dates pour la semaine
-        const { startTimestamp, endTimestamp } = getScheduleDates(weekOffset);
-
-        // Vérifier si des événements correspondant à cette plage de dates sont déjà présents
-        const isWeekInPlanning = planning.some(
-            (event) =>
-                new Date(event.start).getTime() >= startTimestamp &&
-                new Date(event.end).getTime() <= endTimestamp
-        );
-        // On vérifie si les événements sont déjà synchronisés avec Internet
-        // On récupère le store directement de cette manière pour éviter les problèmes d'attentes de rendu
-        const isWeekInSyncedPlanning = useSyncedPlanningStore
-            .getState()
-            .syncedPlanning.some(
-                (event) =>
-                    new Date(event.start).getTime() >= startTimestamp &&
-                    new Date(event.end).getTime() <= endTimestamp
-            );
-
-        // Pas besoin de retélécharger les événements si la semaine est déjà chargée
-        if (isWeekInPlanning) {
-            setPlanningLoaded(true);
-        }
-        // Si la semaine n'est pas à jour avec Internet, on lance la synchronisation
-        if (!isWeekInSyncedPlanning) {
-            setSyncing(true);
-        }
-        if (session) {
-            // Requête pour charger les événements de la semaine
-            session
-                .getPlanningApi()
-                .fetchPlanning(weekOffset)
-                .then((currentWeekPlanning: PlanningEvent[]) => {
-                    // On met à jour le planning en fusionnant les événements
-                    const updatedPlanning = mergePlanning(
-                        usePlanningStore.getState().planning,
-                        currentWeekPlanning
-                    );
-                    setPlanning(updatedPlanning);
-                    sendUnknownPlanningSubjectsTelemetry(updatedPlanning);
-                    setPlanningLoaded(true);
-                    // Mettre à jour le planning synchronisé
-                    setSyncedPlanning(
-                        // On met à jour le planning synchronisé en fusionnant les événements
-                        mergePlanning(
-                            useSyncedPlanningStore.getState().syncedPlanning,
-                            currentWeekPlanning
-                        )
-                    );
-                    setSyncing(false);
-                    // On met à jour la date de la dernière mise à jour
-                    setLastUpdateTime(new Date());
-                })
-                .catch((error) => {
-                    console.error(error);
-                    setPlanningLoaded(true);
-                });
-        }
-    };
-
     // Fonction pour changer la semaine affichée
     const handleWeekChange = (previous: boolean) => {
-        setSelectedMonday((prevStart) => {
-            const closestMonday = getCloserMonday(new Date());
+        // Calcul de la nouvelle date
+        const closestMonday = getCloserMonday(new Date());
+        let newDate = new Date(selectedMonday);
+        newDate.setDate(newDate.getDate() + (previous ? -7 : 7));
+        if (previous && newDate < closestMonday) {
+            newDate = closestMonday;
+        }
 
-            const newDate = new Date(prevStart);
-            newDate.setDate(newDate.getDate() + (previous ? -7 : 7)); // On avance ou recule d'une semaine
+        // Mise à jour des states locaux
+        setSelectedMonday(newDate);
+        setSelectedDayIndex(
+            isSameWorkWeek(newDate) ? getDayNumberInWeek(new Date()) : 0
+        );
 
-            // Si on recule et que la date est antérieure au lundi le plus proche, on reste sur le lundi le plus proche
-            if (previous && newDate < closestMonday) {
-                return closestMonday;
-            }
-
-            // On met à jour l'emploi du temps
-            updatePlanning(weekFromNow(getCloserMonday(new Date()), newDate));
-            setSelectedDayIndex(
-                isSameWorkWeek(newDate) ? getDayNumberInWeek(new Date()) : 0
-            );
-            return newDate;
-        });
+        // Mise à jour du planning déclenchée après avoir déterminé la date
+        const offset = weekFromNow(getCloserMonday(new Date()), newDate);
+        updatePlanning(offset);
     };
 
     return (
         <Page style={styles.container}>
-            <SyncMessage isVisible={isSyncing} />
+            <SyncBadge />
 
             {/* En tête de la page */}
             <PageHeader title="Mes cours">
@@ -257,13 +158,7 @@ export default function PlanningScreen() {
                 </View>
             </View>
 
-            {!isPlanningLoaded ? (
-                <ActivityIndicator
-                    animating={true}
-                    color={Colors.primary}
-                    size={50}
-                />
-            ) : planningView === "list" ? (
+            {planningView === "list" ? (
                 <PlanningList
                     events={planning}
                     selectedDay={selectedDayIndex}

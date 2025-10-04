@@ -37,7 +37,6 @@ export default function ClubsScreen() {
             );
             return response.data;
         } catch (error) {
-            console.error("Erreur lors de la récupération des posts :", error);
             return null;
         }
     };

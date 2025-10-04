@@ -47,11 +47,7 @@ export class Session {
      * @returns {Promise<Session>} Une promesse qui se résout avec une instance de Session si l'authentification réussit.
      * @throws {Error} Si l'authentification échoue.
      */
-    public login(
-        username: string,
-        password: string,
-        timeout?: number
-    ): Promise<boolean> {
+    public login(username: string, password: string): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             //Mode de démo
             if (username === "demo" && password === "demo") {

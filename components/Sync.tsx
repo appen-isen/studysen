@@ -8,26 +8,81 @@ import {
 } from "react-native";
 import { Text } from "./Texts";
 import Colors from "@/constants/Colors";
-// Message de synchronisation
-export function SyncMessage({ isVisible }: { isVisible: boolean }) {
+import { useSyncStore } from "@/stores/syncStore";
+import { MaterialIcons } from "@expo/vector-icons";
+// Badge de synchronisation
+export function SyncBadge() {
+    const { syncStatus, lastSyncDate } = useSyncStore();
+    const isVisible = syncStatus === "syncing" || syncStatus === "error";
     // Animation pour la hauteur
     const heightValue = useRef(new Animated.Value(0)).current;
     useEffect(() => {
         // Animation d'apparition ou de rétractation en fonction de `isVisible`
         Animated.timing(heightValue, {
-            toValue: isVisible ? 20 : 0, // Hauteur cible (50 pour affiché, 0 pour caché)
+            toValue: isVisible ? 30 : 0, // Hauteur cible (30 pour affiché, 0 pour caché)
             duration: 300, // Durée de l'animation
             easing: Easing.ease,
             useNativeDriver: false // `height` n'est pas pris en charge par useNativeDriver
         }).start();
     }, [isVisible, heightValue]);
     return (
-        <Animated.View style={[styles.syncView, { height: heightValue }]}>
-            <ActivityIndicator color={"white"} size={15}></ActivityIndicator>
-            <Text style={styles.syncText}>Synchronisation</Text>
+        <Animated.View
+            style={[
+                styles.syncView,
+                { height: heightValue, borderBottomWidth: isVisible ? 1 : 0 }
+            ]}
+        >
+            {syncStatus === "syncing" && (
+                // En cours de synchronisation
+                <>
+                    <ActivityIndicator size={15} color={Colors.black} />
+                    <Text style={styles.syncText}>
+                        Synchronisation depuis Internet
+                    </Text>
+                </>
+            )}
+            {syncStatus === "error" && (
+                // Erreur de synchronisation
+                <>
+                    <MaterialIcons
+                        name="warning-amber"
+                        color={Colors.primary}
+                        size={15}
+                    />
+                    <Text style={styles.syncText}>
+                        Désynchronisé
+                        {lastSyncDate
+                            ? ` depuis ${lastSyncDate.toLocaleString()}`
+                            : ""}
+                    </Text>
+                </>
+            )}
         </Animated.View>
     );
 }
+
+const styles = StyleSheet.create({
+    syncView: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: Colors.light,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0px 4px 40px rgba(0,0,0,0.25)",
+        borderBottomColor: Colors.lightGray,
+        overflow: "hidden", // Cache le contenu quand la hauteur diminue
+        zIndex: 1000
+    },
+    syncText: {
+        marginLeft: 8,
+        color: Colors.black,
+        fontSize: 12,
+        fontWeight: 600
+    }
+});
 
 // Composant de chargement avec des points animés
 export function DotLoader() {
@@ -111,30 +166,6 @@ export function DotLoader() {
         </View>
     );
 }
-const styles = StyleSheet.create({
-    syncView: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: Colors.primary,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden", // Cache le contenu quand la hauteur diminue
-        zIndex: 1000
-    },
-    syncText: {
-        marginLeft: 8,
-        color: "white",
-        fontSize: 12,
-        fontWeight: "bold"
-    },
-    syncIcon: {
-        fontSize: 12,
-        color: "white"
-    }
-});
 
 const dotLoaderStyles = StyleSheet.create({
     container: {

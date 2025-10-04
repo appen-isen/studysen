@@ -8,11 +8,7 @@ import { AnimatedPressable } from "@/components/Buttons";
 import { ConfirmModal } from "@/components/Modals";
 import { useEffect, useState } from "react";
 import useSettingsStore from "@/stores/settingsStore";
-import {
-    useNotesStore,
-    usePlanningStore,
-    useSyncedPlanningStore
-} from "@/stores/webaurionStore";
+import { useNotesStore, usePlanningStore } from "@/stores/webaurionStore";
 import { Page } from "@/components/Page";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
@@ -24,18 +20,16 @@ import { getSemester } from "@/utils/date";
 import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
 import { getFirstLetters } from "@/utils/account";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { stopAutoSync } from "@/services/syncService";
 
 export default function SettingsScreen() {
     const router = useRouter();
     const { clearSession } = useSessionStore();
     const { clearPlanning } = usePlanningStore();
-    const { clearSyncedPlanning } = useSyncedPlanningStore();
     const { clearNotes } = useNotesStore();
-    const { settings, setSettings } = useSettingsStore();
+    const { settings } = useSettingsStore();
 
-    const [selectedSemester, setSelectedSemester] = useState<0 | 1>(
-        getSemester()
-    );
+    const [selectedSemester] = useState<0 | 1>(getSemester());
     const { notes } = useNotesStore();
     const selectedNotes = groupNotesBySubject(
         filterNotesBySemester(notes, selectedSemester)
@@ -178,11 +172,11 @@ export default function SettingsScreen() {
                     // Lors de la déconnexion, on supprime les données de l'utilisateur
                     clearSession();
                     clearPlanning();
-                    clearSyncedPlanning();
                     clearNotes();
                     removeSecureStoreItem("username");
                     removeSecureStoreItem("password");
                     unregisterDeviceForNotifications();
+                    stopAutoSync();
                     router.replace("/login");
                 }}
             />

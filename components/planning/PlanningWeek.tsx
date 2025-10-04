@@ -91,10 +91,6 @@ export function WeekEvent(props: {
             <View style={[eventStyles.blankEvent, { height: eventHeight }]} />
         );
     }
-    // On n'affiche pas les congés
-    if (props.event.className === "CONGES") {
-        return;
-    }
 
     return (
         <AnimatedPressable

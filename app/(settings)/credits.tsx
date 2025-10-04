@@ -68,7 +68,6 @@ export default function Credits() {
                 </View>
                 <View style={styles.nameContainer}>
                     <Text style={styles.nameBadge}>Titouan BRANGER</Text>
-                    <Text style={styles.nameBadge}>Léonard SAVARY</Text>
                 </View>
                 <Text style={styles.subtitle}>DESIGN & PROTOTYPE</Text>
                 <View style={styles.nameContainer}>

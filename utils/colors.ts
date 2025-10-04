@@ -49,15 +49,15 @@ export function getSubjectColor(subject: string): string {
         case "FHS":
             return "#B1E8BB";
         case "Environnement":
-            return "#18bd4aff";
+            return "#2dda60ff";
         case "Entrepreneuriat":
             return "#ff745cff";
         case "Economie":
             return "#e5ec18ff";
         case "Energie":
-            return "#155bf4ff";
+            return "#5c86e0ff";
         case "Sport":
-            return "#6a4e2cff";
+            return "#af8149ff";
         default:
             return Colors.lightGray;
     }
