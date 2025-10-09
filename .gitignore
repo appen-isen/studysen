@@ -44,3 +44,5 @@ yarn-error.*
 # Images de issues
 images/*
 !images/.gitkeep
+
+pnpm-lock.yaml

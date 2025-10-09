@@ -12,6 +12,7 @@ export function Page(props: {
     children?: ReactNode;
     style?: any;
     scrollable?: boolean;
+    keyboardDismissMode?: "none" | "on-drag" | "interactive";
 }) {
     const contentStyle = [
         pageStyles.content,
@@ -29,6 +30,7 @@ export function Page(props: {
                 contentContainerStyle={contentStyle}
                 scrollEnabled={props.scrollable}
                 keyboardShouldPersistTaps="handled"
+                keyboardDismissMode={props.keyboardDismissMode}
             >
                 {props.children}
             </ScrollView>
