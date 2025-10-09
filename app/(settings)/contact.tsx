@@ -153,7 +153,11 @@ ${username}
     };
 
     return (
-        <Page style={styles.container} scrollable={true}>
+        <Page
+            style={styles.container}
+            scrollable={true}
+            keyboardDismissMode="on-drag"
+        >
             <PageHeader title="Contact" returnTo="Profil"></PageHeader>
             <View style={styles.responsiveContainer}>
                 <Bold style={styles.sectionTitle}>Formulaire de contact</Bold>
