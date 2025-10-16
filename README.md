@@ -1,15 +1,15 @@
 # Studysen
 
-Studysen est un projet d'application mobile développée en React Native avec Expo et TypeScript par le club Appen. L'objectif de ce projet est de fournir une expérience mobile intuitive pour les étudiants.
+Studysen est un projet d'application mobile développé en React Native avec Expo et TypeScript par le club Appen. L'objectif de ce projet est de fournir une expérience mobile intuitive pour les étudiants.
 
 ## 📲 Télécharger l'application
 
 <a href="https://apps.apple.com/us/app/studysen/id6753770477" target="_blank" rel="noopener noreferrer">
-    <img alt="Télécharger sur l'App Store" height="63" src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/fr-fr?size=250x83&releaseDate=1727654400">
+    <img alt="Télécharger sur l'App Store" width="200px" src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/fr-fr?releaseDate=1727654400">
 </a>
-
+<br>
 <a href="https://play.google.com/store/apps/details?id=fr.appen.studysen" target="_blank" rel="noopener noreferrer">
-    <img alt="Disponible sur Google Play" height="83" src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png">
+    <img alt="Disponible sur Google Play" width="200px" src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png">
 </a>
 
 ## 🎯 Fonctionnalités
