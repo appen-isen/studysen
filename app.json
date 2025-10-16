@@ -1,115 +1,110 @@
 {
-    "expo": {
-        "name": "Studysen",
-        "slug": "studysen",
-        "version": "1.0.6",
-        "orientation": "default",
-        "icon": "./assets/images/icon.png",
-        "scheme": "studysen",
-        "userInterfaceStyle": "automatic",
-        "newArchEnabled": true,
-        "splash": {
+  "expo": {
+    "name": "Studysen",
+    "slug": "studysen",
+    "version": "1.0.6",
+    "orientation": "default",
+    "icon": "./assets/images/icon.png",
+    "scheme": "studysen",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "requireFullScreen": true,
+      "bundleIdentifier": "fr.appen.studysen",
+      "infoPlist": {
+        "UIViewControllerBasedStatusBarAppearance": true,
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "splash": {
+        "image": "./assets/images/splash-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE",
+        "android.permission.WAKE_LOCK",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.USE_EXACT_ALARM",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "fr.appen.studysen",
+      "googleServicesFile": "./google-services.json"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": "./assets/images/splash-icon.png",
+          "dark": {
             "image": "./assets/images/splash-icon.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#FFFFFF"
-        },
-        "ios": {
-            "supportsTablet": true,
-            "requireFullScreen": true,
-            "bundleIdentifier": "fr.appen.studysen",
-            "infoPlist": {
-                "UIViewControllerBasedStatusBarAppearance": true
-            }
-        },
-        "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/images/adaptive-icon.png",
-                "backgroundColor": "#FFFFFF"
-            },
-            "splash": {
-                "image": "./assets/images/splash-icon.png",
-                "resizeMode": "contain",
-                "backgroundColor": "#ffffff"
-            },
-            "permissions": [
-                "android.permission.RECEIVE_BOOT_COMPLETED",
-                "android.permission.VIBRATE",
-                "android.permission.WAKE_LOCK",
-                "android.permission.SCHEDULE_EXACT_ALARM",
-                "android.permission.USE_EXACT_ALARM",
-                "android.permission.RECORD_AUDIO",
-                "android.permission.RECEIVE_BOOT_COMPLETED",
-                "android.permission.VIBRATE",
-                "android.permission.WAKE_LOCK",
-                "android.permission.SCHEDULE_EXACT_ALARM",
-                "android.permission.USE_EXACT_ALARM",
-                "android.permission.RECORD_AUDIO"
-            ],
-            "package": "fr.appen.studysen",
-            "googleServicesFile": "./google-services.json"
-        },
-        "web": {
-            "bundler": "metro",
-            "output": "static",
-            "favicon": "./assets/images/favicon.png"
-        },
-        "plugins": [
-            "expo-router",
-            "expo-secure-store",
-            [
-                "expo-splash-screen",
-                {
-                    "backgroundColor": "#ffffff",
-                    "image": "./assets/images/splash-icon.png",
-                    "dark": {
-                        "image": "./assets/images/splash-icon.png",
-                        "backgroundColor": "#ffffff"
-                    },
-                    "imageWidth": 200
-                }
-            ],
-            [
-                "expo-notifications",
-                {
-                    "icon": "./assets/images/notification_icon.png",
-                    "color": "#ffffff",
-                    "androidMode": "default",
-                    "androidCollapsedTitle": "Studysen",
-                    "allowsNotificationsEnabled": true
-                }
-            ],
-            [
-                "expo-screen-orientation",
-                {
-                    "initialOrientation": "DEFAULT"
-                }
-            ],
-            [
-                "expo-image-picker",
-                {
-                    "photosPermission": "L'application accède à vos photos pour les rapports de bug."
-                }
-            ],
-            "expo-web-browser",
-            "expo-font"
-        ],
-        "experiments": {
-            "typedRoutes": true
-        },
-        "extra": {
-            "router": {
-                "origin": false
-            },
-            "eas": {
-                "projectId": "adbbf1b2-db5b-43a9-8516-24e1e58be3fc"
-            }
-        },
-        "owner": "appen",
-        "runtimeVersion": {
-            "policy": "appVersion"
-        },
-        "updates": {
-            "url": "https://u.expo.dev/adbbf1b2-db5b-43a9-8516-24e1e58be3fc"
+            "backgroundColor": "#ffffff"
+          },
+          "imageWidth": 200
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification_icon.png",
+          "color": "#ffffff",
+          "androidMode": "default",
+          "androidCollapsedTitle": "Studysen",
+          "allowsNotificationsEnabled": true
+        }
+      ],
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "L'application accède à vos photos pour les rapports de bug."
+        }
+      ],
+      "expo-web-browser",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "adbbf1b2-db5b-43a9-8516-24e1e58be3fc"
+      }
+    },
+    "owner": "appen",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/adbbf1b2-db5b-43a9-8516-24e1e58be3fc"
     }
+  }
 }

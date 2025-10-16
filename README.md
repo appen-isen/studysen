@@ -2,16 +2,34 @@
 
 Studysen est un projet d'application mobile développée en React Native avec Expo et TypeScript par le club Appen. L'objectif de ce projet est de fournir une expérience mobile intuitive pour les étudiants.
 
+## 📲 Télécharger l'application
+
+<a href="https://apps.apple.com/us/app/studysen/id6753770477" target="_blank" rel="noopener noreferrer">
+    <img alt="Télécharger sur l'App Store" height="63" src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/fr-fr?size=250x83&releaseDate=1727654400">
+</a>
+
+<a href="https://play.google.com/store/apps/details?id=fr.appen.studysen" target="_blank" rel="noopener noreferrer">
+    <img alt="Disponible sur Google Play" height="83" src="https://play.google.com/intl/en_us/badges/static/images/badges/fr_badge_web_generic.png">
+</a>
+
 ## 🎯 Fonctionnalités
 
--   Authentification avec compte WebAurion
+-   Authentification automatique avec compte WebAurion
 -   Emploi du temps WebAurion
 -   Notes WebAurion par semestre avec moyenne générale
 -   Affichage du cours actuel et à venir sur la page d'accueil
--   Sauvegarde du planning et des notes en local - Mode hors ligne
+-   Sauvegarde du planning et des notes en local - Mode hors ligne et connexion instantanée
 -   Posts et événements des clubs pour la vie étudiante
 -   Notifications rappels de cours et pour les nouveaux posts de clubs
 -   Demande de nouvelles fonctionnalités et rapports de bugs directement depuis l'application
+
+## Espace Clubs (Communication)
+
+Les responsables communication des clubs peuvent gérer leurs événements et leurs posts depuis l'espace dédié:
+
+-   https://clubs.studysen.fr
+
+Note: lorsqu'un club est créé, une demande de validation nous est automatiquement envoyée pour confirmer le club avant publication.
 
 ## 🚀 Installation et configuration
 
@@ -50,40 +68,35 @@ Studysen est un projet d'application mobile développée en React Native avec Ex
 
 Le backend de l'application permet de gérer la partie vie étudiante (posts, événements, etc.) et est développé en Express.js. Il est facilement déployable en utilisant Docker. Le code source du backend est disponible dans le dépôt [studysen-backend](https://github.com/appen-isen/studysen-backend)
 
-## 🤖 Technologies utilisées
-
--   **React Native** : Framework pour le développement d'applications mobiles (Android et iOS).
--   **Expo** : Outils et services pour développer et déployer l'application.
--   **Typescript** : Typage statique pour JavaScript.
--   **Express**: Framework pour le backend
-
-## 📚 Bibliothèques utilisées
-
--   **[Axios](https://github.com/axios/axios)** : Pour effectuer les requêtes HTTP
--   **[Zustand](https://github.com/pmndrs/zustand)** : Pour la gestion des variables globales de l'application
--   **[WebAurion API](https://github.com/dd060606/WebAurion-API)** : Pour communiquer avec WebAurion
-
 ## 🤝 Contribution
 
-Pour contribuer au projet:
+Flux Git:
 
-1. Créez une branche pour votre fonctionnalité/correctif :
+-   **Branches principales:**
+    -   main: production (version publiée sur les stores)
+    -   dev: intégration (développement en cours)
+-   **Features:** partez de dev, nommez `feat/ma-feature`, puis Pull Request vers dev.
+-   **Hotfixes:** partez de main, nommez `hotfix/mon-correctif`, puis Pull Request vers main et back-merge vers dev.
 
-    ```bash
-    git checkout -b feat/nouvelle-fonctionnalité
-    ```
+Exemples de commandes:
 
-2. Faites vos modifications et ajoutez des commits :
+```bash
+# Nouvelle fonctionnalité
+git checkout dev
+git pull
+git checkout -b feat/ma-feature
+# ... commits ...
+git push -u origin feat/ma-feature
+# Ouvrir une PR vers dev
 
-    ```bash
-    git commit -m "feat: [votre fonctionnalité/modifs]"
-    ```
-
-3. Synchronisez votre travail sur le repo GitHub en envoyant votre branche
-
-    ```bash
-    git push origin feat/nouvelle-fonctionnalité
-    ```
+# Correctif urgent en prod (hotfix)
+git checkout main
+git pull
+git checkout -b hotfix/bug-critique
+# ... commits ...
+git push -u origin hotfix/bug-critique
+# Ouvrir une PR vers main, puis merger main -> dev
+```
 
 ## 🛠️ Build de l'application
 
@@ -126,6 +139,19 @@ Pour constuire l'application (obtenir un exécutable Android/iOS), vous pouvez u
     ```bash
     eas update --channel production --message "[message]"
     ```
+
+## 🤖 Technologies utilisées
+
+-   **React Native** : Framework pour le développement d'applications mobiles (Android et iOS).
+-   **Expo** : Outils et services pour développer et déployer l'application.
+-   **Typescript** : Typage statique pour JavaScript.
+-   **Express**: Framework pour le backend
+
+## 📚 Bibliothèques utilisées
+
+-   **[Axios](https://github.com/axios/axios)** : Pour effectuer les requêtes HTTP
+-   **[Zustand](https://github.com/pmndrs/zustand)** : Pour la gestion des variables globales de l'application
+-   **[WebAurion API](https://github.com/dd060606/WebAurion-API)** : Pour communiquer avec WebAurion
 
 ### Ressources utiles
 
