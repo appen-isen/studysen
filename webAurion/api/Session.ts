@@ -33,7 +33,11 @@ export class Session {
                 "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8",
                 Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "User-Agent":
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36"
+                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
+                // Empêcher la mise en cache
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                Pragma: "no-cache",
+                Expires: "0"
             },
             withCredentials: true
         });
@@ -73,6 +77,8 @@ export class Session {
                         // On récupère le nom de l'utilisateur
                         this.username = getName(res);
                         console.log(`Logged in as ${this.username}`);
+                        // On repart sur un ViewState propre après login
+                        this.clearViewStateCache();
                         resolve(true);
                     }
                     resolve(false);
@@ -157,35 +163,43 @@ export class Session {
 
     // Récupération du ViewState pour effectuer les différentes requêtes
     public getViewState(subMenuId: string): Promise<string> {
-        return new Promise<string>(async (resolve, reject) => {
-            //On optimise l'accès au ViewState
+        const attempt = async (): Promise<string> => {
+            // Utiliser le cache si pertinent
             if (this.viewStateCache && this.subMenuIdCache === subMenuId) {
-                return resolve(this.viewStateCache);
+                return this.viewStateCache;
             }
-            try {
-                const schedulePage = await this.sendGET<string>(
-                    "/faces/Planning.xhtml"
-                );
-                let viewState = getViewState(schedulePage);
-                if (viewState) {
-                    // Ici 291906 correspond au menu 'Scolarité' dans la sidebar
-                    // Requête utile pour intialiser le ViewState (obligatoire pour effectuer une requête)
-                    await this.sendSidebarRequest("291906", viewState);
+            const schedulePage = await this.sendGET<string>(
+                "/faces/Planning.xhtml"
+            );
+            let viewState = getViewState(schedulePage);
+            if (!viewState) throw new Error("Viewstate not found");
 
-                    // On récupère le ViewState pour effectuer la prochaine requête
-                    viewState = await this.sendSidebarSubmenuRequest(
-                        subMenuId,
-                        viewState
-                    );
-                    if (viewState) {
-                        this.viewStateCache = viewState;
-                        this.subMenuIdCache = subMenuId;
-                        return resolve(viewState);
-                    }
+            // Ici 291906 correspond au menu 'Scolarité' dans la sidebar
+            // Requête utile pour intialiser le ViewState (obligatoire pour effectuer une requête)
+            await this.sendSidebarRequest("291906", viewState);
+            viewState = await this.sendSidebarSubmenuRequest(
+                subMenuId,
+                viewState
+            );
+            if (!viewState) throw new Error("Viewstate not found");
+            this.viewStateCache = viewState;
+            this.subMenuIdCache = subMenuId;
+            return viewState;
+        };
+
+        return new Promise<string>(async (resolve, reject) => {
+            try {
+                const vs = await attempt();
+                resolve(vs);
+            } catch (e1) {
+                // En cas d'échec, on nettoie et on retente une fois
+                try {
+                    this.clearViewStateCache();
+                    const vs2 = await attempt();
+                    resolve(vs2);
+                } catch (e2) {
+                    reject(new Error("Viewstate not found"));
                 }
-                return reject(new Error("Viewstate not found"));
-            } catch (error) {
-                reject(new Error("Viewstate not found"));
             }
         });
     }
@@ -208,7 +222,15 @@ export class Session {
                 url: this.baseURL + url
             }).then((response) => response);
         }
-        return this.client.get<T>(url).then((response) => response.data);
+        return this.client
+            .get<T>(url, {
+                headers: {
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    Pragma: "no-cache",
+                    Expires: "0"
+                }
+            })
+            .then((response) => response.data);
     }
 
     public sendPOST<T>(url: string, data: URLSearchParams): Promise<T> {
@@ -219,7 +241,15 @@ export class Session {
                 params: paramsToHashMap(data)
             }).then((response) => response);
         }
-        return this.client.post<T>(url, data).then((response) => response.data);
+        return this.client
+            .post<T>(url, data, {
+                headers: {
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    Pragma: "no-cache",
+                    Expires: "0"
+                }
+            })
+            .then((response) => response.data);
     }
 }
 

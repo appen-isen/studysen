@@ -1,4 +1,3 @@
-import { getViewState } from "../utils/AurionUtils";
 import { generateDemoNotes } from "../utils/demo";
 import { getNotesFromResponse } from "../utils/NoteUtils";
 import { NotesList } from "../utils/types";
