@@ -2,8 +2,8 @@ import Colors from "@/constants/Colors";
 import { useSentUnknownSubjectStore } from "@/stores/telemetryStore";
 import { NotesList, PlanningEvent } from "@/webAurion/utils/types";
 import { MaterialIcons } from "@expo/vector-icons";
-import axios from "axios";
 import { API_BASE_URL } from "./config";
+import { fetch } from "expo/fetch";
 
 // Correspondance entre les différents noms et code de matière
 const subjectMapping: Record<string, string> = {
@@ -192,10 +192,12 @@ export function sendUnknownPlanningSubjectsTelemetry(
 export async function sendUnknownSubjectsTelemetry(subjects: string[]) {
     try {
         console.log("Nouveaux noms de matière inconnus envoyés :", subjects);
-        await axios.post(`${API_BASE_URL}/telemetry/submit`, {
-            type: "unknownSubjects",
-            data: subjects
+        const res = await fetch(`${API_BASE_URL}/telemetry/submit`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: "unknownSubjects", data: subjects })
         });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
     } catch (error) {
         console.error(
             "Erreur lors de l'envoi des données de télémétrie :",
