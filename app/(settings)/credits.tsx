@@ -8,6 +8,7 @@ import { Link } from "expo-router";
 import { API_BASE_URL } from "@/utils/config";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
 import { fetch } from "expo/fetch";
+import { updateId } from "expo-updates";
 
 //Les crédits
 export default function Credits() {
@@ -100,6 +101,9 @@ export default function Credits() {
                     VERSION {nativeApplicationVersion}
                 </Text>
                 <Text style={styles.subtitle}>BUILD {nativeBuildVersion}</Text>
+                {updateId && (
+                    <Text style={styles.subtitle}>UPDATE {updateId}</Text>
+                )}
             </View>
         </Page>
     );
