@@ -1,4 +1,4 @@
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { ReactNode } from "react";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
@@ -13,6 +13,7 @@ export function Page(props: {
     style?: any;
     scrollable?: boolean;
     keyboardDismissMode?: "none" | "on-drag" | "interactive";
+    refreshControl?: React.ReactElement<typeof RefreshControl>;
 }) {
     const contentStyle = [
         pageStyles.content,

@@ -1,0 +1,11 @@
+*.json
+*.yaml
+*.md
+.gitignore
+node_modules/
+.github/
+.vscode/
+.iedea/
+.expo/
+*.ttf
+*.png

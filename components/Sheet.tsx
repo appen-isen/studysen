@@ -1,4 +1,9 @@
-import { Modal, View, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import {
+    Modal,
+    View,
+    StyleSheet,
+    TouchableWithoutFeedback
+} from "react-native";
 import { ReactNode } from "react";
 import Colors from "@/constants/Colors";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
@@ -20,8 +25,15 @@ export function Sheet(props: SheetProps) {
             onRequestClose={() => props.setVisible(false)}
         >
             <GestureHandlerRootView style={styles.overlay}>
-                <TouchableWithoutFeedback onPress={() => props.setVisible(false)}><View style={styles.close} /></TouchableWithoutFeedback>
-                <BottomSheet enablePanDownToClose onClose={() => props.setVisible(false)}>
+                <TouchableWithoutFeedback
+                    onPress={() => props.setVisible(false)}
+                >
+                    <View style={styles.close} />
+                </TouchableWithoutFeedback>
+                <BottomSheet
+                    enablePanDownToClose
+                    onClose={() => props.setVisible(false)}
+                >
                     <BottomSheetView style={props.sheetStyle}>
                         {props.children}
                     </BottomSheetView>
@@ -40,9 +52,9 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         position: "absolute",
-        inset: 0,
+        inset: 0
     },
     close: {
-        ...StyleSheet.absoluteFillObject,
-    },
+        ...StyleSheet.absoluteFillObject
+    }
 });

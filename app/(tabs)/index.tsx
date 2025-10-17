@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, RefreshControl } from "react-native";
 import { Text } from "@/components/Texts";
 import { AnimatedPressable } from "@/components/Buttons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNotesStore, usePlanningStore } from "@/stores/webaurionStore";
+import { useSyncStore } from "@/stores/syncStore";
+import { syncData } from "@/services/syncService";
 import { Note, PlanningEvent } from "@/webAurion/utils/types";
 import {
     findEvent,
@@ -32,6 +34,7 @@ export default function HomeScreen() {
     const router = useRouter();
     const { notes } = useNotesStore();
     const { settings } = useSettingsStore();
+    const { syncStatus } = useSyncStore();
     // Gestion du planning
     const { planning } = usePlanningStore();
     // On formate le planning pour le mode liste
@@ -43,6 +46,12 @@ export default function HomeScreen() {
     //Permet de stocker la note sélectionnée pour l'afficher dans la modal
     const [selectedNote, setSelectedNote] = useState<Note | null>();
     const [noteModalInfoVisible, setNoteModalInfoVisible] = useState(false);
+
+    // État pour le pull-to-refresh
+    const isRefreshing = syncStatus === "syncing";
+    const onRefresh = () => {
+        syncData();
+    };
 
     // Lorsque la page est chargée, on demande les permissions pour les notifications
     useEffect(() => {
@@ -60,7 +69,18 @@ export default function HomeScreen() {
     };
 
     return (
-        <Page style={styles.container} scrollable={true}>
+        <Page
+            style={styles.container}
+            scrollable={true}
+            refreshControl={
+                <RefreshControl
+                    refreshing={isRefreshing}
+                    onRefresh={onRefresh}
+                    colors={[Colors.primary]} // Android
+                    tintColor={Colors.primary} // iOS
+                />
+            }
+        >
             <SyncBadge />
             {/* En tête de la page */}
             <PageHeader title="Accueil" />

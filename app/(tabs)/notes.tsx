@@ -15,11 +15,19 @@ import { Note, NotesList } from "@/webAurion/utils/types";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+    RefreshControl
+} from "react-native";
 import { Page, PageHeader } from "@/components/Page";
 import { getColorFromNoteCode, getIconFromNoteCode } from "@/utils/colors";
 import { Sheet } from "@/components/Sheet";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { useSyncStore } from "@/stores/syncStore";
+import { syncData } from "@/services/syncService";
 
 export default function NotesScreen() {
     const router = useRouter();
@@ -30,6 +38,13 @@ export default function NotesScreen() {
     const [infoVisible, setInfoVisible] = useState(false);
     // Récupération des notes
     const { notes } = useNotesStore();
+    const { syncStatus } = useSyncStore();
+
+    // État pour le pull-to-refresh
+    const isRefreshing = syncStatus === "syncing";
+    const onRefresh = () => {
+        syncData();
+    };
 
     // Tableau des notes du semestre sélectionné
 
@@ -45,7 +60,18 @@ export default function NotesScreen() {
     const [noteModalInfoVisible, setNoteModalInfoVisible] = useState(false);
 
     return (
-        <Page style={styles.container} scrollable={true}>
+        <Page
+            style={styles.container}
+            scrollable={true}
+            refreshControl={
+                <RefreshControl
+                    refreshing={isRefreshing}
+                    onRefresh={onRefresh}
+                    colors={[Colors.primary]} // Android
+                    tintColor={Colors.primary} // iOS
+                />
+            }
+        >
             <PageHeader title="Mes Notes" returnTo="Accueil"></PageHeader>
             <View style={styles.contentView}>
                 {/* Sélecteur de semestre */}

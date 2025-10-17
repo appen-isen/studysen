@@ -28,9 +28,8 @@ export const useSentUnknownSubjectStore = create<SentUnknownSubjectState>(
 
 // On charge les stores depuis le stockage
 export async function initializeTelemetryStores() {
-    const initialUnknownSubjectsState = await loadStateFromStorage(
-        "unknownSubjects"
-    );
+    const initialUnknownSubjectsState =
+        await loadStateFromStorage("unknownSubjects");
 
     if (initialUnknownSubjectsState) {
         useSentUnknownSubjectStore.setState({
