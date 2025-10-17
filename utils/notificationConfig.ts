@@ -1,9 +1,9 @@
 import useSettingsStore from "@/stores/settingsStore";
 import * as Notifications from "expo-notifications";
-import axios from "axios";
 import { Linking, Platform } from "react-native";
 import { API_BASE_URL } from "@/utils/config";
 import Constants from "expo-constants";
+import { fetch } from "expo/fetch";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -87,15 +87,16 @@ export const sendTestNotification = async () => {
         const deviceId = await registerForPushNotificationsAsync();
         if (deviceId) {
             // Send notification through backend
-            await axios.post(
-                `${API_BASE_URL}/notifications/send-notifications`,
-                {
+            await fetch(`${API_BASE_URL}/notifications/send-notifications`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
                     device_id: deviceId,
                     title: "Studysen",
                     message: "Notification backend de test",
                     date: new Date()
-                }
-            );
+                })
+            });
         }
     } catch (error) {
         console.error("Error sending test notification:", error);
@@ -235,9 +236,11 @@ export const scheduleLocalNotification = async (
 
 export const deleteNotifications = async (device_id: string) => {
     try {
-        await axios.delete(
-            `${API_BASE_URL}/notifications/delete-notifications/${device_id}`
+        const res = await fetch(
+            `${API_BASE_URL}/notifications/delete-notifications/${device_id}`,
+            { method: "DELETE" }
         );
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
     } catch (error) {
         console.error(
             "Erreur lors de la suppression de la notification depuis le backend:",
@@ -254,10 +257,15 @@ export const registerDeviceForNotifications = async (campus_id: number) => {
     const token = await registerForPushNotificationsAsync();
     if (token) {
         try {
-            await axios.post(`${API_BASE_URL}/notifications/add-device`, {
-                device_id: token,
-                campus_id: campus_id
-            });
+            const res = await fetch(
+                `${API_BASE_URL}/notifications/add-device`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ device_id: token, campus_id })
+                }
+            );
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             console.log("Appareil enregistré pour les notifications:", token);
         } catch (error) {
             console.error(
@@ -276,9 +284,11 @@ export const unregisterDeviceForNotifications = async () => {
     const token = await registerForPushNotificationsAsync();
     if (token) {
         try {
-            await axios.delete(
-                `${API_BASE_URL}/notifications/delete-device/${token}`
+            const res = await fetch(
+                `${API_BASE_URL}/notifications/delete-device/${token}`,
+                { method: "DELETE" }
             );
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             console.log(
                 "Appareil désenregistré pour les notifications:",
                 token

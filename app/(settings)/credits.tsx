@@ -4,10 +4,10 @@ import { Text, Bold } from "@/components/Texts";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
 import Colors from "@/constants/Colors";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link } from "expo-router";
 import { API_BASE_URL } from "@/utils/config";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { fetch } from "expo/fetch";
 
 //Les crédits
 export default function Credits() {
@@ -16,8 +16,10 @@ export default function Credits() {
         //On regarde si le backend est disponible
         const checkBackend = async () => {
             try {
-                const response = await axios.head(`${API_BASE_URL}/ping/`);
-                if (response.status === 200) {
+                const response = await fetch(`${API_BASE_URL}/ping/`, {
+                    method: "HEAD"
+                });
+                if (response.ok) {
                     console.log("Backend disponible");
                 } else {
                     console.log("Backend indisponible");

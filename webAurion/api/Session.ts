@@ -6,13 +6,13 @@ import {
     paramsToHashMap
 } from "../utils/AurionUtils";
 import NotesApi from "./NotesApi";
-import axios, { AxiosInstance } from "axios";
 import { Platform } from "react-native";
 import { sendTauriCommand } from "@/utils/desktop";
+import { fetch } from "expo/fetch";
 
 export class Session {
-    private client: AxiosInstance;
     private baseURL: string = "https://web.isen-ouest.fr/webAurion";
+    private defaultTimeoutMs = 8000;
 
     //Permet de sauvegarder le ViewState et le subMenuId pour les réutiliser dans les prochaines requêtes (optimisation)
     //Cela a pour but d'éviter d'effectuer 3 requêtes lorsque l'on refait la même demande (emploi du temps de la semaine suivante par exemple)
@@ -24,23 +24,39 @@ export class Session {
 
     private demo_mode: boolean = false;
 
-    constructor() {
-        this.client = axios.create({
-            baseURL: this.baseURL,
-            timeout: 8000,
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8",
-                Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "User-Agent":
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36",
-                // Empêcher la mise en cache
-                "Cache-Control": "no-cache, no-store, must-revalidate",
-                Pragma: "no-cache",
-                Expires: "0"
-            },
-            withCredentials: true
-        });
+    constructor() {}
+
+    private getBaseHeaders(): Record<string, string> {
+        return {
+            "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8",
+            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        };
+    }
+
+    private async fetchText(
+        url: string,
+        init?: RequestInit,
+        timeoutMs: number = this.defaultTimeoutMs
+    ): Promise<string> {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            const res = await fetch(this.baseURL + url, {
+                method: init?.method || "GET",
+                headers: {
+                    ...this.getBaseHeaders(),
+                    ...(init?.headers as any)
+                },
+                body: init?.body === null ? undefined : init?.body,
+                // S'assurer que les cookies de session sont envoyés/stockés
+                credentials: "include",
+                signal: controller.signal
+            });
+            const text = await res.text();
+            return text as unknown as string;
+        } finally {
+            clearTimeout(id);
+        }
     }
 
     /**
@@ -222,15 +238,9 @@ export class Session {
                 url: this.baseURL + url
             }).then((response) => response);
         }
-        return this.client
-            .get<T>(url, {
-                headers: {
-                    "Cache-Control": "no-cache, no-store, must-revalidate",
-                    Pragma: "no-cache",
-                    Expires: "0"
-                }
-            })
-            .then((response) => response.data);
+        return this.fetchText(url, { method: "GET" }).then(
+            (text) => text as unknown as T
+        );
     }
 
     public sendPOST<T>(url: string, data: URLSearchParams): Promise<T> {
@@ -241,15 +251,13 @@ export class Session {
                 params: paramsToHashMap(data)
             }).then((response) => response);
         }
-        return this.client
-            .post<T>(url, data, {
-                headers: {
-                    "Cache-Control": "no-cache, no-store, must-revalidate",
-                    Pragma: "no-cache",
-                    Expires: "0"
-                }
-            })
-            .then((response) => response.data);
+        return this.fetchText(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: data.toString()
+        }).then((text) => text as unknown as T);
     }
 }
 
