@@ -10,7 +10,7 @@ type SessionState = {
 const useSessionStore = create<SessionState>((set) => ({
     session: null, // Etat de la session initialisé à null
     setSession: (session) => set({ session }), // Modifie l'état de la session
-    clearSession: () => set({ session: null }), // Supprime la session
+    clearSession: () => set({ session: null }) // Supprime la session
 }));
 
 export default useSessionStore;

@@ -4,7 +4,7 @@ import { PlanningEvent } from "./types";
 // Conversion du calendrier au format JSON
 export function getJSONSchedule(xml: string): object {
     const parser = load(xml, {
-        xmlMode: true,
+        xmlMode: true
     });
     const json = parser('update[id="form:j_idt118"]').text();
     return JSON.parse(json)["events"];
@@ -47,7 +47,7 @@ export function planningResponseToEvents(response: string): PlanningEvent[] {
             learners,
             start: event.start,
             end: event.end,
-            className: event.className,
+            className: event.className
         };
     });
 }
