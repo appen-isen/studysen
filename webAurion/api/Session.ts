@@ -12,7 +12,7 @@ import { fetch } from "expo/fetch";
 
 export class Session {
     private baseURL: string = "https://web.isen-ouest.fr/webAurion";
-    private defaultTimeoutMs = 8000;
+    private defaultTimeoutMs = 15000;
 
     //Permet de sauvegarder le ViewState et le subMenuId pour les réutiliser dans les prochaines requêtes (optimisation)
     //Cela a pour but d'éviter d'effectuer 3 requêtes lorsque l'on refait la même demande (emploi du temps de la semaine suivante par exemple)
@@ -52,6 +52,15 @@ export class Session {
                 credentials: "include",
                 signal: controller.signal
             });
+            // En cas d'erreur HTTP
+            if (!res.ok) {
+                const err = new Error(
+                    `HTTP ${res.status} ${res.statusText} for ${url}`
+                );
+                (err as any).status = res.status;
+                (err as any).statusText = res.statusText;
+                throw err;
+            }
             const text = await res.text();
             return text as unknown as string;
         } finally {
@@ -238,9 +247,10 @@ export class Session {
                 url: this.baseURL + url
             }).then((response) => response);
         }
-        return this.fetchText(url, { method: "GET" }).then(
-            (text) => text as unknown as T
-        );
+        // On ajoute un cache buster pour éviter les problèmes de cache
+        return this.fetchText(url + `?cb=${Date.now()}`, {
+            method: "GET"
+        }).then((text) => text as unknown as T);
     }
 
     public sendPOST<T>(url: string, data: URLSearchParams): Promise<T> {
