@@ -9,6 +9,7 @@ import NotesApi from "./NotesApi";
 import { Platform } from "react-native";
 import { sendTauriCommand } from "@/utils/desktop";
 import { fetch } from "expo/fetch";
+import CookieManager from "@react-native-cookies/cookies";
 
 export class Session {
     private baseURL: string = "https://web.isen-ouest.fr/webAurion";
@@ -38,6 +39,18 @@ export class Session {
         };
     }
 
+    // Retourne l'origine de base (schéma + host) ex: https://web.isen-ouest.fr
+    private getOrigin(): string {
+        try {
+            const url = new URL(this.baseURL);
+            return url.origin;
+        } catch {
+            // Fallback sans URL
+            const m = this.baseURL.match(/^https?:\/\/[^/]+/i);
+            return m ? m[0] : this.baseURL;
+        }
+    }
+
     // Redaction et normalisation des headers pour les logs
     private sanitizeHeaders(
         headers: Record<string, any> | undefined
@@ -51,9 +64,6 @@ export class Session {
         for (const [k, v] of entries) {
             const key = String(k).toLowerCase();
             let val = typeof v === "string" ? v : JSON.stringify(v);
-            if (["cookie", "authorization", "set-cookie"].includes(key)) {
-                val = "<redacted>";
-            }
             result[key] = val;
         }
         return result;
@@ -64,10 +74,26 @@ export class Session {
         try {
             h.forEach((value, key) => {
                 const k = key.toLowerCase();
-                obj[k] = ["set-cookie"].includes(k) ? "<redacted>" : value;
+                obj[k] = value;
             });
         } catch {}
         return obj;
+    }
+
+    // Construit l'en-tête Cookie actuel à partir du stockage natif
+    private async buildCookieHeader(): Promise<string | undefined> {
+        try {
+            const origin = this.getOrigin();
+            const cookies = await CookieManager.get(origin);
+            const pairs: string[] = [];
+            Object.entries(cookies || {}).forEach(([name, cookie]) => {
+                const val = (cookie as any)?.value ?? (cookie as any);
+                if (name && val) pairs.push(`${name}=${val}`);
+            });
+            return pairs.length ? pairs.join("; ") : undefined;
+        } catch {
+            return undefined;
+        }
     }
 
     // Masquage du body (ex: password) + truncation
@@ -86,7 +112,7 @@ export class Session {
             if (contentType.includes("application/x-www-form-urlencoded")) {
                 const usp = new URLSearchParams(raw);
                 if (usp.has("password")) usp.set("password", "<redacted>");
-                return usp.toString().slice(0, 2000);
+                return usp.toString();
             }
             // JSON
             if (contentType.includes("application/json")) {
@@ -95,12 +121,12 @@ export class Session {
                     if ("password" in json)
                         (json as any).password = "<redacted>";
                 }
-                return JSON.stringify(json).slice(0, 2000);
+                return JSON.stringify(json);
             }
             // Texte par défaut
-            return raw.slice(0, 2000);
+            return raw;
         } catch {
-            return String(body).slice(0, 2000);
+            return String(body);
         }
     }
 
@@ -134,7 +160,7 @@ export class Session {
             headers instanceof Headers
                 ? this.headersToObject(headers)
                 : this.sanitizeHeaders(headers as Record<string, any>);
-        const preview = (bodyText || "").slice(0, 2000);
+        const preview = bodyText || "";
         console.log("[HTTP Response]", {
             url: fullUrl,
             method,
@@ -160,6 +186,10 @@ export class Session {
             };
             const method = init?.method || "GET";
 
+            // Si on a des cookies (gérés nativement), on les ajoute explicitement pour fiabilité
+            const cookieHeader = await this.buildCookieHeader();
+            if (cookieHeader) mergedHeaders["Cookie"] = cookieHeader;
+
             // Log requête
             this.debugLogRequest(fullUrl, method, mergedHeaders, init?.body);
 
@@ -169,6 +199,7 @@ export class Session {
                 body: init?.body === null ? undefined : init?.body,
                 // S'assurer que les cookies de session sont envoyés/stockés
                 credentials: "include",
+                redirect: "follow",
                 signal: controller.signal
             });
             const text = await res.text();
@@ -191,7 +222,7 @@ export class Session {
                 );
                 (err as any).status = res.status;
                 (err as any).statusText = res.statusText;
-                (err as any).body = text.slice(0, 2000);
+                (err as any).body = text;
                 throw err;
             }
             return text as unknown as string;
@@ -222,19 +253,76 @@ export class Session {
             params.append("username", username);
             params.append("password", password);
 
-            // On envoie la requête de connexion
+            // iOS: on gère manuellement la redirection pour récupérer les cookies (JSESSIONID, ROUTEID, etc.)
+            if (Platform.OS === "ios") {
+                (async () => {
+                    try {
+                        const loginUrl = this.baseURL + "/login";
+                        const headers = {
+                            ...this.getBaseHeaders(),
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        } as Record<string, any>;
+                        this.debugLogRequest(
+                            loginUrl,
+                            "POST",
+                            headers,
+                            params.toString()
+                        );
+                        let res = await fetch(loginUrl, {
+                            method: "POST",
+                            headers,
+                            body: params.toString(),
+                            credentials: "include",
+                            redirect: "manual"
+                        });
+                        let text = await res.text();
+                        this.debugLogResponse(
+                            loginUrl,
+                            "POST",
+                            res.status,
+                            res.statusText,
+                            res.headers,
+                            text
+                        );
+                        // Vérifier que la session semble valide (présence d'un cookie de session) via le stockage natif
+                        const cookieHeader = await this.buildCookieHeader();
+                        if (
+                            !cookieHeader ||
+                            !cookieHeader.includes("JSESSIONID=")
+                        ) {
+                            return resolve(false);
+                        }
+
+                        // Récupérer le nom via la page planning pour s'assurer que la session est utilisable côté JSF
+                        try {
+                            const schedulePage = await this.sendGET<string>(
+                                "/faces/Planning.xhtml"
+                            );
+                            const name = getName(schedulePage);
+                            if (name) this.username = name;
+                        } catch {}
+                        // ViewState doit repartir proprement
+                        this.clearViewStateCache();
+                        console.log(
+                            `Logged in (iOS)${this.username ? ` as ${this.username}` : ""}`
+                        );
+                        return resolve(true);
+                    } catch (e) {
+                        return reject(e);
+                    }
+                })();
+                return;
+            }
+
+            // Android/others: comportement actuel (redirect suivie automatiquement)
             this.sendPOST<string>(`/login`, params)
                 .then((res) => {
-                    // On traite la réponse de la connexion
-                    // On vérifie si la connexion a réussi
                     if (
                         res.includes("Home page") ||
                         res.includes("Page d'accueil")
                     ) {
-                        // On récupère le nom de l'utilisateur
                         this.username = getName(res);
                         console.log(`Logged in as ${this.username}`);
-                        // On repart sur un ViewState propre après login
                         this.clearViewStateCache();
                         resolve(true);
                     }
