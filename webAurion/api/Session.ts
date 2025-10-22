@@ -13,6 +13,8 @@ import { fetch } from "expo/fetch";
 export class Session {
     private baseURL: string = "https://web.isen-ouest.fr/webAurion";
     private defaultTimeoutMs = 15000;
+    // Active les logs de debug des requêtes/réponses HTTP
+    private httpDebug = true;
 
     //Permet de sauvegarder le ViewState et le subMenuId pour les réutiliser dans les prochaines requêtes (optimisation)
     //Cela a pour but d'éviter d'effectuer 3 requêtes lorsque l'on refait la même demande (emploi du temps de la semaine suivante par exemple)
@@ -33,6 +35,113 @@ export class Session {
         };
     }
 
+    // Redaction et normalisation des headers pour les logs
+    private sanitizeHeaders(
+        headers: Record<string, any> | undefined
+    ): Record<string, string> {
+        const result: Record<string, string> = {};
+        if (!headers) return result;
+        // Aplatir (peut être Headers-like ou simple record)
+        const entries: Array<[string, any]> = Array.isArray(headers)
+            ? (headers as Array<[string, any]>)
+            : Object.entries(headers as Record<string, any>);
+        for (const [k, v] of entries) {
+            const key = String(k).toLowerCase();
+            let val = typeof v === "string" ? v : JSON.stringify(v);
+            if (["cookie", "authorization", "set-cookie"].includes(key)) {
+                val = "<redacted>";
+            }
+            result[key] = val;
+        }
+        return result;
+    }
+
+    private headersToObject(h: Headers): Record<string, string> {
+        const obj: Record<string, string> = {};
+        try {
+            h.forEach((value, key) => {
+                const k = key.toLowerCase();
+                obj[k] = ["set-cookie"].includes(k) ? "<redacted>" : value;
+            });
+        } catch {}
+        return obj;
+    }
+
+    // Masquage du body (ex: password) + truncation
+    private sanitizeBody(
+        body: any,
+        headers?: Record<string, any>
+    ): string | undefined {
+        if (body == null) return undefined;
+        try {
+            const contentType = String(
+                headers?.["content-type"] || headers?.["Content-Type"] || ""
+            ).toLowerCase();
+            const raw = typeof body === "string" ? body : String(body);
+
+            // x-www-form-urlencoded
+            if (contentType.includes("application/x-www-form-urlencoded")) {
+                const usp = new URLSearchParams(raw);
+                if (usp.has("password")) usp.set("password", "<redacted>");
+                return usp.toString().slice(0, 2000);
+            }
+            // JSON
+            if (contentType.includes("application/json")) {
+                const json = JSON.parse(raw);
+                if (json && typeof json === "object") {
+                    if ("password" in json)
+                        (json as any).password = "<redacted>";
+                }
+                return JSON.stringify(json).slice(0, 2000);
+            }
+            // Texte par défaut
+            return raw.slice(0, 2000);
+        } catch {
+            return String(body).slice(0, 2000);
+        }
+    }
+
+    private debugLogRequest(
+        fullUrl: string,
+        method: string,
+        headers: Record<string, any> | undefined,
+        body: any
+    ) {
+        if (!this.httpDebug) return;
+        const normalizedHeaders = this.sanitizeHeaders(headers);
+        const safeBody = this.sanitizeBody(body, normalizedHeaders);
+        console.log("[HTTP Request]", {
+            url: fullUrl,
+            method,
+            headers: normalizedHeaders,
+            body: safeBody
+        });
+    }
+
+    private debugLogResponse(
+        fullUrl: string,
+        method: string,
+        status: number,
+        statusText: string,
+        headers: Headers | Record<string, any> | undefined,
+        bodyText: string
+    ) {
+        if (!this.httpDebug) return;
+        const normalizedHeaders =
+            headers instanceof Headers
+                ? this.headersToObject(headers)
+                : this.sanitizeHeaders(headers as Record<string, any>);
+        const preview = (bodyText || "").slice(0, 2000);
+        console.log("[HTTP Response]", {
+            url: fullUrl,
+            method,
+            status,
+            statusText,
+            headers: normalizedHeaders,
+            body: preview
+        });
+    }
+
     private async fetchText(
         url: string,
         init?: RequestInit,
@@ -41,27 +150,47 @@ export class Session {
         const controller = new AbortController();
         const id = setTimeout(() => controller.abort(), timeoutMs);
         try {
-            const res = await fetch(this.baseURL + url, {
+            const fullUrl = this.baseURL + url;
+            const mergedHeaders: Record<string, any> = {
+                ...this.getBaseHeaders(),
+                ...(init?.headers as any)
+            };
+            const method = init?.method || "GET";
+
+            // Log requête
+            this.debugLogRequest(fullUrl, method, mergedHeaders, init?.body);
+
+            const res = await fetch(fullUrl, {
                 method: init?.method || "GET",
-                headers: {
-                    ...this.getBaseHeaders(),
-                    ...(init?.headers as any)
-                },
+                headers: mergedHeaders,
                 body: init?.body === null ? undefined : init?.body,
                 // S'assurer que les cookies de session sont envoyés/stockés
                 credentials: "include",
                 signal: controller.signal
             });
+            const text = await res.text();
+            // Log réponse
+            this.debugLogResponse(
+                fullUrl,
+                method,
+                res.status,
+                res.statusText,
+                res.headers,
+                text
+            );
+
             // En cas d'erreur HTTP
             if (!res.ok) {
                 const err = new Error(
-                    `HTTP ${res.status} ${res.statusText} for ${url}`
+                    `HTTP ${res.status} ${
+                        res.statusText
+                    } for ${url} — ${text.slice(0, 256)}`
                 );
                 (err as any).status = res.status;
                 (err as any).statusText = res.statusText;
+                (err as any).body = text.slice(0, 2000);
                 throw err;
             }
-            const text = await res.text();
             return text as unknown as string;
         } finally {
             clearTimeout(id);
