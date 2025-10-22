@@ -31,7 +31,10 @@ export class Session {
     private getBaseHeaders(): Record<string, string> {
         return {
             "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8",
-            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            Pragma: "no-cache",
+            Expires: "0"
         };
     }
 
