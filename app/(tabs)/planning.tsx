@@ -41,12 +41,6 @@ export default function PlanningScreen() {
 
     const [selectedEvent, setSelectedEvent] = useState<PlanningEvent | null>();
 
-    // État pour le pull-to-refresh
-    const isRefreshing = syncStatus === "syncing";
-    const onRefresh = () => {
-        syncData();
-    };
-
     // Fonction pour changer la semaine affichée
     const handleWeekChange = (previous: boolean) => {
         // Calcul de la nouvelle date
@@ -74,8 +68,8 @@ export default function PlanningScreen() {
             scrollable={true}
             refreshControl={
                 <RefreshControl
-                    refreshing={isRefreshing}
-                    onRefresh={onRefresh}
+                    refreshing={false}
+                    onRefresh={syncData}
                     colors={[Colors.primary]} // Android
                     tintColor={Colors.primary} // iOS
                 />
@@ -195,12 +189,6 @@ export default function PlanningScreen() {
                             );
                         }
                     }}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={isRefreshing}
-                            onRefresh={onRefresh}
-                        />
-                    }
                 />
             ) : (
                 <PlanningWeek
@@ -209,12 +197,6 @@ export default function PlanningScreen() {
                     setSelectedEvent={(planningEvent) => {
                         setSelectedEvent(findEvent(planning, planningEvent));
                     }}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={isRefreshing}
-                            onRefresh={onRefresh}
-                        />
-                    }
                 />
             )}
             {/* Modal d'informations sur un cours */}

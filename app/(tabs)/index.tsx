@@ -47,12 +47,6 @@ export default function HomeScreen() {
     const [selectedNote, setSelectedNote] = useState<Note | null>();
     const [noteModalInfoVisible, setNoteModalInfoVisible] = useState(false);
 
-    // État pour le pull-to-refresh
-    const isRefreshing = syncStatus === "syncing";
-    const onRefresh = () => {
-        syncData();
-    };
-
     // Lorsque la page est chargée, on demande les permissions pour les notifications
     useEffect(() => {
         requestPermissions().then((granted) => {
@@ -74,8 +68,8 @@ export default function HomeScreen() {
             scrollable={true}
             refreshControl={
                 <RefreshControl
-                    refreshing={isRefreshing}
-                    onRefresh={onRefresh}
+                    refreshing={false}
+                    onRefresh={syncData}
                     colors={[Colors.primary]} // Android
                     tintColor={Colors.primary} // iOS
                 />

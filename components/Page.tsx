@@ -13,7 +13,9 @@ export function Page(props: {
     style?: any;
     scrollable?: boolean;
     keyboardDismissMode?: "none" | "on-drag" | "interactive";
-    refreshControl?: React.ReactElement<typeof RefreshControl>;
+    refreshControl?: React.ReactElement<
+        React.ComponentProps<typeof RefreshControl>
+    >;
 }) {
     const contentStyle = [
         pageStyles.content,
