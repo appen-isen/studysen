@@ -13,7 +13,7 @@
         "update-preview": "eas update --channel preview",
         "update-production": "eas update --channel production",
         "test": "jest --watchAll",
-        "pretty": "prettier --write ."
+        "pretty":  "prettier --write ."
     },
     "jest": {
         "preset": "jest-expo"
@@ -22,8 +22,7 @@
         "@expo/metro-runtime": "~6.1.2",
         "@expo/vector-icons": "^15.0.2",
         "@gorhom/bottom-sheet": "^5.2.6",
-                "@react-native-async-storage/async-storage": "2.2.0",
-                "@react-native-cookies/cookies": "^6.2.1",
+        "@react-native-async-storage/async-storage": "2.2.0",
         "@react-navigation/native": "^7.0.0",
         "cheerio": "1.0.0-rc.12",
         "expo": "54.0.12",
