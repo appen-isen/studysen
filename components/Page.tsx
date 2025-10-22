@@ -1,4 +1,3 @@
-import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { ReactNode } from "react";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
@@ -7,6 +6,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getResponsivePadding } from "@/utils/responsive";
+import { RefreshControl, ScrollView, View, StyleSheet } from "react-native";
 
 export function Page(props: {
     children?: ReactNode;
@@ -32,6 +32,7 @@ export function Page(props: {
                 scrollEnabled={props.scrollable}
                 keyboardShouldPersistTaps="handled"
                 keyboardDismissMode={props.keyboardDismissMode}
+                refreshControl={props.refreshControl}
             >
                 {props.children}
             </ScrollView>
