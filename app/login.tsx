@@ -156,7 +156,7 @@ export default function LoginScreen() {
                 {/* Champs */}
                 <View style={styles.fieldsBox}>
                     <Input
-                        placeholder="Nom d'utilisateur"
+                        placeholder="Nom d'utilisateur (p_nom)"
                         icon="account-circle"
                         onChangeText={(text) => setUsername(text)}
                         value={username}

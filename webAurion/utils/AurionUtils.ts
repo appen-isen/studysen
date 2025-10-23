@@ -46,6 +46,40 @@ export function getName(html: string): string {
     return "";
 }
 
+/**
+ * Extrait le sidebar_menuid correspondant à un texte donné dans le menu.
+ * @param {string} html - Le contenu HTML à parser
+ * @param {string} label - Le texte du menu à rechercher (ex: "Mon planning" ou "Mes notes")
+ * @returns {string|null} Le sidebar_menuid correspondant, ou null si non trouvé
+ */
+export function getSidebarMenuId(html: string, label: string): string | null {
+    const parser = load(html);
+
+    // Cherche le span dont le texte commence par `label`
+    const span = parser("span.ui-menuitem-text")
+        .filter((_, el) => {
+            const text = parser(el).text().trim();
+            return text.startsWith(label);
+        })
+        .first();
+
+    if (!span.length) {
+        // Non trouvé
+        return null;
+    }
+
+    // Trouve l’attribut onclick du lien parent
+    const onclick = span.closest("a").attr("onclick");
+    if (!onclick) {
+        // Non trouvé
+        return null;
+    }
+
+    // Extrait la valeur form:sidebar_menuid:'X_Y'
+    const match = onclick.match(/'form:sidebar_menuid':'([^']+)'/);
+    return match ? match[1] : null;
+}
+
 // Conversion de l'objet URLSearchParams en HashMap pour Rust (application de bureau)
 export function paramsToHashMap(params: URLSearchParams) {
     return Object.fromEntries(params.entries());

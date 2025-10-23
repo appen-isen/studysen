@@ -22,8 +22,7 @@ class PlanningApi {
             }
             try {
                 // On récupère le ViewState pour effectuer la requête
-                // Ici 1_4 correspond au sous-menu 'Emploi du temps' dans la sidebar
-                let viewState = await this.session.getViewState("1_4");
+                let viewState = await this.session.getViewState("Mon planning");
                 // On envoie enfin la requête pour obtenir l'emploi du temps
                 const params = getJSFFormParams(
                     "j_idt118",

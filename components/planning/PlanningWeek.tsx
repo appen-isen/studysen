@@ -29,7 +29,10 @@ export default function PlanningWeek(props: {
 
     function handleLayout(e: LayoutChangeEvent) {
         const { height } = e.nativeEvent.layout;
-        setWeekHeight(height);
+        // Évite une boucle d'agrandissement: ne mesure qu'une fois (ou depuis 0)
+        if (weekHeight === 0 && height > 0) {
+            setWeekHeight(height);
+        }
     }
 
     return (
@@ -94,70 +97,73 @@ export function WeekEvent(props: {
 
     return (
         <AnimatedPressable
-            style={[
-                eventStyles.container,
-                { height: eventHeight },
-                // Mode compact: seulement le texte pour les très courts événements
-                isVeryShort && {
-                    paddingBlock: 0,
-                    gap: 0,
-                    justifyContent: "center"
-                }
-            ]}
+            style={[eventStyles.container, { height: eventHeight }]}
             onPress={() => props.onPress && props.onPress(props.event)}
             scale={0.9}
         >
-            {!isVeryShort && (
-                <View
-                    style={[
-                        eventStyles.colorBar,
-                        {
-                            backgroundColor: getSubjectColor(
-                                props.event.subject
-                            )
-                        }
-                    ]}
-                />
-            )}
-            <Text
+            <View
                 style={[
-                    eventStyles.subject,
-                    isVeryShort && { fontSize: 9, paddingHorizontal: 2 }
+                    eventStyles.content,
+                    // Mode compact: seulement le texte pour les très courts événements
+                    isVeryShort && {
+                        paddingVertical: 0,
+                        gap: 0,
+                        justifyContent: "center"
+                    }
                 ]}
-                numberOfLines={1}
             >
-                {props.event.subject || props.event.title}
-            </Text>
+                {!isVeryShort && (
+                    <View
+                        style={[
+                            eventStyles.colorBar,
+                            {
+                                backgroundColor: getSubjectColor(
+                                    props.event.subject
+                                )
+                            }
+                        ]}
+                    />
+                )}
+                <Text
+                    style={[
+                        eventStyles.subject,
+                        isVeryShort && { fontSize: 9, paddingHorizontal: 2 }
+                    ]}
+                    numberOfLines={1}
+                >
+                    {props.event.subject || props.event.title}
+                </Text>
 
-            {/* On affiche l'heure de début et de fin de l'événement si la durée est supérieure à 45 minutes */}
-            {durationInHours > 0.75 && (
-                <View style={eventStyles.tags}>
-                    <Text
-                        style={[eventStyles.tag, eventStyles.tagWhite]}
-                        numberOfLines={1}
-                    >
-                        {startHour}
-                    </Text>
-                    <Text
-                        style={[eventStyles.tag, eventStyles.tagWhite]}
-                        numberOfLines={1}
-                    >
-                        {endHour}
-                    </Text>
-                </View>
-            )}
+                {/* On affiche l'heure de début et de fin de l'événement si la durée est supérieure à 45 minutes */}
+                {durationInHours > 0.75 && (
+                    <View style={eventStyles.tags}>
+                        <Text
+                            style={[eventStyles.tag, eventStyles.tagWhite]}
+                            numberOfLines={1}
+                        >
+                            {startHour}
+                        </Text>
+                        <Text
+                            style={[eventStyles.tag, eventStyles.tagWhite]}
+                            numberOfLines={1}
+                        >
+                            {endHour}
+                        </Text>
+                    </View>
+                )}
 
-            {/* On affiche la salle si l'événement dure plus d'une heure */}
-            {durationInHours > 1 && (
-                <View style={eventStyles.tags}>
-                    <Text
-                        style={[eventStyles.tag, eventStyles.tagBlack]}
-                        numberOfLines={1}
-                    >
-                        {props.event.room}
-                    </Text>
-                </View>
-            )}
+                {/* On affiche la salle si l'événement dure plus d'une heure */}
+                {durationInHours > 1 && (
+                    <View style={eventStyles.tags}>
+                        <Text
+                            style={[eventStyles.tag, eventStyles.tagBlack]}
+                            numberOfLines={1}
+                        >
+                            {props.event.room}
+                        </Text>
+                    </View>
+                )}
+            </View>
         </AnimatedPressable>
     );
 }
@@ -199,9 +205,14 @@ const eventStyles = StyleSheet.create({
         borderRadius: 10,
         width: "100%",
         backgroundColor: Colors.light,
-        overflow: "hidden",
-        paddingBlock: 10,
-        paddingInline: 4,
+        overflow: "hidden"
+    },
+    content: {
+        flex: 1,
+        width: "100%",
+        alignItems: "center",
+        paddingVertical: 10,
+        paddingHorizontal: 4,
         gap: 5
     },
     colorBar: {

@@ -2,6 +2,7 @@ import PlanningApi from "./PlanningApi";
 import {
     getJSFFormParams,
     getName,
+    getSidebarMenuId,
     getViewState,
     paramsToHashMap
 } from "../utils/AurionUtils";
@@ -13,8 +14,6 @@ import { fetch } from "expo/fetch";
 export class Session {
     private baseURL: string = "https://web.isen-ouest.fr/webAurion";
     private defaultTimeoutMs = 15000;
-    // Active les logs de debug des requêtes/réponses HTTP
-    private httpDebug = true;
 
     //Permet de sauvegarder le ViewState et le subMenuId pour les réutiliser dans les prochaines requêtes (optimisation)
     //Cela a pour but d'éviter d'effectuer 3 requêtes lorsque l'on refait la même demande (emploi du temps de la semaine suivante par exemple)
@@ -38,113 +37,6 @@ export class Session {
         };
     }
 
-    // Redaction et normalisation des headers pour les logs
-    private sanitizeHeaders(
-        headers: Record<string, any> | undefined
-    ): Record<string, string> {
-        const result: Record<string, string> = {};
-        if (!headers) return result;
-        // Aplatir (peut être Headers-like ou simple record)
-        const entries: Array<[string, any]> = Array.isArray(headers)
-            ? (headers as Array<[string, any]>)
-            : Object.entries(headers as Record<string, any>);
-        for (const [k, v] of entries) {
-            const key = String(k).toLowerCase();
-            let val = typeof v === "string" ? v : JSON.stringify(v);
-            if (["cookie", "authorization", "set-cookie"].includes(key)) {
-                val = "<redacted>";
-            }
-            result[key] = val;
-        }
-        return result;
-    }
-
-    private headersToObject(h: Headers): Record<string, string> {
-        const obj: Record<string, string> = {};
-        try {
-            h.forEach((value, key) => {
-                const k = key.toLowerCase();
-                obj[k] = ["set-cookie"].includes(k) ? "<redacted>" : value;
-            });
-        } catch {}
-        return obj;
-    }
-
-    // Masquage du body (ex: password) + truncation
-    private sanitizeBody(
-        body: any,
-        headers?: Record<string, any>
-    ): string | undefined {
-        if (body == null) return undefined;
-        try {
-            const contentType = String(
-                headers?.["content-type"] || headers?.["Content-Type"] || ""
-            ).toLowerCase();
-            const raw = typeof body === "string" ? body : String(body);
-
-            // x-www-form-urlencoded
-            if (contentType.includes("application/x-www-form-urlencoded")) {
-                const usp = new URLSearchParams(raw);
-                if (usp.has("password")) usp.set("password", "<redacted>");
-                return usp.toString().slice(0, 2000);
-            }
-            // JSON
-            if (contentType.includes("application/json")) {
-                const json = JSON.parse(raw);
-                if (json && typeof json === "object") {
-                    if ("password" in json)
-                        (json as any).password = "<redacted>";
-                }
-                return JSON.stringify(json).slice(0, 2000);
-            }
-            // Texte par défaut
-            return raw.slice(0, 2000);
-        } catch {
-            return String(body).slice(0, 2000);
-        }
-    }
-
-    private debugLogRequest(
-        fullUrl: string,
-        method: string,
-        headers: Record<string, any> | undefined,
-        body: any
-    ) {
-        if (!this.httpDebug) return;
-        const normalizedHeaders = this.sanitizeHeaders(headers);
-        const safeBody = this.sanitizeBody(body, normalizedHeaders);
-        console.log("[HTTP Request]", {
-            url: fullUrl,
-            method,
-            headers: normalizedHeaders,
-            body: safeBody
-        });
-    }
-
-    private debugLogResponse(
-        fullUrl: string,
-        method: string,
-        status: number,
-        statusText: string,
-        headers: Headers | Record<string, any> | undefined,
-        bodyText: string
-    ) {
-        if (!this.httpDebug) return;
-        const normalizedHeaders =
-            headers instanceof Headers
-                ? this.headersToObject(headers)
-                : this.sanitizeHeaders(headers as Record<string, any>);
-        const preview = (bodyText || "").slice(0, 2000);
-        console.log("[HTTP Response]", {
-            url: fullUrl,
-            method,
-            status,
-            statusText,
-            headers: normalizedHeaders,
-            body: preview
-        });
-    }
-
     private async fetchText(
         url: string,
         init?: RequestInit,
@@ -160,9 +52,6 @@ export class Session {
             };
             const method = init?.method || "GET";
 
-            // Log requête
-            this.debugLogRequest(fullUrl, method, mergedHeaders, init?.body);
-
             const res = await fetch(fullUrl, {
                 method: init?.method || "GET",
                 headers: mergedHeaders,
@@ -172,16 +61,6 @@ export class Session {
                 signal: controller.signal
             });
             const text = await res.text();
-            // Log réponse
-            this.debugLogResponse(
-                fullUrl,
-                method,
-                res.status,
-                res.statusText,
-                res.headers,
-                text
-            );
-
             // En cas d'erreur HTTP
             if (!res.ok) {
                 const err = new Error(
@@ -191,7 +70,6 @@ export class Session {
                 );
                 (err as any).status = res.status;
                 (err as any).statusText = res.statusText;
-                (err as any).body = text.slice(0, 2000);
                 throw err;
             }
             return text as unknown as string;
@@ -228,8 +106,8 @@ export class Session {
                     // On traite la réponse de la connexion
                     // On vérifie si la connexion a réussi
                     if (
-                        res.includes("Home page") ||
-                        res.includes("Page d'accueil")
+                        !res.includes("Login or password invalid") &&
+                        !res.includes("Login ou mot de passe invalide")
                     ) {
                         // On récupère le nom de l'utilisateur
                         this.username = getName(res);
@@ -319,44 +197,61 @@ export class Session {
     }
 
     // Récupération du ViewState pour effectuer les différentes requêtes
-    public getViewState(subMenuId: string): Promise<string> {
-        const attempt = async (): Promise<string> => {
-            // Utiliser le cache si pertinent
-            if (this.viewStateCache && this.subMenuIdCache === subMenuId) {
-                return this.viewStateCache;
-            }
-            const schedulePage = await this.sendGET<string>(
-                "/faces/Planning.xhtml"
-            );
-            let viewState = getViewState(schedulePage);
-            if (!viewState) throw new Error("Viewstate not found");
-
-            // Ici 291906 correspond au menu 'Scolarité' dans la sidebar
-            // Requête utile pour intialiser le ViewState (obligatoire pour effectuer une requête)
-            await this.sendSidebarRequest("291906", viewState);
-            viewState = await this.sendSidebarSubmenuRequest(
-                subMenuId,
-                viewState
-            );
-            if (!viewState) throw new Error("Viewstate not found");
-            this.viewStateCache = viewState;
-            this.subMenuIdCache = subMenuId;
-            return viewState;
-        };
-
+    public getViewState(subMenuName: string): Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
+            //On optimise l'accès au ViewState
+            if (this.viewStateCache && this.subMenuIdCache === subMenuName) {
+                return resolve(this.viewStateCache);
+            }
             try {
-                const vs = await attempt();
-                resolve(vs);
-            } catch (e1) {
-                // En cas d'échec, on nettoie et on retente une fois
-                try {
-                    this.clearViewStateCache();
-                    const vs2 = await attempt();
-                    resolve(vs2);
-                } catch (e2) {
-                    reject(new Error("Viewstate not found"));
+                const schedulePage = await this.sendGET<string>(
+                    "/faces/Planning.xhtml"
+                );
+                let viewState = getViewState(schedulePage);
+                if (viewState) {
+                    // Ici 291906 correspond au menu 'Scolarité' dans la sidebar
+                    // Requête utile pour intialiser le ViewState (obligatoire pour effectuer une requête)
+                    const sidebarResponse = await this.sendSidebarRequest(
+                        "291906",
+                        viewState
+                    );
+
+                    // On récupère le sidebar_menuid correspondant au sous-menu demandé
+                    const subMenuId = getSidebarMenuId(
+                        sidebarResponse,
+                        subMenuName
+                    );
+                    // Vérification de l'existence du subMenuId
+                    if (!subMenuId) {
+                        return reject(
+                            new Error(
+                                "Sidebar menu ID not found, subMenuName: " +
+                                    subMenuName
+                            )
+                        );
+                    }
+                    // On récupère le ViewState pour effectuer la prochaine requête
+                    viewState = await this.sendSidebarSubmenuRequest(
+                        subMenuId,
+                        viewState
+                    );
+                    if (viewState) {
+                        this.viewStateCache = viewState;
+                        this.subMenuIdCache = subMenuName;
+                        return resolve(viewState);
+                    }
                 }
+                return reject(
+                    new Error(
+                        "Viewstate not found, subMenuName: " + subMenuName
+                    )
+                );
+            } catch (error) {
+                reject(
+                    new Error(
+                        "Viewstate not found, subMenuName: " + subMenuName
+                    )
+                );
             }
         });
     }
