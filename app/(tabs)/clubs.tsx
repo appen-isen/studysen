@@ -5,7 +5,6 @@ import { Post } from "../post-details";
 import { DotLoader } from "@/components/Sync";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/utils/config";
-import axios from "axios";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
 import useSettingsStore, { CAMPUS, campusToId } from "@/stores/settingsStore";
@@ -14,6 +13,7 @@ import { getResponsiveMaxWidth } from "@/utils/responsive";
 import { AnimatedPressable } from "@/components/Buttons";
 import { Dropdown } from "@/components/Modals";
 import { MaterialIcons } from "@expo/vector-icons";
+import { fetch } from "expo/fetch";
 
 export default function ClubsScreen() {
     const [posts, setPosts] = useState<PostType[]>([]);
@@ -30,12 +30,13 @@ export default function ClubsScreen() {
     ): Promise<PostType | null> => {
         try {
             //On récupère le X dernier post
-            const response = await axios.get(
+            const response = await fetch(
                 `${API_BASE_URL}/posts/last?offset=${offset}&campus=${campusToId(
                     useSettingsStore.getState().settings.campus
                 )}`
             );
-            return response.data;
+            if (!response.ok) return null;
+            return (await response.json()) as PostType;
         } catch (error) {
             return null;
         }

@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, RefreshControl } from "react-native";
 import { Text } from "@/components/Texts";
 import Colors from "@/constants/Colors";
 import { useState } from "react";
@@ -19,6 +19,8 @@ import { AnimatedPressable, Toggle } from "@/components/Buttons";
 import EventModal from "@/components/modals/EventModal";
 import { findEvent } from "@/utils/planning";
 import { usePlanningStore } from "@/stores/webaurionStore";
+import { useSyncStore } from "@/stores/syncStore";
+import { syncData } from "@/services/syncService";
 import { SyncBadge } from "@/components/Sync";
 import { Page, PageHeader } from "@/components/Page";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
@@ -26,6 +28,7 @@ import { updatePlanning } from "@/services/syncService";
 
 export default function PlanningScreen() {
     const { planning } = usePlanningStore();
+    const { syncStatus } = useSyncStore();
 
     const [planningView, setPlanningView] = useState<"list" | "week">("list");
 
@@ -60,7 +63,18 @@ export default function PlanningScreen() {
     };
 
     return (
-        <Page style={styles.container}>
+        <Page
+            style={styles.container}
+            scrollable={true}
+            refreshControl={
+                <RefreshControl
+                    refreshing={false}
+                    onRefresh={syncData}
+                    colors={[Colors.primary]} // Android
+                    tintColor={Colors.primary} // iOS
+                />
+            }
+        >
             <SyncBadge />
 
             {/* En tête de la page */}

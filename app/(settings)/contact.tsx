@@ -10,10 +10,10 @@ import { Sheet } from "@/components/Sheet";
 import { ErrorModal, SuccessModal } from "@/components/Modals";
 import useSettingsStore from "@/stores/settingsStore";
 import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
 import * as Device from "expo-device";
 import { API_BASE_URL } from "@/utils/config";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { fetch } from "expo/fetch";
 
 export default function Contact() {
     const { settings } = useSettingsStore();
@@ -124,17 +124,27 @@ ${username}
 
             // Créer l'issue sur GitHub
 
-            const response = await axios.post(`${API_BASE_URL}/github`, {
-                title,
-                body: bodyContent,
-                image: selectedImage,
-                labels: [`${contactType === 0 ? "bug" : "suggestion"}`],
-                assignees: ["dd060606", "BreizhHardware"]
+            const response = await fetch(`${API_BASE_URL}/github`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title,
+                    body: bodyContent,
+                    image: selectedImage,
+                    labels: [`${contactType === 0 ? "bug" : "suggestion"}`],
+                    assignees: ["dd060606", "BreizhHardware"]
+                })
             });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const data = await response.json();
 
             // Succès
             setSuccessVisible(true);
-            console.log("Issue envoyée:", response.data);
+            console.log("Issue envoyée:", data);
             //On réinitialise les champs
             setDescription("");
             setReproductionSteps("");

@@ -156,22 +156,26 @@ export default function LoginScreen() {
                 {/* Champs */}
                 <View style={styles.fieldsBox}>
                     <Input
-                        placeholder="Nom d'utilisateur"
+                        placeholder="Nom d'utilisateur (p_nom)"
                         icon="account-circle"
                         onChangeText={(text) => setUsername(text)}
                         value={username}
                         autoComplete="username"
+                        autoCapitalize="none"
+                        autoCorrect={false}
                         numberOfLines={1}
-                    ></Input>
+                    />
                     <Input
                         placeholder="Mot de passe"
                         icon="key"
                         onChangeText={(text) => setPassword(text)}
                         value={password}
                         autoComplete="password"
+                        autoCapitalize="none"
+                        autoCorrect={false}
                         numberOfLines={1}
                         password
-                    ></Input>
+                    />
                     <Checkbox
                         status={rememberMe ? "checked" : "unchecked"}
                         onPress={() => setRememberMe(!rememberMe)}

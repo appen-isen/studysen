@@ -21,23 +21,23 @@ export default function TabLayout() {
     //On utilise un hook pour gérer l'état de l'application (arrivée en arrière-plan, en premier plan, etc.)
     const appState = useRef<AppStateStatus>(AppState.currentState);
 
+    const checkAndSync = () => {
+        const lastSyncDate = useSyncStore.getState().lastSyncDate;
+        if (
+            lastSyncDate instanceof Date &&
+            Date.now() - lastSyncDate.getTime() > 5 * 60 * 1000
+        ) {
+            // Plus de 5 minutes se sont écoulées depuis la dernière synchronisation
+            stopAutoSync();
+            useSyncStore.getState().clearAlreadySyncedPlanning();
+            startAutoSync();
+        }
+    };
+
     useEffect(() => {
         const handleAppStateChange = (nextAppState: AppStateStatus) => {
-            if (
-                appState.current.match(/inactive|background/) &&
-                nextAppState === "active"
-            ) {
-                const lastSyncDate = useSyncStore.getState().lastSyncDate;
-                // L'application revient en premier plan
-                if (
-                    lastSyncDate instanceof Date &&
-                    Date.now() - lastSyncDate.getTime() > 5 * 60 * 1000
-                ) {
-                    // Plus de 5 minutes se sont écoulées depuis la dernière synchronisation
-                    stopAutoSync();
-                    useSyncStore.getState().clearAlreadySyncedPlanning();
-                    startAutoSync();
-                }
+            if (nextAppState === "active") {
+                checkAndSync();
             }
 
             appState.current = nextAppState;
@@ -48,9 +48,12 @@ export default function TabLayout() {
             handleAppStateChange
         );
 
-        return () => {
-            subscription.remove();
-        };
+        // Vérifier au lancement de l'app si une synchronisation est nécessaire
+        if (appState.current === "active") {
+            checkAndSync();
+        }
+
+        return () => subscription.remove();
     }, []);
 
     return (

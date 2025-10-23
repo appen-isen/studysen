@@ -1,4 +1,3 @@
-import { getViewState } from "../utils/AurionUtils";
 import { generateDemoNotes } from "../utils/demo";
 import { getNotesFromResponse } from "../utils/NoteUtils";
 import { NotesList } from "../utils/types";
@@ -19,8 +18,7 @@ class NotesApi {
             }
             try {
                 // On initialise le ViewState (obligatoire pour avoir une réponse correcteur du backend)
-                // Ici 1_1 correspond au sous-menu 'Mes notes' dans la sidebar
-                await this.session.getViewState("1_1");
+                await this.session.getViewState("Mes notes");
                 const response = await this.session.sendGET<string>(
                     "/faces/LearnerNotationListPage.xhtml"
                 );

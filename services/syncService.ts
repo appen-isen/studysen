@@ -44,7 +44,7 @@ function clearPendingRetry() {
 }
 
 // Permet de synchroniser l'agenda et les notes depuis WebAurion
-async function syncData(weekOffset: number = 0) {
+export async function syncData(weekOffset: number = 0) {
     if (isSyncInProgress) return;
     isSyncInProgress = true;
     console.log("Début de la synchronisation");

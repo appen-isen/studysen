@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, RefreshControl } from "react-native";
 import { Text } from "@/components/Texts";
 import { AnimatedPressable } from "@/components/Buttons";
 import Colors from "@/constants/Colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNotesStore, usePlanningStore } from "@/stores/webaurionStore";
+import { useSyncStore } from "@/stores/syncStore";
+import { syncData } from "@/services/syncService";
 import { Note, PlanningEvent } from "@/webAurion/utils/types";
 import {
     findEvent,
@@ -32,6 +34,7 @@ export default function HomeScreen() {
     const router = useRouter();
     const { notes } = useNotesStore();
     const { settings } = useSettingsStore();
+    const { syncStatus } = useSyncStore();
     // Gestion du planning
     const { planning } = usePlanningStore();
     // On formate le planning pour le mode liste
@@ -60,7 +63,18 @@ export default function HomeScreen() {
     };
 
     return (
-        <Page style={styles.container} scrollable={true}>
+        <Page
+            style={styles.container}
+            scrollable={true}
+            refreshControl={
+                <RefreshControl
+                    refreshing={false}
+                    onRefresh={syncData}
+                    colors={[Colors.primary]} // Android
+                    tintColor={Colors.primary} // iOS
+                />
+            }
+        >
             <SyncBadge />
             {/* En tête de la page */}
             <PageHeader title="Accueil" />

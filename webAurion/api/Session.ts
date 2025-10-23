@@ -2,17 +2,18 @@ import PlanningApi from "./PlanningApi";
 import {
     getJSFFormParams,
     getName,
+    getSidebarMenuId,
     getViewState,
     paramsToHashMap
 } from "../utils/AurionUtils";
 import NotesApi from "./NotesApi";
-import axios, { AxiosInstance } from "axios";
 import { Platform } from "react-native";
 import { sendTauriCommand } from "@/utils/desktop";
+import { fetch } from "expo/fetch";
 
 export class Session {
-    private client: AxiosInstance;
     private baseURL: string = "https://web.isen-ouest.fr/webAurion";
+    private defaultTimeoutMs = 15000;
 
     //Permet de sauvegarder le ViewState et le subMenuId pour les réutiliser dans les prochaines requêtes (optimisation)
     //Cela a pour but d'éviter d'effectuer 3 requêtes lorsque l'on refait la même demande (emploi du temps de la semaine suivante par exemple)
@@ -24,19 +25,57 @@ export class Session {
 
     private demo_mode: boolean = false;
 
-    constructor() {
-        this.client = axios.create({
-            baseURL: this.baseURL,
-            timeout: 8000,
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8",
-                Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "User-Agent":
-                    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36"
-            },
-            withCredentials: true
-        });
+    constructor() {}
+
+    private getBaseHeaders(): Record<string, string> {
+        return {
+            "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8",
+            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            Pragma: "no-cache",
+            Expires: "0"
+        };
+    }
+
+    private async fetchText(
+        url: string,
+        init?: RequestInit,
+        timeoutMs: number = this.defaultTimeoutMs
+    ): Promise<string> {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            const fullUrl = this.baseURL + url;
+            const mergedHeaders: Record<string, any> = {
+                ...this.getBaseHeaders(),
+                ...(init?.headers as any)
+            };
+            const method = init?.method || "GET";
+
+            const res = await fetch(fullUrl, {
+                method: init?.method || "GET",
+                headers: mergedHeaders,
+                body: init?.body === null ? undefined : init?.body,
+                // S'assurer que les cookies de session sont envoyés/stockés
+                credentials: "include",
+                signal: controller.signal
+            });
+            const text = await res.text();
+            // En cas d'erreur HTTP
+            if (!res.ok) {
+                const err = new Error(
+                    `HTTP ${res.status} ${
+                        res.statusText
+                    } for ${url} — ${text.slice(0, 256)}`
+                );
+                (err as any).status = res.status;
+                (err as any).statusText = res.statusText;
+                throw err;
+            }
+            return text as unknown as string;
+        } finally {
+            clearTimeout(id);
+        }
     }
 
     /**
@@ -67,12 +106,14 @@ export class Session {
                     // On traite la réponse de la connexion
                     // On vérifie si la connexion a réussi
                     if (
-                        res.includes("Home page") ||
-                        res.includes("Page d'accueil")
+                        !res.includes("Login or password invalid") &&
+                        !res.includes("Login ou mot de passe invalide")
                     ) {
                         // On récupère le nom de l'utilisateur
                         this.username = getName(res);
                         console.log(`Logged in as ${this.username}`);
+                        // On repart sur un ViewState propre après login
+                        this.clearViewStateCache();
                         resolve(true);
                     }
                     resolve(false);
@@ -156,10 +197,10 @@ export class Session {
     }
 
     // Récupération du ViewState pour effectuer les différentes requêtes
-    public getViewState(subMenuId: string): Promise<string> {
+    public getViewState(subMenuName: string): Promise<string> {
         return new Promise<string>(async (resolve, reject) => {
             //On optimise l'accès au ViewState
-            if (this.viewStateCache && this.subMenuIdCache === subMenuId) {
+            if (this.viewStateCache && this.subMenuIdCache === subMenuName) {
                 return resolve(this.viewStateCache);
             }
             try {
@@ -170,8 +211,25 @@ export class Session {
                 if (viewState) {
                     // Ici 291906 correspond au menu 'Scolarité' dans la sidebar
                     // Requête utile pour intialiser le ViewState (obligatoire pour effectuer une requête)
-                    await this.sendSidebarRequest("291906", viewState);
+                    const sidebarResponse = await this.sendSidebarRequest(
+                        "291906",
+                        viewState
+                    );
 
+                    // On récupère le sidebar_menuid correspondant au sous-menu demandé
+                    const subMenuId = getSidebarMenuId(
+                        sidebarResponse,
+                        subMenuName
+                    );
+                    // Vérification de l'existence du subMenuId
+                    if (!subMenuId) {
+                        return reject(
+                            new Error(
+                                "Sidebar menu ID not found, subMenuName: " +
+                                    subMenuName
+                            )
+                        );
+                    }
                     // On récupère le ViewState pour effectuer la prochaine requête
                     viewState = await this.sendSidebarSubmenuRequest(
                         subMenuId,
@@ -179,13 +237,21 @@ export class Session {
                     );
                     if (viewState) {
                         this.viewStateCache = viewState;
-                        this.subMenuIdCache = subMenuId;
+                        this.subMenuIdCache = subMenuName;
                         return resolve(viewState);
                     }
                 }
-                return reject(new Error("Viewstate not found"));
+                return reject(
+                    new Error(
+                        "Viewstate not found, subMenuName: " + subMenuName
+                    )
+                );
             } catch (error) {
-                reject(new Error("Viewstate not found"));
+                reject(
+                    new Error(
+                        "Viewstate not found, subMenuName: " + subMenuName
+                    )
+                );
             }
         });
     }
@@ -208,7 +274,10 @@ export class Session {
                 url: this.baseURL + url
             }).then((response) => response);
         }
-        return this.client.get<T>(url).then((response) => response.data);
+        // On ajoute un cache buster pour éviter les problèmes de cache
+        return this.fetchText(url + `?cb=${Date.now()}`, {
+            method: "GET"
+        }).then((text) => text as unknown as T);
     }
 
     public sendPOST<T>(url: string, data: URLSearchParams): Promise<T> {
@@ -219,7 +288,13 @@ export class Session {
                 params: paramsToHashMap(data)
             }).then((response) => response);
         }
-        return this.client.post<T>(url, data).then((response) => response.data);
+        return this.fetchText(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: data.toString()
+        }).then((text) => text as unknown as T);
     }
 }
 
