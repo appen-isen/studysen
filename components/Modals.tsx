@@ -41,6 +41,15 @@ function ModalBase(props: ModalProps) {
             transparent={true}
             visible={props.visible}
             onRequestClose={() => props.setVisible(false)}
+            // iOS/iPad: autoriser toutes les orientations pour éviter un basculement forcé en portrait
+            supportedOrientations={[
+                "portrait",
+                "portrait-upside-down",
+                "landscape",
+                "landscape-left",
+                "landscape-right"
+            ]}
+            presentationStyle="overFullScreen"
         >
             <View style={styles.modalOverlay}>
                 {/* Overlay pour fermer la modal en cliquant à l'extérieur */}
