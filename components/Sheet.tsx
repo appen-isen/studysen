@@ -23,6 +23,16 @@ export function Sheet(props: SheetProps) {
             transparent={true}
             visible={props.visible}
             onRequestClose={() => props.setVisible(false)}
+            // iOS: éviter la rotation forcée en portrait lors de l'ouverture du Modal (iPad)
+            supportedOrientations={[
+                "portrait",
+                "portrait-upside-down",
+                "landscape",
+                "landscape-left",
+                "landscape-right"
+            ]}
+            // Assure une présentation qui respecte la transparence et limite les effets de rotation
+            presentationStyle="overFullScreen"
         >
             <GestureHandlerRootView style={styles.overlay}>
                 <TouchableWithoutFeedback
