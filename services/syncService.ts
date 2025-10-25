@@ -44,7 +44,10 @@ function clearPendingRetry() {
 }
 
 // Permet de synchroniser l'agenda et les notes depuis WebAurion
-export async function syncData(weekOffset: number = 0) {
+export async function syncData(
+    weekOffset: number = 0,
+    forceRelogin: boolean = false
+) {
     if (isSyncInProgress) return;
     isSyncInProgress = true;
     console.log("Début de la synchronisation");
@@ -59,7 +62,7 @@ export async function syncData(weekOffset: number = 0) {
         }
 
         // Si pas de session, on tente une connexion automatique
-        if (!session && !(await autoLogin())) {
+        if ((!session || forceRelogin) && !(await autoLogin())) {
             setSyncStatus("error");
             scheduleRetryIfNeeded(weekOffset);
             return;
@@ -205,7 +208,7 @@ export function startAutoSync() {
     if (syncIntervalId) return;
     // Première synchro immédiate
     useSyncStore.getState().clearAlreadySyncedPlanning();
-    syncData();
+    syncData(0, true);
     syncIntervalId = setInterval(() => {
         syncData();
     }, SYNC_INTERVAL_MS);

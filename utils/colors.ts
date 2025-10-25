@@ -11,6 +11,7 @@ const subjectMapping: Record<string, string> = {
     PROBA: "Mathématiques",
     PROBABILITES: "Mathématiques",
     Graphes: "Mathématiques",
+    STATISTIQUES: "Mathématiques",
     PHYS: "Physique",
     ALGO: "Informatique",
     Algorithmique: "Informatique",
@@ -21,6 +22,7 @@ const subjectMapping: Record<string, string> = {
     DEV: "Informatique",
     STM32: "Informatique",
     ENVT: "Environnement",
+    "Technologies pour l'environnement	": "Environnement",
     SI: "Sciences de l'Ingénieur",
     ANGLAIS: "Anglais",
     LV2: "Anglais",
@@ -28,8 +30,10 @@ const subjectMapping: Record<string, string> = {
     PROJET_INFO: "Informatique",
     RESEAUX: "Informatique",
     Réseaux: "Informatique",
+    ENTREPRENEURIAT: "Entrepreneuriat",
     "Gestion de projet": "Entrepreneuriat",
     Electronique: "Energie",
+    FPGA: "Energie",
     "Traitement du signal": "Energie"
 };
 // Fonction pour obtenir la couleur d'un événement en fonction de la matière

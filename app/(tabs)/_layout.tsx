@@ -20,6 +20,7 @@ function TabBarIcon(props: {
 export default function TabLayout() {
     //On utilise un hook pour gérer l'état de l'application (arrivée en arrière-plan, en premier plan, etc.)
     const appState = useRef<AppStateStatus>(AppState.currentState);
+    const hasLaunched = useRef(false);
 
     const checkAndSync = () => {
         const lastSyncDate = useSyncStore.getState().lastSyncDate;
@@ -36,11 +37,18 @@ export default function TabLayout() {
 
     useEffect(() => {
         const handleAppStateChange = (nextAppState: AppStateStatus) => {
-            if (nextAppState === "active") {
-                checkAndSync();
+            // Déclencher uniquement si on revient au premier plan APRES le lancement initial
+            if (
+                appState.current.match(/inactive|background/) &&
+                nextAppState === "active"
+            ) {
+                if (hasLaunched.current) {
+                    checkAndSync();
+                }
             }
 
             appState.current = nextAppState;
+            hasLaunched.current = true;
         };
 
         const subscription = AppState.addEventListener(
@@ -48,13 +56,8 @@ export default function TabLayout() {
             handleAppStateChange
         );
 
-        // Vérifier au lancement de l'app si une synchronisation est nécessaire
-        if (appState.current === "active") {
-            checkAndSync();
-        }
-
         return () => subscription.remove();
-    }, []);
+    }, [checkAndSync]);
 
     return (
         <Tabs
