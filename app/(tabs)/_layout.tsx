@@ -57,7 +57,7 @@ export default function TabLayout() {
         );
 
         return () => subscription.remove();
-    }, [checkAndSync]);
+    }, []);
 
     return (
         <Tabs
