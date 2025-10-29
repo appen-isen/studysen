@@ -41,7 +41,7 @@ export default function Credits() {
                 <Bold style={styles.sectionTitle}>À propos</Bold>
                 <Text style={styles.paragraph}>
                     <Text style={styles.important}>Studysen</Text> est une
-                    application crée par le club <Bold>Appen</Bold> du campus de
+                    application créée par le club <Bold>Appen</Bold> du campus de
                     Nantes de l'école d'ingénieur ISEN.
                 </Text>
                 <Text style={styles.paragraph}>
