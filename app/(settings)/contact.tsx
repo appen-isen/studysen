@@ -24,6 +24,7 @@ export default function Contact() {
     const [additionnalData, setAdditionnalData] = useState<boolean>(true);
     const [selectedImage, setSelectedImage] = useState<string>("");
     const [isLoading, setLoading] = useState<boolean>(false);
+    const [username, setUsername] = useState<string>("");
 
     //Modals
     const [infoVisible, setInfoVisible] = useState<boolean>(false);
@@ -86,7 +87,11 @@ export default function Contact() {
                 return;
             }
             //On récupère le nom de l'utilisateur
-            const username = settings.username || "Anonyme";
+            if (!settings.username && !username) {
+                setUsername("Anonyme");
+            } else if (settings.username && !username) {
+                setUsername(settings.username);
+            } 
 
             // Infos de l'issue
             const title = `${
@@ -232,6 +237,27 @@ ${username}
             {/* Informations complémentaires */}
             <View>
                 <Text style={styles.subtitle}>INFORMATIONS SUPLÉMENTAIRES</Text>
+
+                {/* Si settings.username est vide, on rajoute un champs pour que l'utilisateur puisse entrer son nom avec un message expliquant que c’est pour nous faciliter la vie pour les contacter afin de reproduire le bug plus facilement*/}
+                {!settings.username && (
+                    <>
+                        <Text style={styles.paragraph}>
+                            <Bold>Important :</Bold> Votre nom et prénom n'as
+                            pas pu être récupéré depuis les paramètres. Veuillez
+                            le renseigner ci-dessous pour nous aider à vous
+                            contacter si besoin.
+                        </Text>
+                        <Input
+                            textInputStyle={styles.input}
+                            placeholder="Votre nom et prénom"
+                            value={username}
+                            onChangeText={setUsername}
+                            numberOfLines={1}
+                            multiline={false}
+                        />
+                    </>
+                )}
+
                 <Text style={styles.paragraph}>
                     Pour <Bold>mieux identifier</Bold> le problème, lors de
                     l'envoi du formulaire, Studysen
