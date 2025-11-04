@@ -21,11 +21,15 @@ import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
 import { getFirstLetters } from "@/utils/account";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
 import { stopAutoSync } from "@/services/syncService";
+import { useSyncStore } from "@/stores/syncStore";
+import { usePostsStore } from "@/stores/clubsStore";
 
 export default function SettingsScreen() {
     const router = useRouter();
     const { clearSession } = useSessionStore();
     const { clearPlanning } = usePlanningStore();
+    const { clearAlreadySyncedPlanning } = useSyncStore();
+    const { setLastSeenPostId } = usePostsStore();
     const { clearNotes } = useNotesStore();
     const { settings } = useSettingsStore();
 
@@ -172,7 +176,9 @@ export default function SettingsScreen() {
                     // Lors de la déconnexion, on supprime les données de l'utilisateur
                     clearSession();
                     clearPlanning();
+                    clearAlreadySyncedPlanning();
                     clearNotes();
+                    setLastSeenPostId(null);
                     removeSecureStoreItem("username");
                     removeSecureStoreItem("password");
                     unregisterDeviceForNotifications();

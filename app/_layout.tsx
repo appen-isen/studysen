@@ -2,6 +2,7 @@ import { initializeSettingsStore } from "@/stores/settingsStore";
 import { initializeSyncStores } from "@/stores/syncStore";
 import { initializeTelemetryStores } from "@/stores/telemetryStore";
 import { initializeWebaurionStores } from "@/stores/webaurionStore";
+import { initializePostsStore } from "@/stores/clubsStore";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -41,6 +42,7 @@ export default function RootLayout() {
             await initializeSyncStores();
             await initializeSettingsStore();
             await initializeTelemetryStores();
+            await initializePostsStore();
         };
         //On initialise les stores
         initStores().then(() => setStoreLoaded(true));

@@ -1,8 +1,9 @@
 import { getSecureStoreItem } from "@/stores/secureStore";
 import useSessionStore from "@/stores/sessionStore";
-import useSettingsStore from "@/stores/settingsStore";
+import useSettingsStore, { campusToId } from "@/stores/settingsStore";
 import { useSyncStore } from "@/stores/syncStore";
 import { useNotesStore, usePlanningStore } from "@/stores/webaurionStore";
+import { usePostsStore } from "@/stores/clubsStore";
 import {
     sendUnknownNotesTelemetry,
     sendUnknownPlanningSubjectsTelemetry
@@ -12,9 +13,11 @@ import {
     scheduleCourseNotification
 } from "@/utils/notificationConfig";
 import { mergePlanning } from "@/utils/planning";
+import { API_BASE_URL } from "@/utils/config";
 import Session from "@/webAurion/api/Session";
 import { getScheduleDates } from "@/webAurion/utils/PlanningUtils";
 import { PlanningEvent } from "@/webAurion/utils/types";
+import { fetch } from "expo/fetch";
 
 const SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 const RETRY_DELAY_MS = 5 * 1000; // 5 secondes pour réessayer après une erreur
@@ -73,6 +76,9 @@ export async function syncData(
 
         // Puis mise à jour du planning
         const currentWeekPlanning = await updatePlanning(weekOffset);
+
+        // Mise à jour des posts (vérifier s'il y a de nouveaux posts)
+        checkForNewPosts();
 
         if (currentWeekPlanning) {
             // On planifie les notifications pour les cours
@@ -201,6 +207,35 @@ export async function updatePlanning(
     setSyncStatus("error");
     scheduleRetryIfNeeded(weekOffset);
     return null;
+}
+
+// Vérifie s'il y a de nouveaux posts disponibles
+async function checkForNewPosts() {
+    try {
+        const response = await fetch(
+            `${API_BASE_URL}/posts/last/id?campus=${campusToId(
+                useSettingsStore.getState().settings.campus
+            )}`
+        );
+        if (!response.ok) {
+            console.error("Failed to fetch latest post ID");
+            return;
+        }
+
+        const data = await response.json();
+        const latestPostId = data.id;
+
+        const { lastSeenPostId, setLastSeenPostId, setHasNewPost } =
+            usePostsStore.getState();
+
+        // Si c'est la première fois ou si on a un nouveau post
+        if (lastSeenPostId === null || latestPostId > lastSeenPostId) {
+            setHasNewPost(true);
+            setLastSeenPostId(latestPostId);
+        }
+    } catch (error) {
+        console.error("Failed to check for new posts:", error);
+    }
 }
 
 // Démarre la synchronisation périodique
