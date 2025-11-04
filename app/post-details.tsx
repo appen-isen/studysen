@@ -242,7 +242,7 @@ const postStyles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: Colors.light,
-        padding: 8,
+        padding: 6,
         borderRadius: 50,
         marginTop: 5,
         marginBottom: 20,

@@ -2,9 +2,10 @@ import React, { useEffect, useRef } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import Colors from "@/constants/Colors";
-import { AppState, AppStateStatus } from "react-native";
+import { AppState, AppStateStatus, View, StyleSheet } from "react-native";
 import { AnimatedPressable } from "@/components/Buttons";
 import { useSyncStore } from "@/stores/syncStore";
+import { usePostsStore } from "@/stores/clubsStore";
 import { startAutoSync, stopAutoSync } from "@/services/syncService";
 
 //Code correspondant à la bottom nav de l'application
@@ -21,6 +22,9 @@ export default function TabLayout() {
     //On utilise un hook pour gérer l'état de l'application (arrivée en arrière-plan, en premier plan, etc.)
     const appState = useRef<AppStateStatus>(AppState.currentState);
     const hasLaunched = useRef(false);
+
+    // Récupérer l'état des nouveaux posts
+    const hasNewPost = usePostsStore((state) => state.hasNewPost);
 
     const checkAndSync = () => {
         const lastSyncDate = useSyncStore.getState().lastSyncDate;
@@ -94,7 +98,10 @@ export default function TabLayout() {
                 options={{
                     title: "Clubs",
                     tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="celebration" color={color} />
+                        <View>
+                            <TabBarIcon name="celebration" color={color} />
+                            {hasNewPost && <View style={styles.badge} />}
+                        </View>
                     )
                 }}
             />
@@ -111,3 +118,15 @@ export default function TabLayout() {
         </Tabs>
     );
 }
+
+const styles = StyleSheet.create({
+    badge: {
+        position: "absolute",
+        top: -4,
+        right: -10,
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: Colors.primary
+    }
+});

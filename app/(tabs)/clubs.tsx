@@ -3,17 +3,19 @@ import { PostType } from "@/utils/types";
 import { FlatList, StyleSheet, View, RefreshControl } from "react-native";
 import { Post } from "../post-details";
 import { DotLoader } from "@/components/Sync";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { API_BASE_URL } from "@/utils/config";
 import Colors from "@/constants/Colors";
 import { Bold, Text } from "@/components/Texts";
 import useSettingsStore, { CAMPUS, campusToId } from "@/stores/settingsStore";
+import { usePostsStore } from "@/stores/clubsStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
 import { AnimatedPressable } from "@/components/Buttons";
 import { Dropdown } from "@/components/Modals";
 import { MaterialIcons } from "@expo/vector-icons";
 import { fetch } from "expo/fetch";
+import { useFocusEffect } from "expo-router";
 
 export default function ClubsScreen() {
     const [posts, setPosts] = useState<PostType[]>([]);
@@ -24,6 +26,14 @@ export default function ClubsScreen() {
     const [hasMore, setHasMore] = useState(true);
     const [campusMenuVisible, setCampusMenuVisible] = useState(false);
     const { settings, setSettings } = useSettingsStore();
+    const { markPostsAsViewed, setLastSeenPostId } = usePostsStore();
+
+    // Marquer les posts comme vus quand l'utilisateur ouvre cet onglet
+    useFocusEffect(
+        useCallback(() => {
+            markPostsAsViewed();
+        }, [markPostsAsViewed])
+    );
 
     const fetchLatestPost = async (
         offset: number
@@ -165,6 +175,7 @@ export default function ClubsScreen() {
                             "campus",
                             newCampus as (typeof CAMPUS)[number]
                         );
+                        setLastSeenPostId(null);
                         // On rafraîchit les posts après le changement de campus
                         onRefresh();
                     }}
