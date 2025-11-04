@@ -91,7 +91,7 @@ export default function Contact() {
                 setUsername("Anonyme");
             } else if (settings.username && !username) {
                 setUsername(settings.username);
-            } 
+            }
 
             // Infos de l'issue
             const title = `${
@@ -248,7 +248,7 @@ ${username}
                             contacter si besoin.
                         </Text>
                         <Input
-                            textInputStyle={styles.input}
+                            textInputStyle={[styles.input, styles.nameInput]}
                             placeholder="Votre nom et prénom"
                             value={username}
                             onChangeText={setUsername}
@@ -395,6 +395,9 @@ const styles = StyleSheet.create({
     input: {
         fontSize: 13,
         height: 100
+    },
+    nameInput: {
+        height: 50
     },
     //Boutons
     infoButton: {
