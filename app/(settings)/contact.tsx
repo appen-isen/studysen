@@ -87,16 +87,12 @@ export default function Contact() {
                 return;
             }
             //On récupère le nom de l'utilisateur
-            if (!settings.username && !username) {
-                setUsername("Anonyme");
-            } else if (settings.username && !username) {
-                setUsername(settings.username);
-            }
+            const usernameValue = username || settings.username || "Anonyme";
 
             // Infos de l'issue
             const title = `${
                 contactType === 0 ? "Problème" : "Suggestion"
-            } de ${username}`;
+            } de ${usernameValue}`;
 
             // Cas d'un problème
             let bodyContent = `
@@ -115,7 +111,7 @@ ${Device.manufacturer}: ${Device.modelName} (${Device.osName} ${Device.osVersion
         : ""
 }
 **Nom de l'utilisateur :**
-${username}`;
+${usernameValue}`;
             // Cas d'une suggestion
             if (contactType === 1) {
                 bodyContent = `
@@ -123,7 +119,7 @@ ${username}`;
 ${description}
 
 **Nom de l'utilisateur :**
-${username}
+${usernameValue}
         `;
             }
 
@@ -236,15 +232,17 @@ ${username}
             )}
             {/* Informations complémentaires */}
             <View>
-                <Text style={styles.subtitle}>INFORMATIONS SUPLÉMENTAIRES</Text>
+                <Text style={styles.subtitle}>
+                    INFORMATIONS SUPPLÉMENTAIRES
+                </Text>
 
                 {/* Si settings.username est vide, on rajoute un champs pour que l'utilisateur puisse entrer son nom avec un message expliquant que c’est pour nous faciliter la vie pour les contacter afin de reproduire le bug plus facilement*/}
                 {!settings.username && (
                     <>
                         <Text style={styles.paragraph}>
-                            <Bold>Important :</Bold> Votre nom et prénom n'as
-                            pas pu être récupéré depuis les paramètres. Veuillez
-                            le renseigner ci-dessous pour nous aider à vous
+                            <Bold>Important :</Bold> Votre nom et prénom n'a pas
+                            pu être récupéré depuis les paramètres. Veuillez le
+                            renseigner ci-dessous pour nous aider à vous
                             contacter si besoin.
                         </Text>
                         <Input
