@@ -16,6 +16,8 @@ import { Dropdown } from "@/components/Modals";
 import { MaterialIcons } from "@expo/vector-icons";
 import { fetch } from "expo/fetch";
 import { useFocusEffect } from "expo-router";
+import useSessionStore from "@/stores/sessionStore";
+import { generateDemoPosts } from "@/webAurion/utils/demo";
 
 export default function ClubsScreen() {
     const [posts, setPosts] = useState<PostType[]>([]);
@@ -38,6 +40,13 @@ export default function ClubsScreen() {
     const fetchLatestPost = async (
         offset: number
     ): Promise<PostType | null> => {
+        // Pour l'utilisateur en mode démo, on renvoie un post de démo
+        if (useSessionStore.getState().session?.isDemo()) {
+            if (offset === 0) {
+                return generateDemoPosts()[0];
+            }
+            return null;
+        }
         try {
             //On récupère le X dernier post
             const response = await fetch(
