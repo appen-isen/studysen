@@ -20,9 +20,16 @@ const subjectMapping: Record<string, string> = {
     CULTURE_NUM: "Informatique",
     BDD: "Informatique",
     DEV: "Informatique",
+    ANGULAR: "Informatique",
+    GIT: "Informatique",
+    "Base de données": "Informatique",
+    "Linux embarqué": "Informatique",
+    "Web Development Node JS": "Informatique",
+    JAVA: "Informatique",
     STM32: "Informatique",
     ENVT: "Environnement",
-    "Technologies pour l'environnement	": "Environnement",
+    "Technologies pour l'environnement": "Environnement",
+    "Changement climatique": "Environnement",
     SI: "Sciences de l'Ingénieur",
     ANGLAIS: "Anglais",
     LV2: "Anglais",
@@ -32,9 +39,16 @@ const subjectMapping: Record<string, string> = {
     Réseaux: "Informatique",
     ENTREPRENEURIAT: "Entrepreneuriat",
     "Gestion de projet": "Entrepreneuriat",
+    Management: "Entrepreneuriat",
+    "Démarche commerciale et négociations": "Entrepreneuriat",
+    "Management des SI": "Entrepreneuriat",
     Electronique: "Energie",
     FPGA: "Energie",
-    "Traitement du signal": "Energie"
+    "Elec Puissance": "Energie",
+    "Traitement du signal": "Energie",
+    "Intelligence économique et veille sectorielle": "Economie",
+    Automatique: "Sciences de l'Ingénieur",
+    "Sciences de l'ingénieur": "Sciences de l'Ingénieur"
 };
 // Fonction pour obtenir la couleur d'un événement en fonction de la matière
 export function getSubjectColor(subject: string): string {
