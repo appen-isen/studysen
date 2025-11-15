@@ -1,5 +1,5 @@
 import { PlanningEvent } from "@/webAurion/utils/types";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, Linking } from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
 
@@ -7,6 +7,8 @@ import { Sheet } from "../Sheet";
 import { MaterialIcons } from "@expo/vector-icons";
 import { formatFullDate } from "@/utils/date";
 import { getSubjectColor, getSubjectIcon } from "@/utils/colors";
+import { Button } from "../Buttons";
+import { useCallback, useMemo } from "react";
 
 type EventModalProps = {
     visible: boolean;
@@ -15,6 +17,39 @@ type EventModalProps = {
 };
 export default function EventModal(props: EventModalProps) {
     const { event, visible, setVisible } = props;
+
+    // Extraire le lien de réunion s'il y en a un
+    const { cleanText: learnersText, meetingLink } = useMemo(() => {
+        if (!event.learners) {
+            return {
+                cleanText: "",
+                meetingLink: undefined as string | undefined
+            };
+        }
+
+        const TEAMS_LINK_REGEX =
+            /\*\*lien\*\*(https?:\/\/[^$\s]+)\$\$lien\$\$/i;
+        const match = event.learners.match(TEAMS_LINK_REGEX);
+        const link = match?.[1];
+        const cleanText = event.learners
+            .replace(TEAMS_LINK_REGEX, "")
+            .replace(/\s{2,}/g, " ")
+            .trim();
+
+        return { cleanText, meetingLink: link };
+    }, [event.learners]);
+
+    const handleOpenMeeting = useCallback(async () => {
+        if (!meetingLink) return;
+        try {
+            const supported = await Linking.canOpenURL(meetingLink);
+            if (supported) {
+                await Linking.openURL(meetingLink);
+            }
+        } catch (error) {
+            console.warn("Unable to open meeting link", error);
+        }
+    }, [meetingLink]);
     return (
         <Sheet
             sheetStyle={popupStyles.container}
@@ -68,7 +103,17 @@ export default function EventModal(props: EventModalProps) {
             </View>
             <View>
                 <Text style={popupStyles.fieldTitle}>Pour les groupes</Text>
-                <Text style={popupStyles.fieldValue}>{event.learners}</Text>
+                <Text style={popupStyles.fieldValue}>
+                    {learnersText || event.learners || "—"}
+                </Text>
+                {meetingLink && (
+                    <Button
+                        title="Rejoindre la réunion"
+                        onPress={handleOpenMeeting}
+                        style={popupStyles.meetingButton}
+                        textStyle={popupStyles.meetingButtonText}
+                    />
+                )}
             </View>
         </Sheet>
     );
@@ -128,5 +173,17 @@ const popupStyles = StyleSheet.create({
     fieldTagBlack: {
         backgroundColor: Colors.black,
         color: Colors.white
+    },
+    meetingButton: {
+        marginTop: 10,
+        alignSelf: "flex-start",
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        backgroundColor: Colors.primary,
+        borderRadius: 8
+    },
+    meetingButtonText: {
+        fontSize: 14,
+        fontWeight: 600
     }
 });

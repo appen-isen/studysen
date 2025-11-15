@@ -547,7 +547,7 @@ export function generateDemoPlanning(): PlanningEvent[] {
         },
         {
             id: "15689457",
-            title: "Culture numérique S1",
+            title: "Etude de controverse sociotechniques S5",
             subject: "Informatique",
             room: "A2_40 ISEN_ TD C3-01",
             instructors: "M. TEST",
@@ -650,6 +650,18 @@ export function generateDemoPlanning(): PlanningEvent[] {
             title: "Formation Humaine et Sociale S1",
             subject: "FHS",
             room: "A2_32 ISEN_CO-DESIGN",
+            instructors: "M. TEST",
+            learners:
+                "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",
+            start: "2025-01-09T10:15:00+0100",
+            end: "2025-01-09T12:15:00+0100",
+            className: "COURS"
+        },
+        {
+            id: "15448938",
+            title: "Conférence Intelligence Artificielle",
+            subject: "Conférence",
+            room: "A0_54 ISEN_AMPHI",
             instructors: "M. TEST",
             learners:
                 "CENT1/CEST1/CIR1/CSI1 Nantes 2024-2025 FHS Groupe C / CENT1 Nantes 2024-2025 / CEST1 Nantes 2024-2025 / CIR1 Nantes 2024-2025 / CSI1 Nantes 2024-2025",

@@ -1,38 +1,169 @@
 import { PlanningEvent } from "@/webAurion/utils/types";
-import { Dimensions, LayoutChangeEvent, StyleSheet, View } from "react-native";
+import { LayoutChangeEvent, StyleSheet, View } from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
-import {
-    fillDayWithBlankEvents,
-    groupEventsByDay,
-    updatePlanningForListMode
-} from "@/utils/planning";
+import { groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { AnimatedPressable } from "../Buttons";
 import { getSubjectColor } from "@/utils/colors";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
+// Fenêtre horaire visible (8h -> 19h)
 const HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+// Hauteur minimale pour conserver un événement cliquable
+const MIN_EVENT_HEIGHT = 28;
+// Espacement horizontal entre deux événements superposés
+const COLUMN_GAP = 8;
+const HOUR_IN_MS = 1000 * 60 * 60;
+
+type EventLayout = {
+    top: number;
+    height: number;
+    left: number;
+    width: number;
+    durationInHours: number;
+};
+
+type PositionedEvent = {
+    event: PlanningEvent;
+    layout: EventLayout;
+};
+
+type EventMeta = {
+    event: PlanningEvent;
+    start: number;
+    end: number;
+    column: number;
+};
+
+function getHourFractionFromTimestamp(timestamp: number) {
+    const date = new Date(timestamp);
+    return date.getHours() + date.getMinutes() / 60 + date.getSeconds() / 3600;
+}
+
+function positionDayEvents(
+    events: PlanningEvent[] = [],
+    pixelPerHour: number,
+    columnWidth: number
+): PositionedEvent[] {
+    if (!pixelPerHour || !columnWidth) return [];
+
+    const sortedEvents = [...events]
+        .filter((event) => event.id !== "blank")
+        .sort(
+            (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+        );
+
+    if (!sortedEvents.length) return [];
+
+    const positioned: PositionedEvent[] = [];
+    let active: EventMeta[] = [];
+    let currentGroup: EventMeta[] = [];
+
+    // Lorsque tous les événements concurrents sont terminés, on distribue la largeur disponible
+    const flushGroup = () => {
+        if (!currentGroup.length) return;
+
+        const maxColumn = currentGroup.reduce(
+            (acc, meta) => Math.max(acc, meta.column),
+            0
+        );
+        const columns = maxColumn + 1;
+        const availableWidth = Math.max(columnWidth - 2, 0);
+        const columnGap = columns > 1 ? COLUMN_GAP : 0;
+        const widthPx =
+            columns > 0
+                ? (availableWidth - columnGap * (columns - 1)) / columns
+                : availableWidth;
+        const totalHeight = HOURS.length * pixelPerHour;
+
+        currentGroup.forEach((meta) => {
+            const durationInHours = Math.max(
+                (meta.end - meta.start) / HOUR_IN_MS,
+                0
+            );
+            const rawHeight = Math.max(
+                durationInHours * pixelPerHour,
+                MIN_EVENT_HEIGHT
+            );
+            const startHour = getHourFractionFromTimestamp(meta.start);
+            const offsetInHours = Math.max(0, startHour - HOURS[0]);
+            const top = offsetInHours * pixelPerHour;
+            const height = Math.min(rawHeight, Math.max(totalHeight - top, 0));
+            const leftValue = meta.column * (widthPx + columnGap);
+
+            positioned.push({
+                event: meta.event,
+                layout: {
+                    top,
+                    height,
+                    left: leftValue,
+                    width: Math.max(widthPx, 0),
+                    durationInHours
+                }
+            });
+        });
+
+        currentGroup = [];
+    };
+
+    sortedEvents.forEach((event) => {
+        const start = new Date(event.start).getTime();
+        const end = new Date(event.end).getTime();
+
+        // On retire les événements dont la plage horaire est passée
+        active = active.filter((meta) => meta.end > start);
+
+        if (!active.length && currentGroup.length) {
+            flushGroup();
+        }
+
+        const usedColumns = active.map((meta) => meta.column);
+        let column = 0;
+        while (usedColumns.includes(column)) {
+            column += 1;
+        }
+
+        const meta: EventMeta = { event, start, end, column };
+        currentGroup.push(meta);
+        active.push(meta);
+    });
+
+    flushGroup();
+
+    return positioned;
+}
 
 export default function PlanningWeek(props: {
     events: PlanningEvent[];
     startDate: Date;
     setSelectedEvent: (event: PlanningEvent) => void;
 }) {
-    const planning = fillDayWithBlankEvents(
-        groupEventsByDay(updatePlanningForListMode(props.events))
+    // Regroupement par jour uniquement quand la liste change
+    const planning = useMemo(
+        () => groupEventsByDay(updatePlanningForListMode(props.events)),
+        [props.events]
     );
 
-    const [weekHeight, setWeekHeight] = useState(0);
-    const PIXEL_PER_HOUR = weekHeight / HOURS.length;
+    // Mesure du conteneur pour convertir les heures en pixels
+    const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+    const PIXEL_PER_HOUR = containerSize.height / HOURS.length;
+    const DAY_COLUMN_WIDTH = containerSize.width / 5;
 
     function handleLayout(e: LayoutChangeEvent) {
-        const { height } = e.nativeEvent.layout;
-        // Évite une boucle d'agrandissement: ne mesure qu'une fois (ou depuis 0)
-        if (weekHeight === 0 && height > 0) {
-            setWeekHeight(height);
-        }
+        const { height, width } = e.nativeEvent.layout;
+        setContainerSize((prev) => {
+            const nextHeight = height > 0 ? height : prev.height;
+            const nextWidth = width > 0 ? width : prev.width;
+            if (
+                Math.abs(prev.height - nextHeight) < 1 &&
+                Math.abs(prev.width - nextWidth) < 1
+            ) {
+                return prev;
+            }
+            return { height: nextHeight, width: nextWidth };
+        });
     }
 
     return (
@@ -53,19 +184,23 @@ export default function PlanningWeek(props: {
             {/* For each days of the week */}
             {[0, 1, 2, 3, 4].map((offset, dayIndex) => (
                 <View style={calendarStyles.dayColumn} key={dayIndex}>
-                    {/* For each events of the day */}
-                    {planning[
-                        getWorkdayFromOffset(props.startDate, offset)
-                    ]?.map((event) => {
-                        return (
+                    {PIXEL_PER_HOUR > 0 &&
+                        DAY_COLUMN_WIDTH > 0 &&
+                        positionDayEvents(
+                            planning[
+                                getWorkdayFromOffset(props.startDate, offset)
+                            ],
+                            PIXEL_PER_HOUR,
+                            DAY_COLUMN_WIDTH
+                        ).map(({ event, layout }) => (
+                            // For each events of the day
                             <WeekEvent
                                 key={`${event.id}-${event.start}`}
                                 event={event}
+                                layout={layout}
                                 onPress={props.setSelectedEvent}
-                                PIXEL_PER_HOUR={PIXEL_PER_HOUR}
                             />
-                        );
-                    })}
+                        ))}
                 </View>
             ))}
         </View>
@@ -75,29 +210,39 @@ export default function PlanningWeek(props: {
 export function WeekEvent(props: {
     event: PlanningEvent;
     onPress: (event: PlanningEvent) => void;
-    PIXEL_PER_HOUR: number;
+    layout: EventLayout;
 }) {
     const startHour = formatDateToLocalTime(props.event.start);
     const endHour = formatDateToLocalTime(props.event.end);
 
-    // Calcul de la hauteur de l'événement en fonction de sa durée
-    const durationInHours =
-        (new Date(props.event.end).getTime() -
-            new Date(props.event.start).getTime()) /
-        (1000 * 60 * 60);
-    const eventHeight = durationInHours * props.PIXEL_PER_HOUR;
+    const durationInHours = props.layout.durationInHours;
     const isVeryShort = durationInHours <= 0.5;
 
     // Si l'événement est vide alors on affiche une case vide
     if (props.event.id === "blank") {
         return (
-            <View style={[eventStyles.blankEvent, { height: eventHeight }]} />
+            <View
+                style={[
+                    eventStyles.blankEvent,
+                    { height: props.layout.height }
+                ]}
+            />
         );
     }
 
     return (
         <AnimatedPressable
-            style={[eventStyles.container, { height: eventHeight }]}
+            style={[
+                eventStyles.container,
+                {
+                    height: props.layout.height,
+                    top: props.layout.top,
+                    left: props.layout.left,
+                    width: props.layout.width,
+                    // On utilise la position verticale comme z-index pour éviter les recouvrements visuels
+                    zIndex: Math.round(props.layout.top)
+                }
+            ]}
             onPress={() => props.onPress && props.onPress(props.event)}
             scale={0.9}
         >
@@ -113,6 +258,7 @@ export function WeekEvent(props: {
                 ]}
             >
                 {!isVeryShort && (
+                    // Bandeau de couleur de la matière
                     <View
                         style={[
                             eventStyles.colorBar,
@@ -179,7 +325,10 @@ const calendarStyles = StyleSheet.create({
         gap: 2
     },
     dayColumn: {
-        flex: 1
+        flex: 1,
+        position: "relative",
+        height: "100%",
+        paddingHorizontal: 1
     },
     hoursBox: {
         position: "absolute",
@@ -201,6 +350,7 @@ const calendarStyles = StyleSheet.create({
 
 const eventStyles = StyleSheet.create({
     container: {
+        position: "absolute",
         alignItems: "center",
         borderRadius: 10,
         width: "100%",
@@ -247,25 +397,5 @@ const eventStyles = StyleSheet.create({
     blankEvent: {
         width: "100%",
         backgroundColor: "transparent"
-    },
-    hour: {
-        fontSize: Dimensions.get("window").width < 500 ? 9 : 11
-    },
-    room: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "70%",
-        maxWidth: 100,
-        height: 13,
-        marginBottom: 2,
-        borderRadius: 10,
-        backgroundColor: Colors.primary
-    },
-    roomText: {
-        color: "white",
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: 9
     }
 });

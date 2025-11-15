@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
         gap: 10
     },
     headerTitle: {
+        flex: 1,
         fontSize: 18,
         fontWeight: 600
     },

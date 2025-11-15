@@ -116,64 +116,6 @@ export function updatePlanningForListMode(
     );
 }
 
-// Fonction pour créer un événement "blank" pour combler les trous dans l'emploi du temps
-export function fillDayWithBlankEvents(dayEvents: DayEvents): DayEvents {
-    const result: DayEvents = {};
-
-    Object.entries(dayEvents).forEach(([date, events]) => {
-        // Début et fin de la journée avec le bon décalage
-        const startOfDay = new Date(`${date}T08:00:00`);
-        const endOfDay = new Date(`${date}T20:00:00`);
-
-        // Trier les événements existants par heure de début
-        const sortedEvents = events.sort(
-            (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
-        );
-
-        const filledEvents: PlanningEvent[] = [];
-        let lastEnd = startOfDay;
-
-        sortedEvents.forEach((event) => {
-            const eventStart = new Date(event.start);
-            const eventEnd = new Date(event.end);
-
-            if (lastEnd < eventStart) {
-                // Ajouter un événement "blank" pour combler le trou
-                filledEvents.push(createBlankEvent(lastEnd, eventStart));
-            }
-            filledEvents.push(event); // Ajouter l'événement actuel
-            lastEnd = eventEnd; // Mettre à jour la dernière heure de fin
-        });
-
-        // Ajouter un événement "blank" à la fin de la journée si nécessaire
-        if (lastEnd < endOfDay) {
-            filledEvents.push(createBlankEvent(lastEnd, endOfDay));
-        }
-
-        result[date] = filledEvents;
-    });
-
-    return result;
-}
-//Permet de créer un événement vide pour combler un trou dans l'emploi du temps
-export function createBlankEvent(start: Date, end: Date): PlanningEvent {
-    // Convertir les dates en ISO strings avec décalage horaire conservé
-    const formatDate = (date: Date): string =>
-        date.toISOString().replace(/Z$/, "+0100");
-
-    return {
-        id: "blank",
-        title: "",
-        subject: "",
-        room: "",
-        instructors: "",
-        learners: "",
-        start: formatDate(start),
-        end: formatDate(end),
-        className: ""
-    };
-}
-
 // Fonction pour retrouver un événement dans le planning
 export function findEvent(planning: PlanningEvent[], event: PlanningEvent) {
     // Avec la découpe multi-jours, start/end des tranches diffèrent de l'original
