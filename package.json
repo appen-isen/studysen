@@ -1,7 +1,7 @@
 {
   "name": "studysen",
   "main": "expo-router/entry",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "scripts": {
     "start": "expo start --go",
     "android": "expo start --android",
