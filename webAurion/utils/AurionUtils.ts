@@ -80,6 +80,34 @@ export function getSidebarMenuId(html: string, label: string): string | null {
     return match ? match[1] : null;
 }
 
+function extractCalendarIdFromFieldName(fieldName: string): string | null {
+    const match = fieldName.match(/form:(j_idt\d+)_/);
+    return match ? match[1] : null;
+}
+
+// Récupère l'ID dynamique du widget planning (ex: j_idt119)
+export function getPlanningCalendarId(html: string): string | null {
+    const parser = load(html);
+
+    const startFieldName = parser('input[name^="form:j_idt"][name$="_start"]')
+        .first()
+        .attr("name");
+    if (startFieldName) {
+        const id = extractCalendarIdFromFieldName(startFieldName);
+        if (id) return id;
+    }
+
+    const viewFieldName = parser('input[name^="form:j_idt"][name$="_view"]')
+        .first()
+        .attr("name");
+    if (viewFieldName) {
+        const id = extractCalendarIdFromFieldName(viewFieldName);
+        if (id) return id;
+    }
+
+    return null;
+}
+
 // Conversion de l'objet URLSearchParams en HashMap pour Rust (application de bureau)
 export function paramsToHashMap(params: URLSearchParams) {
     return Object.fromEntries(params.entries());

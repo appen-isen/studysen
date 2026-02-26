@@ -2,17 +2,49 @@ import { load } from "cheerio";
 import { PlanningEvent } from "./types";
 
 // Conversion du calendrier au format JSON
-export function getJSONSchedule(xml: string): object {
+export function getJSONSchedule(xml: string): any[] {
     const parser = load(xml, {
         xmlMode: true
     });
-    const json = parser('update[id="form:j_idt118"]').text();
-    return JSON.parse(json)["events"];
+
+    const updates = parser("update");
+    for (const update of updates.toArray()) {
+        const content = parser(update).text().trim();
+
+        if (!content) {
+            continue;
+        }
+
+        const looksLikeJson =
+            (content.startsWith("{") && content.endsWith("}")) ||
+            (content.startsWith("[") && content.endsWith("]"));
+
+        if (!looksLikeJson) {
+            continue;
+        }
+
+        try {
+            const parsed = JSON.parse(content);
+
+            if (Array.isArray(parsed)) {
+                return parsed;
+            }
+
+            if (Array.isArray(parsed?.events)) {
+                return parsed.events;
+            }
+        } catch {
+            // Continue: une autre balise <update> peut contenir le vrai JSON
+        }
+    }
+
+    // Certains retours du backend ne contiennent aucun événement (ex: "<br />")
+    return [];
 }
 
 // On convertit la réponse du serveur XML en cours du planning
 export function planningResponseToEvents(response: string): PlanningEvent[] {
-    const json: any = getJSONSchedule(response);
+    const json = getJSONSchedule(response);
 
     return json.map((event: any) => {
         // On récupère les informations des cours

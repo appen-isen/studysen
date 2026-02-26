@@ -1,4 +1,4 @@
-import { getJSFFormParams } from "../utils/AurionUtils";
+import { getJSFFormParams, getPlanningCalendarId } from "../utils/AurionUtils";
 import { generateDemoPlanning } from "../utils/demo";
 import {
     getScheduleDates,
@@ -23,18 +23,32 @@ class PlanningApi {
             try {
                 // On récupère le ViewState pour effectuer la requête
                 let viewState = await this.session.getViewState("Mon planning");
+
+                // On récupère l'ID dynamique du composant planning et les champs contextuels
+                const planningPage = await this.session.sendGET<string>(
+                    "/faces/Planning.xhtml"
+                );
+                const planningWidgetId =
+                    getPlanningCalendarId(planningPage) || "j_idt119";
+
                 // On envoie enfin la requête pour obtenir l'emploi du temps
                 const params = getJSFFormParams(
-                    "j_idt118",
-                    "j_idt118",
+                    planningWidgetId,
+                    planningWidgetId,
                     viewState
                 );
 
                 //On récupère les dates de début et de fin de l'emploi du temps
                 let { startTimestamp, endTimestamp } =
                     getScheduleDates(weeksFromNow);
-                params.append("form:j_idt118_start", startTimestamp.toString());
-                params.append("form:j_idt118_end", endTimestamp.toString());
+                params.append(
+                    `form:${planningWidgetId}_start`,
+                    startTimestamp.toString()
+                );
+                params.append(
+                    `form:${planningWidgetId}_end`,
+                    endTimestamp.toString()
+                );
 
                 const response = await this.session.sendPOST<string>(
                     "/faces/Planning.xhtml",
