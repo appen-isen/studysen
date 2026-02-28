@@ -58,7 +58,6 @@ const subjectMapping: Record<string, string> = {
     TEMPS_REEL: "Informatique",
     "Theorie de la decision": "Mathématiques",
     "Théorie de la décision": "Mathématiques",
-    DEVOIRS: "Mathématiques",
     Eco: "Economie",
     ECONOMIE: "Economie",
     "Customer Relationship management and satisfaction": "Entrepreneuriat",
