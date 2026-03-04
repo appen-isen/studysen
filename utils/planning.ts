@@ -5,6 +5,23 @@ export type DayEvents = {
     [date: string]: PlanningEvent[];
 };
 
+// Détermine si un événement correspond à un TP
+export function isTpEvent(event: PlanningEvent): boolean {
+    return event.className === "TP";
+}
+
+// Libellé d'affichage pour le planning (sans modifier la matière d'origine)
+export function getPlanningEventLabel(event: PlanningEvent): string {
+    const baseLabel = (event.subject || event.title || "").trim();
+    if (!baseLabel) return "";
+
+    // Si c'est un TP, on ajoute "TP" devant le nom de la matière
+    if (isTpEvent(event)) {
+        return `TP ${baseLabel}`;
+    }
+    return baseLabel;
+}
+
 // Fonction pour grouper les événements par jour
 export function groupEventsByDay(events: PlanningEvent[]): DayEvents {
     // Définition de la fenêtre d'affichage quotidienne (07:00 -> 19:00)

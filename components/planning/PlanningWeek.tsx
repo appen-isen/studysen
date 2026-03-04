@@ -2,7 +2,11 @@ import { PlanningEvent } from "@/webAurion/utils/types";
 import { LayoutChangeEvent, StyleSheet, View } from "react-native";
 import { Text } from "../Texts";
 import Colors from "@/constants/Colors";
-import { groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
+import {
+    getPlanningEventLabel,
+    groupEventsByDay,
+    updatePlanningForListMode
+} from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { AnimatedPressable } from "../Buttons";
 import { getSubjectColor } from "@/utils/colors";
@@ -277,7 +281,7 @@ export function WeekEvent(props: {
                     ]}
                     numberOfLines={1}
                 >
-                    {props.event.subject || props.event.title}
+                    {getPlanningEventLabel(props.event)}
                 </Text>
 
                 {/* On affiche l'heure de début et de fin de l'événement si la durée est supérieure à 45 minutes */}

@@ -8,7 +8,11 @@ import {
     View
 } from "react-native";
 import { Text } from "@/components/Texts";
-import { groupEventsByDay, updatePlanningForListMode } from "@/utils/planning";
+import {
+    getPlanningEventLabel,
+    groupEventsByDay,
+    updatePlanningForListMode
+} from "@/utils/planning";
 import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { getSubjectColor, getSubjectIcon } from "@/utils/colors";
 import { AnimatedPressable } from "../Buttons";
@@ -194,7 +198,7 @@ export function ListEvent(props: {
                     />
                 </View>
                 <Text style={styles.headerTitle}>
-                    {props.event.title || props.event.subject}
+                    {getPlanningEventLabel(props.event)}
                 </Text>
             </View>
             <View>

@@ -9,6 +9,7 @@ import { formatFullDate } from "@/utils/date";
 import { getSubjectColor, getSubjectIcon } from "@/utils/colors";
 import { Button } from "../Buttons";
 import { useCallback, useMemo } from "react";
+import { getPlanningEventLabel } from "@/utils/planning";
 
 type EventModalProps = {
     visible: boolean;
@@ -72,7 +73,7 @@ export default function EventModal(props: EventModalProps) {
                 </View>
                 <View>
                     <Text style={popupStyles.headerTitle}>
-                        {event.title || event.subject}
+                        {getPlanningEventLabel(event)}
                     </Text>
                     <Text style={popupStyles.headerSubtitle}>
                         {event.className}
