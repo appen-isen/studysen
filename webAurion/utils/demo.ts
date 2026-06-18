@@ -782,3 +782,6 @@ export function generateDemoPosts(): PostType[] {
         }
     ];
 }
+
+// NOTE : Il faudrait pas faire un fichier demo.ts dans studysen/utils au lieu de studysen/webAuron/utils ?
+

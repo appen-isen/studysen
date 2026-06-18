@@ -106,6 +106,16 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
+                name="carpool"
+                options={{
+                    title: "Covoiturage",
+                    tabBarIcon: ({ color }) => (
+                        <TabBarIcon name="directions-car" color={color} />
+                    )
+                }}
+            />
+ 
+            <Tabs.Screen
                 name="settings"
                 options={{
                     title: "Profil",
@@ -114,6 +124,7 @@ export default function TabLayout() {
                     )
                 }}
             />
+           
             <Tabs.Screen name="notes" options={{ href: null }} />
         </Tabs>
     );

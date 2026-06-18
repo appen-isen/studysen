@@ -16,3 +16,8 @@ export type PostType = {
     };
     imageUri?: string;
 };
+
+export type ProfileType = {
+    name: string;
+    location: string;
+};
