@@ -9,6 +9,10 @@ export default {
     light: "#E7E7E7",
     white: "#FFFFFF",
 
+    background: "#F2F2F7",
+    card: "#FFFFFF",
+    border: "#E4E4EA",
+
     hexWithOpacity: (hex: string, opacity: number) => {
         const alpha = Math.round(opacity * 255)
             .toString(16)

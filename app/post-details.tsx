@@ -8,6 +8,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Href, useRouter } from "expo-router";
 import { Image, StyleSheet, View } from "react-native";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { Card } from "@/constants/Styles";
 
 export default function PostDetailsScreen() {
     const { currentPost } = usePostDetailsStore();
@@ -65,7 +66,7 @@ export function Post(props: { post: PostType; details?: boolean }) {
         }
     };
     return (
-        <View>
+        <View style={postStyles.card}>
             {/* Type et date du post affichée seulement dans la liste des posts*/}
             {!props.details && (
                 <View style={postStyles.row}>
@@ -189,9 +190,6 @@ export function Post(props: { post: PostType; details?: boolean }) {
                     </Text>
                 </AnimatedPressable>
             )}
-
-            {/* Séparateur */}
-            {!props.details && <View style={postStyles.separator}></View>}
         </View>
     );
 }
@@ -200,6 +198,10 @@ const postStyles = StyleSheet.create({
     row: {
         flexDirection: "row",
         alignItems: "center"
+    },
+    card: {
+        ...Card,
+        padding: 15
     },
     responsiveContainer: {
         maxWidth: getResponsiveMaxWidth(),
@@ -316,11 +318,5 @@ const postStyles = StyleSheet.create({
         color: Colors.white,
         fontSize: 18,
         fontWeight: "bold"
-    },
-    separator: {
-        marginVertical: 20,
-        height: 1,
-        width: "100%",
-        backgroundColor: Colors.lightGray
     }
 });

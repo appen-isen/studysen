@@ -274,16 +274,19 @@ const timeStyles = StyleSheet.create({
         flex: 1
     },
     daysLabel: {
-        backgroundColor: Colors.light,
+        backgroundColor: Colors.card,
+        borderWidth: 1,
+        borderColor: Colors.border,
         paddingHorizontal: 5,
         paddingVertical: 8,
-        borderRadius: 5,
+        borderRadius: 8,
         textAlign: "center",
         fontSize: 12,
         fontWeight: 600
     },
     daysLabelSelected: {
         backgroundColor: Colors.black,
+        borderColor: Colors.black,
         color: Colors.white
     }
 });

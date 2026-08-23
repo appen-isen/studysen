@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "space-around",
-        backgroundColor: Colors.white
+        backgroundColor: Colors.background
     },
     containerView: {
         width: "100%",
@@ -347,13 +347,9 @@ const helpStyles = StyleSheet.create({
         gap: 20
     },
     subtitle: {
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: "bold",
-        backgroundColor: Colors.primary,
-        color: Colors.white,
-        paddingBlock: 5,
-        paddingInline: 10,
-        borderRadius: 5
+        color: Colors.black
     },
     paragraph: {
         color: Colors.darkGray

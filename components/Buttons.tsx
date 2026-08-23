@@ -123,7 +123,11 @@ export function Toggle(props: ToggleProps) {
             <Text style={toggleStyles.label}>
                 {props.stateList[props.state].label}
             </Text>
-            <MaterialIcons name={props.stateList[props.state].icon} size={24} />
+            <MaterialIcons
+                name={props.stateList[props.state].icon}
+                size={24}
+                color={Colors.primary}
+            />
         </AnimatedPressable>
     );
 }
@@ -175,6 +179,9 @@ export const MultiToggle = ({
 
     if (!options.length) return null;
 
+    // Le slider n'est visible qu'une fois les options mesurées
+    const sliderReady = dimensions.length === options.length;
+
     return (
         <View style={mToggleStyles.container}>
             {/* Slider qui se déplace entre les options */}
@@ -195,7 +202,16 @@ export const MultiToggle = ({
                     onLayout={(e) => handleOptionLayout(index, e)}
                     style={{ paddingHorizontal: 16 }}
                 >
-                    <Text style={mToggleStyles.optionText}>{option}</Text>
+                    <Text
+                        style={[
+                            mToggleStyles.optionText,
+                            sliderReady &&
+                                index === selectedIndex &&
+                                mToggleStyles.optionTextSelected
+                        ]}
+                    >
+                        {option}
+                    </Text>
                 </Pressable>
             ))}
         </View>
@@ -249,7 +265,9 @@ const toggleStyles = StyleSheet.create({
         gap: 5,
         paddingHorizontal: 15,
         paddingVertical: 8,
-        backgroundColor: Colors.light,
+        backgroundColor: Colors.card,
+        borderWidth: 1,
+        borderColor: Colors.border,
         borderRadius: 30
     },
     label: {
@@ -261,7 +279,9 @@ const toggleStyles = StyleSheet.create({
 // Styles pour le MultiToggle
 const mToggleStyles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.light,
+        backgroundColor: Colors.card,
+        borderWidth: 1,
+        borderColor: Colors.border,
         borderRadius: 30,
         position: "relative",
         alignSelf: "center",
@@ -270,7 +290,7 @@ const mToggleStyles = StyleSheet.create({
     },
     slider: {
         position: "absolute",
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
         borderRadius: 30,
         height: "80%",
         top: "10%"
@@ -280,5 +300,8 @@ const mToggleStyles = StyleSheet.create({
         fontWeight: "600",
         color: Colors.black,
         paddingVertical: 12
+    },
+    optionTextSelected: {
+        color: Colors.white
     }
 });

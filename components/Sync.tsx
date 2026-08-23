@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         right: 0,
-        backgroundColor: Colors.light,
+        backgroundColor: Colors.card,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",

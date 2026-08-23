@@ -41,8 +41,8 @@ export default function Credits() {
                 <Bold style={styles.sectionTitle}>À propos</Bold>
                 <Text style={styles.paragraph}>
                     <Text style={styles.important}>Studysen</Text> est une
-                    application créée par le club <Bold>Appen</Bold> du campus de
-                    Nantes de l'école d'ingénieur ISEN.
+                    application créée par le club <Bold>Appen</Bold> du campus
+                    de Nantes de l'école d'ingénieur ISEN.
                 </Text>
                 <Text style={styles.paragraph}>
                     L’objectif de cette application est de{" "}
@@ -148,8 +148,10 @@ const styles = StyleSheet.create({
         gap: 10
     },
     nameBadge: {
-        backgroundColor: Colors.light,
-        borderRadius: 5,
+        backgroundColor: Colors.card,
+        borderWidth: 1,
+        borderColor: Colors.border,
+        borderRadius: 8,
         padding: 8,
         marginTop: 10
     },

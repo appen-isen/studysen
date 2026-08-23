@@ -68,6 +68,10 @@ export default function TabLayout() {
             screenOptions={{
                 tabBarActiveTintColor: Colors.primary,
                 tabBarInactiveTintColor: Colors.darkGray,
+                tabBarStyle: {
+                    backgroundColor: Colors.card,
+                    borderTopColor: Colors.border
+                },
                 headerShown: false,
                 tabBarButton: (props) => {
                     const { ref: _ref, style, ...rest } = props as any;
