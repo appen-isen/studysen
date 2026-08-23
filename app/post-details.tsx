@@ -201,7 +201,8 @@ const postStyles = StyleSheet.create({
     },
     card: {
         ...Card,
-        padding: 15
+        padding: 15,
+        marginTop: 15
     },
     responsiveContainer: {
         maxWidth: getResponsiveMaxWidth(),

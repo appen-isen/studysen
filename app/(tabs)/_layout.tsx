@@ -2,7 +2,13 @@ import React, { useEffect, useRef } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import Colors from "@/constants/Colors";
-import { AppState, AppStateStatus, View, StyleSheet } from "react-native";
+import {
+    AppState,
+    AppStateStatus,
+    ColorValue,
+    View,
+    StyleSheet
+} from "react-native";
 import { AnimatedPressable } from "@/components/Buttons";
 import { useSyncStore } from "@/stores/syncStore";
 import { usePostsStore } from "@/stores/clubsStore";
@@ -13,7 +19,7 @@ import { startAutoSync, stopAutoSync } from "@/services/syncService";
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
     name: keyof typeof MaterialIcons.glyphMap;
-    color: string;
+    color: ColorValue;
 }) {
     return <MaterialIcons size={28} {...props} />;
 }

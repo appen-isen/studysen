@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
         inset: 0
     },
     close: {
-        ...StyleSheet.absoluteFillObject
+        position: "absolute",
+        inset: 0
     }
 });

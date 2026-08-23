@@ -204,7 +204,8 @@ const styles = StyleSheet.create({
         padding: 10
     },
     modalBackground: {
-        ...StyleSheet.absoluteFillObject
+        position: "absolute",
+        inset: 0
     },
     // Contenu des modales
     modalTitle: { fontSize: 35, fontWeight: 600, textAlign: "center" },
