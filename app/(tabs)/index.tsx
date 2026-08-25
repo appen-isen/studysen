@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View, RefreshControl } from "react-native";
 import { Text } from "@/components/Texts";
 import { AnimatedPressable } from "@/components/Buttons";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNotesStore, usePlanningStore } from "@/stores/webaurionStore";
 import { useSyncStore } from "@/stores/syncStore";
@@ -27,7 +28,7 @@ import { Page, PageHeader } from "@/components/Page";
 import { NoteElement } from "@/components/Note";
 import NoteModal from "@/components/modals/NoteModal";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
-import { Card } from "@/constants/Styles";
+import { getCardStyle } from "@/constants/Styles";
 import { getFirstNameFromName } from "@/utils/account";
 import { SyncBadge } from "@/components/Sync";
 
@@ -36,6 +37,9 @@ export default function HomeScreen() {
     const { notes } = useNotesStore();
     const { settings } = useSettingsStore();
     const { syncStatus } = useSyncStore();
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
+    const sectionStyles = useMemo(() => createSectionStyles(colors), [colors]);
     // Gestion du planning
     const { planning } = usePlanningStore();
     // On formate le planning pour le mode liste
@@ -71,8 +75,8 @@ export default function HomeScreen() {
                 <RefreshControl
                     refreshing={false}
                     onRefresh={syncData}
-                    colors={[Colors.primary]} // Android
-                    tintColor={Colors.primary} // iOS
+                    colors={[colors.primary]} // Android
+                    tintColor={colors.primary} // iOS
                 />
             }
         >
@@ -180,7 +184,7 @@ export default function HomeScreen() {
                                 <MaterialCommunityIcons
                                     name="dots-horizontal"
                                     size={20}
-                                    color={Colors.black}
+                                    color={colors.black}
                                 />
                                 <Text style={styles.allNotesButtonText}>
                                     Voir plus
@@ -211,98 +215,100 @@ export default function HomeScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        gap: 35
-    },
-    scrollView: {
-        width: "100%"
-    },
-    scrollContainer: {
-        alignItems: "center",
-        justifyContent: "flex-start",
-        paddingBottom: 20
-    },
-    title: {
-        fontSize: 25,
-        fontWeight: "bold",
-        color: Colors.primary
-    },
-    //Texte de bienvenue
-    welcomeBox: {
-        justifyContent: "flex-start",
-        alignItems: "flex-start",
-        width: "100%"
-    },
-    heyText: {
-        fontSize: 25
-    },
-    firstnameText: {
-        color: Colors.primary
-    },
-    // Texte quand il n'y a pas d'événement
-    noEventText: {
-        fontSize: 16,
-        textAlign: "center",
-        ...Card,
-        padding: 20,
-        width: "100%"
-    },
-    // Texte quand il n'y a pas de note
-    noNoteText: {
-        fontSize: 16,
-        textAlign: "center",
-        paddingVertical: 10
-    },
-    //Notes
-    notesCard: {
-        ...Card,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        width: "100%"
-    },
-    allNotesButton: {
-        ...Card,
-        borderRadius: 8,
-        alignSelf: "flex-start",
-        paddingVertical: 5,
-        paddingHorizontal: 10
-    },
-    allNotesButtonContent: {
-        flexDirection: "row",
-        gap: 10
-    },
-    allNotesButtonText: {
-        fontSize: 14,
-        fontWeight: "normal",
-        color: Colors.black
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            gap: 35
+        },
+        scrollView: {
+            width: "100%"
+        },
+        scrollContainer: {
+            alignItems: "center",
+            justifyContent: "flex-start",
+            paddingBottom: 20
+        },
+        title: {
+            fontSize: 25,
+            fontWeight: "bold",
+            color: colors.primary
+        },
+        //Texte de bienvenue
+        welcomeBox: {
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+            width: "100%"
+        },
+        heyText: {
+            fontSize: 25
+        },
+        firstnameText: {
+            color: colors.primary
+        },
+        // Texte quand il n'y a pas d'événement
+        noEventText: {
+            fontSize: 16,
+            textAlign: "center",
+            ...getCardStyle(colors),
+            padding: 20,
+            width: "100%"
+        },
+        // Texte quand il n'y a pas de note
+        noNoteText: {
+            fontSize: 16,
+            textAlign: "center",
+            paddingVertical: 10
+        },
+        //Notes
+        notesCard: {
+            ...getCardStyle(colors),
+            paddingVertical: 10,
+            paddingHorizontal: 15,
+            width: "100%"
+        },
+        allNotesButton: {
+            ...getCardStyle(colors),
+            borderRadius: 8,
+            alignSelf: "flex-start",
+            paddingVertical: 5,
+            paddingHorizontal: 10
+        },
+        allNotesButtonContent: {
+            flexDirection: "row",
+            gap: 10
+        },
+        allNotesButtonText: {
+            fontSize: 14,
+            fontWeight: "normal",
+            color: colors.black
+        }
+    });
 
 // Styles pour les sections
-const sectionStyles = StyleSheet.create({
-    section: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        alignSelf: "center",
-        width: "100%",
-        maxWidth: getResponsiveMaxWidth()
-    },
-    titleText: {
-        fontSize: 16,
-        color: Colors.gray,
-        fontWeight: "bold",
-        alignSelf: "flex-start"
-    },
-    content: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: 140,
-        width: "100%",
-        gap: 15
-    }
-});
+const createSectionStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        section: {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            alignSelf: "center",
+            width: "100%",
+            maxWidth: getResponsiveMaxWidth()
+        },
+        titleText: {
+            fontSize: 16,
+            color: colors.gray,
+            fontWeight: "bold",
+            alignSelf: "flex-start"
+        },
+        content: {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: 140,
+            width: "100%",
+            gap: 15
+        }
+    });

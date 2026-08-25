@@ -9,6 +9,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
+import { useColorScheme_ } from "@/hooks/useColors";
 import "react-native-reanimated";
 
 //Layout par défaut de l'application
@@ -57,10 +58,11 @@ export default function RootLayout() {
 
 //Il s'agit de la navigation principale de l'application
 function RootLayoutNav() {
+    const colorScheme = useColorScheme_();
     return (
         <>
-            {/* Texte sombre, fond transparent */}
-            <StatusBar style="dark" />
+            {/* Texte sombre en thème clair, texte clair en thème sombre, fond transparent */}
+            <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
             <Stack
                 screenOptions={{
                     headerShown: false

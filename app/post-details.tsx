@@ -1,17 +1,21 @@
 import { AnimatedPressable } from "@/components/Buttons";
 import { Page, PageHeader } from "@/components/Page";
 import { Text } from "@/components/Texts";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { usePostDetailsStore } from "@/stores/clubsStore";
 import { PostType } from "@/utils/types";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Href, useRouter } from "expo-router";
 import { Image, StyleSheet, View } from "react-native";
+import { useMemo } from "react";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
-import { Card } from "@/constants/Styles";
+import { getCardStyle } from "@/constants/Styles";
 
 export default function PostDetailsScreen() {
     const { currentPost } = usePostDetailsStore();
+    const colors = useColors();
+    const postStyles = useMemo(() => createPostStyles(colors), [colors]);
     if (currentPost === null) {
         return (
             <Page>
@@ -51,6 +55,8 @@ export function Post(props: { post: PostType; details?: boolean }) {
 
     const router = useRouter();
     const { setCurrentPost } = usePostDetailsStore();
+    const colors = useColors();
+    const postStyles = useMemo(() => createPostStyles(colors), [colors]);
 
     //Lorsque l'on veut voir plus de détails sur le post ou aller sur le lien
     const handleViewDetails = () => {
@@ -110,7 +116,7 @@ export function Post(props: { post: PostType; details?: boolean }) {
                     <MaterialIcons
                         name="location-on"
                         size={20}
-                        color={Colors.primary}
+                        color={colors.primary}
                     />
                     <Text style={postStyles.addressText}>
                         {address.toUpperCase()}
@@ -161,7 +167,7 @@ export function Post(props: { post: PostType; details?: boolean }) {
                     scale={0.95}
                     style={postStyles.viewButton}
                 >
-                    <Text style={{ color: Colors.white }}>
+                    <Text style={{ color: colors.white }}>
                         Voir {type === "event" ? "l'événement" : "le post"}
                     </Text>
                     <MaterialIcons
@@ -194,130 +200,131 @@ export function Post(props: { post: PostType; details?: boolean }) {
     );
 }
 
-const postStyles = StyleSheet.create({
-    row: {
-        flexDirection: "row",
-        alignItems: "center"
-    },
-    card: {
-        ...Card,
-        padding: 15,
-        marginTop: 15
-    },
-    responsiveContainer: {
-        maxWidth: getResponsiveMaxWidth(),
-        width: "100%",
-        alignSelf: "center"
-    },
-    //Textes
-    textSeparator: {
-        width: 20,
-        height: 3,
-        borderRadius: 10,
-        marginHorizontal: 10,
-        backgroundColor: Colors.black
-    },
-    largeText: {
-        fontSize: 20
-    },
-    title: {
-        fontSize: 20,
-        marginVertical: 5,
-        fontWeight: "bold"
-    },
-    badge: {
-        borderRadius: 10,
-        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.1),
-        padding: 10,
-        fontSize: 11,
-        fontWeight: "bold",
-        color: Colors.primary
-    },
-    //Bannière
-    banner: {
-        width: "100%",
-        height: 100,
-        borderRadius: 15,
-        marginVertical: 15
-    },
-    //Nom du club
-    clubBox: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: Colors.light,
-        padding: 6,
-        borderRadius: 50,
-        marginTop: 5,
-        marginBottom: 20,
-        alignSelf: "flex-start"
-    },
-    clubImage: {
-        width: 30,
-        height: 30,
-        borderRadius: 100
-    },
-    clubName: {
-        fontWeight: 600,
-        marginLeft: 5
-    },
-    //Adresse
-    addressBox: {
-        flexDirection: "row",
-        alignItems: "center",
-        alignSelf: "flex-start",
-        gap: 10,
-        marginTop: 10,
-        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.1),
-        padding: 10,
-        borderRadius: 5
-    },
-    addressText: {
-        fontSize: 12,
-        fontWeight: 600,
-        color: Colors.primary
-    },
-    //Informations
-    infoBox: {
-        padding: 10,
-        borderRadius: 5,
-        justifyContent: "center",
-        marginTop: 15,
-        marginRight: 15,
-        backgroundColor: Colors.light
-    },
-    infoTitle: {
-        fontWeight: "bold",
-        color: Colors.gray,
-        fontSize: 10
-    },
-    infoText: {
-        fontSize: 16
-    },
-    viewButton: {
-        backgroundColor: Colors.primary,
-        padding: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        flexDirection: "row",
-        alignItems: "center",
-        alignSelf: "flex-start",
-        gap: 15,
-        marginTop: 20
-    },
-    linkButton: {
-        backgroundColor: Colors.primary,
-        padding: 10,
-        paddingHorizontal: 20,
-        borderRadius: 50,
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 15,
-        marginTop: 20
-    },
-    linkText: {
-        color: Colors.white,
-        fontSize: 18,
-        fontWeight: "bold"
-    }
-});
+const createPostStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        row: {
+            flexDirection: "row",
+            alignItems: "center"
+        },
+        card: {
+            ...getCardStyle(colors),
+            padding: 15,
+            marginTop: 15
+        },
+        responsiveContainer: {
+            maxWidth: getResponsiveMaxWidth(),
+            width: "100%",
+            alignSelf: "center"
+        },
+        //Textes
+        textSeparator: {
+            width: 20,
+            height: 3,
+            borderRadius: 10,
+            marginHorizontal: 10,
+            backgroundColor: colors.black
+        },
+        largeText: {
+            fontSize: 20
+        },
+        title: {
+            fontSize: 20,
+            marginVertical: 5,
+            fontWeight: "bold"
+        },
+        badge: {
+            borderRadius: 10,
+            backgroundColor: colors.hexWithOpacity(colors.primary, 0.1),
+            padding: 10,
+            fontSize: 11,
+            fontWeight: "bold",
+            color: colors.primary
+        },
+        //Bannière
+        banner: {
+            width: "100%",
+            height: 100,
+            borderRadius: 15,
+            marginVertical: 15
+        },
+        //Nom du club
+        clubBox: {
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: colors.light,
+            padding: 6,
+            borderRadius: 50,
+            marginTop: 5,
+            marginBottom: 20,
+            alignSelf: "flex-start"
+        },
+        clubImage: {
+            width: 30,
+            height: 30,
+            borderRadius: 100
+        },
+        clubName: {
+            fontWeight: 600,
+            marginLeft: 5
+        },
+        //Adresse
+        addressBox: {
+            flexDirection: "row",
+            alignItems: "center",
+            alignSelf: "flex-start",
+            gap: 10,
+            marginTop: 10,
+            backgroundColor: colors.hexWithOpacity(colors.primary, 0.1),
+            padding: 10,
+            borderRadius: 5
+        },
+        addressText: {
+            fontSize: 12,
+            fontWeight: 600,
+            color: colors.primary
+        },
+        //Informations
+        infoBox: {
+            padding: 10,
+            borderRadius: 5,
+            justifyContent: "center",
+            marginTop: 15,
+            marginRight: 15,
+            backgroundColor: colors.light
+        },
+        infoTitle: {
+            fontWeight: "bold",
+            color: colors.gray,
+            fontSize: 10
+        },
+        infoText: {
+            fontSize: 16
+        },
+        viewButton: {
+            backgroundColor: colors.primary,
+            padding: 10,
+            paddingHorizontal: 20,
+            borderRadius: 5,
+            flexDirection: "row",
+            alignItems: "center",
+            alignSelf: "flex-start",
+            gap: 15,
+            marginTop: 20
+        },
+        linkButton: {
+            backgroundColor: colors.primary,
+            padding: 10,
+            paddingHorizontal: 20,
+            borderRadius: 50,
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 15,
+            marginTop: 20
+        },
+        linkText: {
+            color: colors.white,
+            fontSize: 18,
+            fontWeight: "bold"
+        }
+    });

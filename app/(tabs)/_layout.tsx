@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import Colors from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import {
     AppState,
     AppStateStatus,
@@ -31,6 +31,7 @@ export default function TabLayout() {
 
     // Récupérer l'état des nouveaux posts
     const hasNewPost = usePostsStore((state) => state.hasNewPost);
+    const colors = useColors();
 
     const checkAndSync = () => {
         const lastSyncDate = useSyncStore.getState().lastSyncDate;
@@ -72,11 +73,11 @@ export default function TabLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: Colors.primary,
-                tabBarInactiveTintColor: Colors.darkGray,
+                tabBarActiveTintColor: colors.primary,
+                tabBarInactiveTintColor: colors.darkGray,
                 tabBarStyle: {
-                    backgroundColor: Colors.card,
-                    borderTopColor: Colors.border
+                    backgroundColor: colors.card,
+                    borderTopColor: colors.border
                 },
                 headerShown: false,
                 tabBarButton: (props) => {
@@ -110,7 +111,14 @@ export default function TabLayout() {
                     tabBarIcon: ({ color }) => (
                         <View>
                             <TabBarIcon name="celebration" color={color} />
-                            {hasNewPost && <View style={styles.badge} />}
+                            {hasNewPost && (
+                                <View
+                                    style={[
+                                        styles.badge,
+                                        { backgroundColor: colors.primary }
+                                    ]}
+                                />
+                            )}
                         </View>
                     )
                 }}
@@ -136,7 +144,6 @@ const styles = StyleSheet.create({
         right: -10,
         width: 12,
         height: 12,
-        borderRadius: 6,
-        backgroundColor: Colors.primary
+        borderRadius: 6
     }
 });

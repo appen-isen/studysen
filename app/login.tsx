@@ -8,8 +8,9 @@ import {
 import { AnimatedPressable, Button } from "@/components/Buttons";
 import { Input, Checkbox } from "@/components/Inputs";
 import { Bold, Text } from "@/components/Texts";
-import Colors from "@/constants/Colors";
-import { useEffect, useState } from "react";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Dropdown, ErrorModal } from "@/components/Modals";
@@ -29,6 +30,9 @@ export default function LoginScreen() {
     const { setSession } = useSessionStore();
 
     const { settings, setSettings } = useSettingsStore();
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
+    const helpStyles = useMemo(() => createHelpStyles(colors), [colors]);
 
     //Connexion automatique
     useEffect(() => {
@@ -179,7 +183,7 @@ export default function LoginScreen() {
                     <Checkbox
                         status={rememberMe ? "checked" : "unchecked"}
                         onPress={() => setRememberMe(!rememberMe)}
-                        color={Colors.primary}
+                        color={colors.primary}
                         text="Se souvenir de moi"
                     />
                 </View>
@@ -235,7 +239,11 @@ export default function LoginScreen() {
                         }
                     >
                         <View style={helpStyles.link}>
-                            <MaterialIcons name="open-in-new" size={20} />
+                            <MaterialIcons
+                                name="open-in-new"
+                                size={20}
+                                color={colors.black}
+                            />
                             <Text>Mot de passe oublié</Text>
                         </View>
                     </Link>
@@ -252,119 +260,121 @@ export default function LoginScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    //
-    // Containers
-    //
-    container: {
-        flex: 1,
-        justifyContent: "space-around",
-        backgroundColor: Colors.background
-    },
-    containerView: {
-        width: "100%",
-        flex: 1,
-        justifyContent: "space-between",
-        alignItems: "center",
-        maxWidth: getResponsiveMaxWidth(),
-        marginHorizontal: "auto",
-        padding: 20
-    },
-    //
-    // Campus selection
-    //
-    campusSelect: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        paddingBlock: 10,
-        paddingInline: 25,
-        backgroundColor: Colors.primary,
-        borderRadius: 999,
-        gap: 5
-    },
-    campusSelectText: {
-        color: Colors.white
-    },
-    dropdownBoxStyle: {
-        width: 250,
-        display: "flex",
-        justifyContent: "flex-start",
-        alignItems: "flex-start"
-    },
-    //
-    // Header section
-    //
-    headerBox: {
-        width: "100%"
-    },
-    headerTitle: {
-        fontSize: 40
-    },
-    headerIcon: {
-        fontSize: 52,
-        color: Colors.primary
-    },
-    headerLabel: {
-        color: Colors.darkGray,
-        marginLeft: 3
-    },
-    //
-    // Fields section
-    //
-    fieldsBox: {
-        alignItems: "flex-start",
-        width: "100%",
-        gap: 25
-    },
-    //
-    // Actions section
-    //
-    actionBox: {
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%"
-    },
-    actionLogin: {
-        width: "100%"
-    },
-    actionHelp: {
-        alignItems: "center",
-        gap: 10,
-        color: Colors.darkGray,
-        fontWeight: 600,
-        padding: 20
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        //
+        // Containers
+        //
+        container: {
+            flex: 1,
+            justifyContent: "space-around",
+            backgroundColor: colors.background
+        },
+        containerView: {
+            width: "100%",
+            flex: 1,
+            justifyContent: "space-between",
+            alignItems: "center",
+            maxWidth: getResponsiveMaxWidth(),
+            marginHorizontal: "auto",
+            padding: 20
+        },
+        //
+        // Campus selection
+        //
+        campusSelect: {
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            paddingBlock: 10,
+            paddingInline: 25,
+            backgroundColor: colors.primary,
+            borderRadius: 999,
+            gap: 5
+        },
+        campusSelectText: {
+            color: colors.white
+        },
+        dropdownBoxStyle: {
+            width: 250,
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "flex-start"
+        },
+        //
+        // Header section
+        //
+        headerBox: {
+            width: "100%"
+        },
+        headerTitle: {
+            fontSize: 40
+        },
+        headerIcon: {
+            fontSize: 52,
+            color: colors.primary
+        },
+        headerLabel: {
+            color: colors.darkGray,
+            marginLeft: 3
+        },
+        //
+        // Fields section
+        //
+        fieldsBox: {
+            alignItems: "flex-start",
+            width: "100%",
+            gap: 25
+        },
+        //
+        // Actions section
+        //
+        actionBox: {
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%"
+        },
+        actionLogin: {
+            width: "100%"
+        },
+        actionHelp: {
+            alignItems: "center",
+            gap: 10,
+            color: colors.darkGray,
+            fontWeight: 600,
+            padding: 20
+        }
+    });
 
-const helpStyles = StyleSheet.create({
-    //
-    // Help styles
-    //
-    container: {
-        alignItems: "flex-start",
-        padding: 20,
-        gap: 20
-    },
-    subtitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: Colors.black
-    },
-    paragraph: {
-        color: Colors.darkGray
-    },
-    important: {
-        color: Colors.primary,
-        fontWeight: "bold"
-    },
-    link: {
-        flexDirection: "row",
-        gap: 5,
-        alignItems: "center",
-        backgroundColor: Colors.light,
-        paddingBlock: 5,
-        paddingInline: 10,
-        borderRadius: 5
-    }
-});
+const createHelpStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        //
+        // Help styles
+        //
+        container: {
+            alignItems: "flex-start",
+            padding: 20,
+            gap: 20
+        },
+        subtitle: {
+            fontSize: 18,
+            fontWeight: "bold",
+            color: colors.black
+        },
+        paragraph: {
+            color: colors.darkGray
+        },
+        important: {
+            color: colors.primary,
+            fontWeight: "bold"
+        },
+        link: {
+            flexDirection: "row",
+            gap: 5,
+            alignItems: "center",
+            backgroundColor: colors.light,
+            paddingBlock: 5,
+            paddingInline: 10,
+            borderRadius: 5
+        }
+    });

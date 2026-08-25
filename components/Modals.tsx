@@ -10,9 +10,10 @@ import {
 } from "react-native";
 import { Text } from "@/components/Texts";
 import { AnimatedPressable, Button } from "@/components/Buttons";
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useMemo, useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
 
@@ -35,6 +36,8 @@ type DropdownProps = ModalProps & {
 };
 
 function ModalBase(props: ModalProps) {
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     return (
         <Modal
             animationType="fade"
@@ -70,6 +73,8 @@ function ModalBase(props: ModalProps) {
 
 // Modal d'erreur
 export function ErrorModal(props: PopupModalProps) {
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     return (
         <ModalBase setVisible={props.setVisible} visible={props.visible}>
             <Image
@@ -91,6 +96,8 @@ export function ErrorModal(props: PopupModalProps) {
 
 // Modal de succès
 export function SuccessModal(props: PopupModalProps) {
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     return (
         <ModalBase setVisible={props.setVisible} visible={props.visible}>
             <Image
@@ -112,6 +119,8 @@ export function SuccessModal(props: PopupModalProps) {
 
 // Modal de confirmation
 export function ConfirmModal(props: PopupModalProps) {
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     return (
         <ModalBase setVisible={props.setVisible} visible={props.visible}>
             <Image
@@ -146,6 +155,8 @@ export function ConfirmModal(props: PopupModalProps) {
 
 // Sélecteur de choix
 export function Dropdown(props: DropdownProps) {
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     const handleOptionPress = (item: string) => {
         props.setSelectedItem(item);
         props.setVisible(false);
@@ -184,74 +195,75 @@ export function Dropdown(props: DropdownProps) {
     );
 }
 
-const styles = StyleSheet.create({
-    //ModalBase
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    modalContent: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "90%",
-        maxWidth: getResponsiveMaxWidth(),
-        backgroundColor: "white",
-        borderRadius: 10,
-        elevation: 10,
-        padding: 10
-    },
-    modalBackground: {
-        position: "absolute",
-        inset: 0
-    },
-    // Contenu des modales
-    modalTitle: { fontSize: 35, fontWeight: 600, textAlign: "center" },
-    modalText: {
-        fontSize: 20,
-        textAlign: "center",
-        marginTop: 10,
-        width: "90%"
-    },
-    modalButton: {
-        marginTop: 20
-    },
-    modalButtonText: { fontSize: 23 },
-    modalImg: {
-        width: 75,
-        height: 75,
-        marginBottom: 15
-    },
-    buttonView: {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-around",
-        width: "100%"
-    },
-    // Dropdown
-    dropdownItem: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: "#eee"
-    },
-    dropdownItemView: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center"
-    },
-    dropdownText: {
-        fontSize: 16
-    },
-    dropdownSelectedIcon: {
-        color: Colors.primary,
-        fontSize: 20,
-        alignSelf: "flex-end"
-    },
-    flatList: {
-        width: "100%"
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        //ModalBase
+        modalOverlay: {
+            flex: 1,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            justifyContent: "center",
+            alignItems: "center"
+        },
+        modalContent: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "90%",
+            maxWidth: getResponsiveMaxWidth(),
+            backgroundColor: colors.card,
+            borderRadius: 10,
+            elevation: 10,
+            padding: 10
+        },
+        modalBackground: {
+            position: "absolute",
+            inset: 0
+        },
+        // Contenu des modales
+        modalTitle: { fontSize: 35, fontWeight: 600, textAlign: "center" },
+        modalText: {
+            fontSize: 20,
+            textAlign: "center",
+            marginTop: 10,
+            width: "90%"
+        },
+        modalButton: {
+            marginTop: 20
+        },
+        modalButtonText: { fontSize: 23 },
+        modalImg: {
+            width: 75,
+            height: 75,
+            marginBottom: 15
+        },
+        buttonView: {
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-around",
+            width: "100%"
+        },
+        // Dropdown
+        dropdownItem: {
+            padding: 10,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border
+        },
+        dropdownItemView: {
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center"
+        },
+        dropdownText: {
+            fontSize: 16
+        },
+        dropdownSelectedIcon: {
+            color: colors.primary,
+            fontSize: 20,
+            alignSelf: "flex-end"
+        },
+        flatList: {
+            width: "100%"
+        }
+    });
