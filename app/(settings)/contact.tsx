@@ -399,7 +399,9 @@ const styles = StyleSheet.create({
     },
     //Boutons
     infoButton: {
-        backgroundColor: Colors.light,
+        backgroundColor: Colors.card,
+        borderWidth: 1,
+        borderColor: Colors.border,
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 8,
@@ -439,12 +441,8 @@ const styles = StyleSheet.create({
         gap: 20
     },
     infoTitle: {
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: "bold",
-        backgroundColor: Colors.primary,
-        color: Colors.white,
-        paddingBlock: 5,
-        paddingInline: 10,
-        borderRadius: 5
+        color: Colors.black
     }
 });

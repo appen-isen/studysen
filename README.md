@@ -139,6 +139,17 @@ Pour constuire l'application (obtenir un exécutable Android/iOS), vous pouvez u
     eas update --channel production --message "[message]"
     ```
 
+5. Déployer une mise à jour sur les stores.
+
+    - Augmenter la version dans le fichier `app.json` et `package.json`
+    - Faire une release sur GitHub
+    - Lancer la commande suivante pour publier sur les stores:
+
+        ```bash
+        eas submit --platform all --profile production
+        ```
+    - Finir la publication sur les stores (Apple et Google) via les interfaces web.
+
 ## 🤖 Technologies utilisées
 
 - **React Native** : Framework pour le développement d'applications mobiles (Android et iOS).

@@ -198,19 +198,21 @@ export default function ClubsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.white
+        backgroundColor: Colors.background
     },
     content: {
         flex: 1,
         paddingBlock: 10,
         paddingInline: 20,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.background,
         gap: 25
     },
     scrollContainer: {
         maxWidth: getResponsiveMaxWidth(),
         width: "100%",
-        alignSelf: "center"
+        alignSelf: "center",
+        gap: 15,
+        paddingBottom: 10
     },
     noPostsText: {
         fontSize: 20,
@@ -225,7 +227,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 15,
         paddingVertical: 8,
-        backgroundColor: Colors.light,
+        backgroundColor: Colors.card,
+        borderWidth: 1,
+        borderColor: Colors.border,
         borderRadius: 999,
         gap: 5
     },

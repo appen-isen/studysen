@@ -11,6 +11,7 @@ import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { AnimatedPressable } from "../Buttons";
 import { getSubjectColor } from "@/utils/colors";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { Card } from "@/constants/Styles";
 import { useMemo, useState } from "react";
 
 // Fenêtre horaire visible (8h -> 19h)
@@ -288,13 +289,13 @@ export function WeekEvent(props: {
                 {durationInHours > 0.75 && (
                     <View style={eventStyles.tags}>
                         <Text
-                            style={[eventStyles.tag, eventStyles.tagWhite]}
+                            style={[eventStyles.tag, eventStyles.tagLight]}
                             numberOfLines={1}
                         >
                             {startHour}
                         </Text>
                         <Text
-                            style={[eventStyles.tag, eventStyles.tagWhite]}
+                            style={[eventStyles.tag, eventStyles.tagLight]}
                             numberOfLines={1}
                         >
                             {endHour}
@@ -341,9 +342,9 @@ const calendarStyles = StyleSheet.create({
         justifyContent: "space-between"
     },
     hourLabel: {
-        borderTopWidth: 2,
-        borderColor: Colors.darkGray,
-        color: Colors.darkGray,
+        borderTopWidth: 1,
+        borderColor: Colors.lightGray,
+        color: Colors.gray,
         width: "100%",
         boxSizing: "border-box",
         paddingTop: 5,
@@ -356,9 +357,9 @@ const eventStyles = StyleSheet.create({
     container: {
         position: "absolute",
         alignItems: "center",
+        ...Card,
         borderRadius: 10,
         width: "100%",
-        backgroundColor: Colors.light,
         overflow: "hidden"
     },
     content: {
@@ -391,8 +392,8 @@ const eventStyles = StyleSheet.create({
         flex: 1,
         textAlign: "center"
     },
-    tagWhite: {
-        backgroundColor: Colors.white
+    tagLight: {
+        backgroundColor: Colors.light
     },
     tagBlack: {
         backgroundColor: Colors.black,

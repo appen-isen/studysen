@@ -65,17 +65,7 @@ export function PageHeader({ title, returnTo, children }: PageHeaderProps) {
                     <Text style={headerStyles.returnText}>{returnTo}</Text>
                 </AnimatedPressable>
             )}
-            <Text
-                // On ajuste le style en fonction de la position du titre
-                style={[
-                    headerStyles.title,
-                    returnTo === undefined
-                        ? headerStyles.rightTitle
-                        : headerStyles.leftTitle
-                ]}
-            >
-                {title}
-            </Text>
+            <Text style={headerStyles.title}>{title}</Text>
             {/* On affiche le contenu */}
             {children}
         </View>
@@ -85,13 +75,13 @@ export function PageHeader({ title, returnTo, children }: PageHeaderProps) {
 const pageStyles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.white
+        backgroundColor: Colors.background
     },
     content: {
         paddingTop: 10,
         paddingBottom: 10,
         paddingInline: getResponsivePadding(),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.background,
         flexGrow: 1
     }
 });
@@ -105,23 +95,17 @@ const headerStyles = StyleSheet.create({
         marginTop: 20
     },
     title: {
-        paddingBlock: 10,
-        paddingInline: 25,
-        fontSize: 18,
-        fontWeight: 600,
-        color: Colors.white,
-        backgroundColor: Colors.primary,
-        borderRadius: 15
-    },
-    rightTitle: {
-        borderBottomRightRadius: 0
-    },
-    leftTitle: {
-        borderBottomLeftRadius: 0
+        paddingBlock: 8,
+        fontSize: 24,
+        fontWeight: 700,
+        color: Colors.black
     },
     returnButton: {
         flexDirection: "row",
-        backgroundColor: Colors.light,
+        alignItems: "center",
+        backgroundColor: Colors.card,
+        borderWidth: 1,
+        borderColor: Colors.border,
         gap: 10,
         paddingVertical: 7,
         paddingHorizontal: 20,

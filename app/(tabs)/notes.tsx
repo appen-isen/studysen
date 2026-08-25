@@ -26,6 +26,7 @@ import { Page, PageHeader } from "@/components/Page";
 import { getColorFromNoteCode, getIconFromNoteCode } from "@/utils/colors";
 import { Sheet } from "@/components/Sheet";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { Card } from "@/constants/Styles";
 import { useSyncStore } from "@/stores/syncStore";
 import { syncData } from "@/services/syncService";
 
@@ -343,7 +344,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginTop: 40
+        ...Card,
+        padding: 20,
+        marginTop: 30
     },
     noteAverageTitle: {
         fontSize: 14,
@@ -395,7 +398,9 @@ const notesGroupStyles = StyleSheet.create({
     container: {
         width: "100%",
         maxWidth: getResponsiveMaxWidth(),
-        marginTop: 30
+        ...Card,
+        padding: 15,
+        marginTop: 20
     },
     // En-tête du groupe de notes
     header: {
@@ -500,13 +505,9 @@ const infoStyles = StyleSheet.create({
         gap: 20
     },
     subtitle: {
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: "bold",
-        backgroundColor: Colors.primary,
-        color: Colors.white,
-        paddingBlock: 5,
-        paddingInline: 10,
-        borderRadius: 5
+        color: Colors.black
     },
     paragraph: {
         color: Colors.darkGray

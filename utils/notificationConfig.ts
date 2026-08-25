@@ -1,11 +1,17 @@
 import useSettingsStore from "@/stores/settingsStore";
-import * as Notifications from "expo-notifications";
+import type * as NotificationsTypes from "expo-notifications";
+import { isRunningInExpoGo } from "expo";
 import { Linking, Platform } from "react-native";
 import { API_BASE_URL } from "@/utils/config";
 import Constants from "expo-constants";
 import { fetch } from "expo/fetch";
 
-Notifications.setNotificationHandler({
+const Notifications: typeof NotificationsTypes | null =
+    Platform.OS === "web" || isRunningInExpoGo()
+        ? null
+        : require("expo-notifications");
+
+Notifications?.setNotificationHandler({
     handleNotification: async () => ({
         shouldPlaySound: true,
         shouldSetBadge: true,
@@ -16,8 +22,8 @@ Notifications.setNotificationHandler({
 
 // On demande la permission pour les notifications
 export const requestPermissions = async (openSettings = false) => {
-    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
-    if (Platform.OS === "web") {
+    //Notifications non supportées ici (web ou Expo Go)
+    if (!Notifications) {
         return false;
     }
 
@@ -55,8 +61,8 @@ export const requestPermissions = async (openSettings = false) => {
 };
 
 export const sendTestNotification = async () => {
-    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
-    if (Platform.OS === "web") {
+    //Notifications non supportées ici (web ou Expo Go)
+    if (!Notifications) {
         return;
     }
     try {
@@ -104,8 +110,8 @@ export const sendTestNotification = async () => {
 };
 
 export const cancelAllScheduledNotifications = async () => {
-    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
-    if (Platform.OS === "web") {
+    //Notifications non supportées ici (web ou Expo Go)
+    if (!Notifications) {
         return;
     }
     console.log("Annulation de toutes les notifications planifiées");
@@ -129,8 +135,8 @@ export const cancelAllScheduledNotifications = async () => {
 };
 
 export const registerForPushNotificationsAsync = async () => {
-    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
-    if (Platform.OS === "web") {
+    //Notifications non supportées ici (web ou Expo Go)
+    if (!Notifications) {
         return;
     }
     const { settings, setSettings } = useSettingsStore.getState();
@@ -177,8 +183,8 @@ export const scheduleCourseNotification = async (
     courseRoom: string,
     courseTime: Date
 ) => {
-    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
-    if (Platform.OS === "web") {
+    //Notifications non supportées ici (web ou Expo Go)
+    if (!Notifications) {
         return;
     }
     const { settings } = useSettingsStore.getState();
@@ -214,8 +220,8 @@ export const scheduleLocalNotification = async (
     body: string,
     date: Date
 ) => {
-    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
-    if (Platform.OS === "web") {
+    //Notifications non supportées ici (web ou Expo Go)
+    if (!Notifications) {
         return;
     }
     try {
@@ -250,8 +256,8 @@ export const deleteNotifications = async (device_id: string) => {
 };
 
 export const registerDeviceForNotifications = async (campus_id: number) => {
-    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
-    if (Platform.OS === "web") {
+    //Notifications non supportées ici (web ou Expo Go)
+    if (!Notifications) {
         return;
     }
     const token = await registerForPushNotificationsAsync();
@@ -277,8 +283,8 @@ export const registerDeviceForNotifications = async (campus_id: number) => {
 };
 
 export const unregisterDeviceForNotifications = async () => {
-    //Si on est sur l'application de bureau, les notifications ne sont pas gérées
-    if (Platform.OS === "web") {
+    //Notifications non supportées ici (web ou Expo Go)
+    if (!Notifications) {
         return;
     }
     const token = await registerForPushNotificationsAsync();

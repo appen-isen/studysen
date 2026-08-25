@@ -17,6 +17,7 @@ import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { getSubjectColor, getSubjectIcon } from "@/utils/colors";
 import { AnimatedPressable } from "../Buttons";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { Card } from "@/constants/Styles";
 import { useState, useEffect } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -206,7 +207,7 @@ export function ListEvent(props: {
                 <Text style={styles.fieldValue}>{props.event.instructors}</Text>
             </View>
             <View style={styles.tagsBox}>
-                <Text style={[styles.tag, styles.tagWhite]}>
+                <Text style={[styles.tag, styles.tagLight]}>
                     {formatDateToLocalTime(props.event.start)} —{" "}
                     {formatDateToLocalTime(props.event.end)}
                 </Text>
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
     },
     timeBar: {
         width: 4,
-        backgroundColor: Colors.light,
+        backgroundColor: Colors.lightGray,
         borderRadius: 999
     },
     timeBarProgress: {
@@ -240,24 +241,22 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 400,
         textAlign: "center",
-        backgroundColor: Colors.light,
+        ...Card,
         padding: 20,
-        borderRadius: 5,
         width: "100%"
     },
     eventBox: {
-        backgroundColor: Colors.light,
+        ...Card,
         paddingBlock: 10,
         paddingInline: 20,
-        borderRadius: 10,
         width: "100%",
         flexDirection: "column",
         justifyContent: "center",
         gap: 20
     },
     currentEventBorder: {
-        borderColor: Colors.lightGray,
-        borderWidth: 1
+        borderColor: Colors.primary,
+        borderWidth: 1.5
     },
     headerBox: {
         flexDirection: "row",
@@ -314,8 +313,8 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: 600
     },
-    tagWhite: {
-        backgroundColor: Colors.white,
+    tagLight: {
+        backgroundColor: Colors.light,
         color: Colors.black
     },
     tagBlack: {

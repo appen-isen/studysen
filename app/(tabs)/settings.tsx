@@ -20,6 +20,7 @@ import { getSemester } from "@/utils/date";
 import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
 import { getFirstLetters } from "@/utils/account";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { Card } from "@/constants/Styles";
 import { stopAutoSync } from "@/services/syncService";
 import { useSyncStore } from "@/stores/syncStore";
 import { usePostsStore } from "@/stores/clubsStore";
@@ -234,7 +235,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: Colors.light,
+        ...Card,
         borderRadius: 999,
         padding: 15
     },
@@ -269,16 +270,14 @@ const styles = StyleSheet.create({
     },
     profileLogout: {
         borderRadius: 999,
-        backgroundColor: Colors.white,
-        borderColor: Colors.primary,
-        borderRightWidth: 4
+        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.1)
     },
     profileLogoutIcon: {
         padding: 10,
         textAlign: "center",
         textAlignVertical: "center",
         fontSize: 20,
-        color: Colors.darkGray
+        color: Colors.primary
     },
     //
     // Settings
@@ -299,8 +298,7 @@ const settingStyles = StyleSheet.create({
     // Setting navigation style
     //
     container: {
-        backgroundColor: Colors.light,
-        borderRadius: 10,
+        ...Card,
         padding: 15,
         gap: 15
     },
@@ -317,7 +315,7 @@ const settingStyles = StyleSheet.create({
     },
     icon: {
         fontSize: 20,
-        backgroundColor: Colors.lightGray,
+        backgroundColor: Colors.light,
         color: Colors.darkGray,
         alignSelf: "center",
         padding: 5,

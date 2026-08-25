@@ -27,6 +27,7 @@ import { Page, PageHeader } from "@/components/Page";
 import { NoteElement } from "@/components/Note";
 import NoteModal from "@/components/modals/NoteModal";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import { Card } from "@/constants/Styles";
 import { getFirstNameFromName } from "@/utils/account";
 import { SyncBadge } from "@/components/Sync";
 
@@ -149,7 +150,7 @@ export default function HomeScreen() {
                 {/* Contenu de la section */}
                 <View style={sectionStyles.content}>
                     {/* On récupère et affiche les trois dernières notes */}
-                    <View style={{ width: "100%" }}>
+                    <View style={styles.notesCard}>
                         {getLatestNotes(notes, 3).map((note, index) => (
                             <NoteElement
                                 key={note.code + index}
@@ -162,7 +163,7 @@ export default function HomeScreen() {
                         ))}
                         {/* S'il n'y a pas de notes */}
                         {notes.length === 0 && (
-                            <Text style={styles.noEventText}>
+                            <Text style={styles.noNoteText}>
                                 Aucune note récente pour le moment
                             </Text>
                         )}
@@ -242,12 +243,27 @@ const styles = StyleSheet.create({
     // Texte quand il n'y a pas d'événement
     noEventText: {
         fontSize: 16,
-        textAlign: "center"
+        textAlign: "center",
+        ...Card,
+        padding: 20,
+        width: "100%"
+    },
+    // Texte quand il n'y a pas de note
+    noNoteText: {
+        fontSize: 16,
+        textAlign: "center",
+        paddingVertical: 10
     },
     //Notes
+    notesCard: {
+        ...Card,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        width: "100%"
+    },
     allNotesButton: {
-        borderRadius: 5,
-        backgroundColor: Colors.light,
+        ...Card,
+        borderRadius: 8,
         alignSelf: "flex-start",
         paddingVertical: 5,
         paddingHorizontal: 10
