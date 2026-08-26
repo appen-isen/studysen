@@ -1,7 +1,8 @@
 import { PlanningEvent } from "@/webAurion/utils/types";
 import { LayoutChangeEvent, StyleSheet, View } from "react-native";
 import { Text } from "../Texts";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import {
     getPlanningEventLabel,
     groupEventsByDay,
@@ -11,7 +12,7 @@ import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { AnimatedPressable } from "../Buttons";
 import { getSubjectColor } from "@/utils/colors";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
-import { Card } from "@/constants/Styles";
+import { getCardStyle } from "@/constants/Styles";
 import { useMemo, useState } from "react";
 
 // Fenêtre horaire visible (8h -> 19h)
@@ -145,6 +146,9 @@ export default function PlanningWeek(props: {
     startDate: Date;
     setSelectedEvent: (event: PlanningEvent) => void;
 }) {
+    const colors = useColors();
+    const calendarStyles = useMemo(() => createCalendarStyles(colors), [colors]);
+    const eventStyles = useMemo(() => createEventStyles(colors), [colors]);
     // Regroupement par jour uniquement quand la liste change
     const planning = useMemo(
         () => groupEventsByDay(updatePlanningForListMode(props.events)),
@@ -217,6 +221,8 @@ export function WeekEvent(props: {
     onPress: (event: PlanningEvent) => void;
     layout: EventLayout;
 }) {
+    const colors = useColors();
+    const eventStyles = useMemo(() => createEventStyles(colors), [colors]);
     const startHour = formatDateToLocalTime(props.event.start);
     const endHour = formatDateToLocalTime(props.event.end);
 
@@ -319,88 +325,90 @@ export function WeekEvent(props: {
     );
 }
 
-const calendarStyles = StyleSheet.create({
-    container: {
-        flex: 6,
-        width: "100%",
-        maxWidth: getResponsiveMaxWidth(),
-        alignSelf: "center",
-        marginHorizontal: "auto",
-        flexDirection: "row",
-        gap: 2
-    },
-    dayColumn: {
-        flex: 1,
-        position: "relative",
-        height: "100%",
-        paddingHorizontal: 1
-    },
-    hoursBox: {
-        position: "absolute",
-        transform: [{ translateX: "-105%" }],
-        alignItems: "center",
-        justifyContent: "space-between"
-    },
-    hourLabel: {
-        borderTopWidth: 1,
-        borderColor: Colors.lightGray,
-        color: Colors.gray,
-        width: "100%",
-        boxSizing: "border-box",
-        paddingTop: 5,
-        fontSize: 15,
-        fontWeight: 400
-    }
-});
+const createCalendarStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            flex: 6,
+            width: "100%",
+            maxWidth: getResponsiveMaxWidth(),
+            alignSelf: "center",
+            marginHorizontal: "auto",
+            flexDirection: "row",
+            gap: 2
+        },
+        dayColumn: {
+            flex: 1,
+            position: "relative",
+            height: "100%",
+            paddingHorizontal: 1
+        },
+        hoursBox: {
+            position: "absolute",
+            transform: [{ translateX: "-105%" }],
+            alignItems: "center",
+            justifyContent: "space-between"
+        },
+        hourLabel: {
+            borderTopWidth: 1,
+            borderColor: colors.lightGray,
+            color: colors.gray,
+            width: "100%",
+            boxSizing: "border-box",
+            paddingTop: 5,
+            fontSize: 15,
+            fontWeight: 400
+        }
+    });
 
-const eventStyles = StyleSheet.create({
-    container: {
-        position: "absolute",
-        alignItems: "center",
-        ...Card,
-        borderRadius: 10,
-        width: "100%",
-        overflow: "hidden"
-    },
-    content: {
-        flex: 1,
-        width: "100%",
-        alignItems: "center",
-        paddingVertical: 10,
-        paddingHorizontal: 4,
-        gap: 5
-    },
-    colorBar: {
-        width: 32,
-        height: 8,
-        marginTop: -13,
-        borderRadius: 999
-    },
-    subject: {
-        fontSize: 10,
-        fontWeight: "bold",
-        textAlign: "center"
-    },
-    tags: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 2
-    },
-    tag: {
-        fontSize: 10,
-        borderRadius: 2,
-        flex: 1,
-        textAlign: "center"
-    },
-    tagLight: {
-        backgroundColor: Colors.light
-    },
-    tagBlack: {
-        backgroundColor: Colors.black,
-        color: Colors.white
-    },
-    blankEvent: {
-        width: "100%",
-        backgroundColor: "transparent"
-    }
-});
+const createEventStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            position: "absolute",
+            alignItems: "center",
+            ...getCardStyle(colors),
+            borderRadius: 10,
+            width: "100%",
+            overflow: "hidden"
+        },
+        content: {
+            flex: 1,
+            width: "100%",
+            alignItems: "center",
+            paddingVertical: 10,
+            paddingHorizontal: 4,
+            gap: 5
+        },
+        colorBar: {
+            width: 32,
+            height: 8,
+            marginTop: -13,
+            borderRadius: 999
+        },
+        subject: {
+            fontSize: 10,
+            fontWeight: "bold",
+            textAlign: "center"
+        },
+        tags: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 2
+        },
+        tag: {
+            fontSize: 10,
+            borderRadius: 2,
+            flex: 1,
+            textAlign: "center"
+        },
+        tagLight: {
+            backgroundColor: colors.light
+        },
+        tagBlack: {
+            backgroundColor: colors.contrast,
+            color: colors.white
+        },
+        blankEvent: {
+            width: "100%",
+            backgroundColor: "transparent"
+        }
+    });

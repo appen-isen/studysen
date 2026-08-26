@@ -1,6 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { Text } from "@/components/Texts";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { AnimatedPressable } from "./Buttons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -17,6 +18,8 @@ export function Page(props: {
         React.ComponentProps<typeof RefreshControl>
     >;
 }) {
+    const colors = useColors();
+    const pageStyles = useMemo(() => createPageStyles(colors), [colors]);
     const contentStyle = [
         pageStyles.content,
         props.scrollable ? { flexGrow: 1 } : { flex: 1 },
@@ -50,6 +53,8 @@ type PageHeaderProps = {
 
 export function PageHeader({ title, returnTo, children }: PageHeaderProps) {
     const router = useRouter();
+    const colors = useColors();
+    const headerStyles = useMemo(() => createHeaderStyles(colors), [colors]);
     return (
         <View style={headerStyles.container}>
             {/* Si on a un bouton de retour, on l'affiche à gauche du titre */}
@@ -61,7 +66,11 @@ export function PageHeader({ title, returnTo, children }: PageHeaderProps) {
                     }}
                     scale={0.9}
                 >
-                    <MaterialIcons name="arrow-back" size={24} />
+                    <MaterialIcons
+                        name="arrow-back"
+                        size={24}
+                        color={colors.black}
+                    />
                     <Text style={headerStyles.returnText}>{returnTo}</Text>
                 </AnimatedPressable>
             )}
@@ -72,47 +81,49 @@ export function PageHeader({ title, returnTo, children }: PageHeaderProps) {
     );
 }
 
-const pageStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.background
-    },
-    content: {
-        paddingTop: 10,
-        paddingBottom: 10,
-        paddingInline: getResponsivePadding(),
-        backgroundColor: Colors.background,
-        flexGrow: 1
-    }
-});
+const createPageStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: colors.background
+        },
+        content: {
+            paddingTop: 10,
+            paddingBottom: 10,
+            paddingInline: getResponsivePadding(),
+            backgroundColor: colors.background,
+            flexGrow: 1
+        }
+    });
 
-const headerStyles = StyleSheet.create({
-    container: {
-        width: "100%",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginTop: 20
-    },
-    title: {
-        paddingBlock: 8,
-        fontSize: 24,
-        fontWeight: 700,
-        color: Colors.black
-    },
-    returnButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: Colors.card,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        gap: 10,
-        paddingVertical: 7,
-        paddingHorizontal: 20,
-        borderRadius: 30
-    },
-    returnText: {
-        fontSize: 16,
-        fontWeight: 600
-    }
-});
+const createHeaderStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: 20
+        },
+        title: {
+            paddingBlock: 8,
+            fontSize: 24,
+            fontWeight: 700,
+            color: colors.black
+        },
+        returnButton: {
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: colors.border,
+            gap: 10,
+            paddingVertical: 7,
+            paddingHorizontal: 20,
+            borderRadius: 30
+        },
+        returnText: {
+            fontSize: 16,
+            fontWeight: 600
+        }
+    });

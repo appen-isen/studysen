@@ -1,7 +1,8 @@
 import { StyleSheet, View, RefreshControl } from "react-native";
 import { Text } from "@/components/Texts";
-import Colors from "@/constants/Colors";
-import { useState } from "react";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
+import { useMemo, useState } from "react";
 import PlanningList from "@/components/planning/PlanningList";
 import PlanningWeek from "@/components/planning/PlanningWeek";
 import { PlanningEvent } from "@/webAurion/utils/types";
@@ -29,6 +30,9 @@ import { updatePlanning } from "@/services/syncService";
 export default function PlanningScreen() {
     const { planning } = usePlanningStore();
     const { syncStatus } = useSyncStore();
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
+    const timeStyles = useMemo(() => createTimeStyles(colors), [colors]);
 
     const [planningView, setPlanningView] = useState<"list" | "week">("list");
 
@@ -70,8 +74,8 @@ export default function PlanningScreen() {
                 <RefreshControl
                     refreshing={false}
                     onRefresh={syncData}
-                    colors={[Colors.primary]} // Android
-                    tintColor={Colors.primary} // iOS
+                    colors={[colors.primary]} // Android
+                    tintColor={colors.primary} // iOS
                 />
             }
         >
@@ -212,81 +216,83 @@ export default function PlanningScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        gap: 25
-    },
-    responsiveContainer: {
-        width: "100%",
-        alignSelf: "center",
-        maxWidth: getResponsiveMaxWidth()
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            gap: 25
+        },
+        responsiveContainer: {
+            width: "100%",
+            alignSelf: "center",
+            maxWidth: getResponsiveMaxWidth()
+        }
+    });
 
-const timeStyles = StyleSheet.create({
-    container: {
-        gap: 10
-    },
+const createTimeStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            gap: 10
+        },
 
-    //
-    // Week selector
-    //
-    weekBox: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        width: "100%"
-    },
-    weekArrow: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 5,
-        fontSize: 28,
-        textAlign: "center",
-        borderRadius: 999,
-        backgroundColor: Colors.black,
-        color: Colors.white
-    },
-    weekArrowDisabled: {
-        backgroundColor: Colors.hexWithOpacity(Colors.black, 0.5)
-    },
-    weekText: {
-        fontSize: 18,
-        fontWeight: 600,
-        color: Colors.gray
-    },
-    weekImportant: {
-        fontSize: 18,
-        fontWeight: 600,
-        color: Colors.black
-    },
-    //
-    // Day selector
-    //
-    daysBox: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        gap: 3,
-        width: "100%"
-    },
-    daysButton: {
-        flex: 1
-    },
-    daysLabel: {
-        backgroundColor: Colors.card,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        paddingHorizontal: 5,
-        paddingVertical: 8,
-        borderRadius: 8,
-        textAlign: "center",
-        fontSize: 12,
-        fontWeight: 600
-    },
-    daysLabelSelected: {
-        backgroundColor: Colors.black,
-        borderColor: Colors.black,
-        color: Colors.white
-    }
-});
+        //
+        // Week selector
+        //
+        weekBox: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%"
+        },
+        weekArrow: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 5,
+            fontSize: 28,
+            textAlign: "center",
+            borderRadius: 999,
+            backgroundColor: colors.contrast,
+            color: colors.white
+        },
+        weekArrowDisabled: {
+            backgroundColor: colors.hexWithOpacity(colors.contrast, 0.5)
+        },
+        weekText: {
+            fontSize: 18,
+            fontWeight: 600,
+            color: colors.gray
+        },
+        weekImportant: {
+            fontSize: 18,
+            fontWeight: 600,
+            color: colors.black
+        },
+        //
+        // Day selector
+        //
+        daysBox: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            gap: 3,
+            width: "100%"
+        },
+        daysButton: {
+            flex: 1
+        },
+        daysLabel: {
+            backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: colors.border,
+            paddingHorizontal: 5,
+            paddingVertical: 8,
+            borderRadius: 8,
+            textAlign: "center",
+            fontSize: 12,
+            fontWeight: 600
+        },
+        daysLabelSelected: {
+            backgroundColor: colors.contrast,
+            borderColor: colors.contrast,
+            color: colors.white
+        }
+    });

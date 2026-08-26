@@ -1,7 +1,9 @@
 import { Note } from "@/webAurion/utils/types";
 import { View, StyleSheet } from "react-native";
+import { useMemo } from "react";
 import { Text } from "../Texts";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { Sheet } from "../Sheet";
 import { MaterialIcons } from "@expo/vector-icons";
 import { getColorFromNoteCode, getIconFromNoteCode } from "@/utils/colors";
@@ -13,6 +15,8 @@ type NoteModalProps = {
 };
 export default function NoteModal(props: NoteModalProps) {
     const { note, visible, setVisible } = props;
+    const colors = useColors();
+    const popupStyles = useMemo(() => createPopupStyles(colors), [colors]);
     return (
         <Sheet
             sheetStyle={popupStyles.container}
@@ -60,58 +64,59 @@ export default function NoteModal(props: NoteModalProps) {
     );
 }
 
-const popupStyles = StyleSheet.create({
-    container: {
-        padding: 20,
-        gap: 20
-    },
-    headerBox: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10
-    },
-    headerIcon: {
-        width: 22,
-        height: 22,
-        borderRadius: 999,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 400
-    },
-    fieldTitle: {
-        fontSize: 10,
-        fontWeight: 700,
-        color: Colors.gray,
-        textTransform: "uppercase"
-    },
-    fieldBox: {
-        gap: 4,
-        alignItems: "flex-start"
-    },
-    fieldValue: {
-        fontSize: 14,
-        fontWeight: 400
-    },
-    fieldTag: {
-        paddingBlock: 5,
-        paddingInline: 10,
-        borderRadius: 5,
-        textAlign: "center",
-        fontSize: 12,
-        fontWeight: 600
-    },
-    fieldTagLight: {
-        backgroundColor: Colors.light
-    },
-    fieldTagBold: {
-        backgroundColor: Colors.light,
-        fontWeight: 700
-    },
-    fieldTagBlack: {
-        backgroundColor: Colors.black,
-        color: Colors.white
-    }
-});
+const createPopupStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            padding: 20,
+            gap: 20
+        },
+        headerBox: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10
+        },
+        headerIcon: {
+            width: 22,
+            height: 22,
+            borderRadius: 999,
+            justifyContent: "center",
+            alignItems: "center"
+        },
+        headerTitle: {
+            fontSize: 18,
+            fontWeight: 400
+        },
+        fieldTitle: {
+            fontSize: 10,
+            fontWeight: 700,
+            color: colors.gray,
+            textTransform: "uppercase"
+        },
+        fieldBox: {
+            gap: 4,
+            alignItems: "flex-start"
+        },
+        fieldValue: {
+            fontSize: 14,
+            fontWeight: 400
+        },
+        fieldTag: {
+            paddingBlock: 5,
+            paddingInline: 10,
+            borderRadius: 5,
+            textAlign: "center",
+            fontSize: 12,
+            fontWeight: 600
+        },
+        fieldTagLight: {
+            backgroundColor: colors.light
+        },
+        fieldTagBold: {
+            backgroundColor: colors.light,
+            fontWeight: 700
+        },
+        fieldTagBlack: {
+            backgroundColor: colors.contrast,
+            color: colors.white
+        }
+    });

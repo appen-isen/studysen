@@ -4,8 +4,9 @@ import {
     StyleSheet,
     TouchableWithoutFeedback
 } from "react-native";
-import { ReactNode } from "react";
-import Colors from "@/constants/Colors";
+import { ReactNode, useMemo } from "react";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -17,6 +18,8 @@ type SheetProps = {
 };
 
 export function Sheet(props: SheetProps) {
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     return (
         <Modal
             animationType="fade"
@@ -43,6 +46,8 @@ export function Sheet(props: SheetProps) {
                 <BottomSheet
                     enablePanDownToClose
                     onClose={() => props.setVisible(false)}
+                    backgroundStyle={{ backgroundColor: colors.card }}
+                    handleIndicatorStyle={{ backgroundColor: colors.lightGray }}
                 >
                     <BottomSheetView style={props.sheetStyle}>
                         {props.children}
@@ -53,19 +58,21 @@ export function Sheet(props: SheetProps) {
     );
 }
 
-const styles = StyleSheet.create({
-    //
-    // Overlay
-    //
-    overlay: {
-        backgroundColor: Colors.hexWithOpacity(Colors.black, 0.3),
-        justifyContent: "center",
-        alignItems: "center",
-        position: "absolute",
-        inset: 0
-    },
-    close: {
-        position: "absolute",
-        inset: 0
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        //
+        // Overlay
+        //
+        overlay: {
+            // Toujours un voile sombre, quel que soit le thème
+            backgroundColor: colors.hexWithOpacity("#000000", 0.3),
+            justifyContent: "center",
+            alignItems: "center",
+            position: "absolute",
+            inset: 0
+        },
+        close: {
+            position: "absolute",
+            inset: 0
+        }
+    });

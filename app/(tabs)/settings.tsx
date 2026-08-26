@@ -3,10 +3,11 @@ import { Bold, Text } from "@/components/Texts";
 import { Href, useRouter } from "expo-router";
 import useSessionStore from "@/stores/sessionStore";
 import { removeSecureStoreItem } from "@/stores/secureStore";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { AnimatedPressable } from "@/components/Buttons";
-import { ConfirmModal } from "@/components/Modals";
-import { useEffect, useState } from "react";
+import { ConfirmModal, ThemeModal } from "@/components/Modals";
+import { useEffect, useMemo, useState } from "react";
 import useSettingsStore from "@/stores/settingsStore";
 import { useNotesStore, usePlanningStore } from "@/stores/webaurionStore";
 import { Page } from "@/components/Page";
@@ -20,7 +21,7 @@ import { getSemester } from "@/utils/date";
 import { unregisterDeviceForNotifications } from "@/utils/notificationConfig";
 import { getFirstLetters } from "@/utils/account";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
-import { Card } from "@/constants/Styles";
+import { getCardStyle } from "@/constants/Styles";
 import { stopAutoSync } from "@/services/syncService";
 import { useSyncStore } from "@/stores/syncStore";
 import { usePostsStore } from "@/stores/clubsStore";
@@ -32,7 +33,10 @@ export default function SettingsScreen() {
     const { clearAlreadySyncedPlanning } = useSyncStore();
     const { setLastSeenPostId } = usePostsStore();
     const { clearNotes } = useNotesStore();
-    const { settings } = useSettingsStore();
+    const { settings, setSettings } = useSettingsStore();
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
+    const settingStyles = useMemo(() => createSettingStyles(colors), [colors]);
 
     const [selectedSemester] = useState<0 | 1>(getSemester());
     const { notes } = useNotesStore();
@@ -44,6 +48,16 @@ export default function SettingsScreen() {
     // Message de confirmation pour la déconnexion
     const [confirmVisible, setConfirmVisible] = useState(false);
     const confirmMessage = "Êtes-vous sûr de vouloir vous déconnecter ?";
+
+    // Modal de choix du thème
+    const [themeModalVisible, setThemeModalVisible] = useState(false);
+    // Icône reflétant le thème actuellement sélectionné
+    const themeIcon: keyof typeof MaterialIcons.glyphMap =
+        settings.theme === "light"
+            ? "light-mode"
+            : settings.theme === "dark"
+              ? "dark-mode"
+              : "brightness-auto";
 
     //Nom de l'utilisateur
     const [username, setUsername] = useState("");
@@ -70,16 +84,29 @@ export default function SettingsScreen() {
                         </Text>
                     </View>
                 </View>
-                {/* Bouton de déconnexion */}
-                <AnimatedPressable
-                    style={styles.profileLogout}
-                    onPress={() => setConfirmVisible(true)}
-                >
-                    <MaterialIcons
-                        name="logout"
-                        style={styles.profileLogoutIcon}
-                    />
-                </AnimatedPressable>
+                {/* Actions du profil : choix du thème + déconnexion */}
+                <View style={styles.profileActions}>
+                    {/* Bouton de choix du thème */}
+                    <AnimatedPressable
+                        style={styles.profileTheme}
+                        onPress={() => setThemeModalVisible(true)}
+                    >
+                        <MaterialIcons
+                            name={themeIcon}
+                            style={styles.profileThemeIcon}
+                        />
+                    </AnimatedPressable>
+                    {/* Bouton de déconnexion */}
+                    <AnimatedPressable
+                        style={styles.profileLogout}
+                        onPress={() => setConfirmVisible(true)}
+                    >
+                        <MaterialIcons
+                            name="logout"
+                            style={styles.profileLogoutIcon}
+                        />
+                    </AnimatedPressable>
+                </View>
             </View>
             <View style={[styles.section, styles.responsiveContainer]}>
                 <Text style={styles.sectionTitle}>Mon profil étudiant</Text>
@@ -187,6 +214,14 @@ export default function SettingsScreen() {
                     router.replace("/login");
                 }}
             />
+
+            {/* Modal de choix du thème */}
+            <ThemeModal
+                visible={themeModalVisible}
+                setVisible={setThemeModalVisible}
+                value={settings.theme}
+                onSelect={(value) => setSettings("theme", value)}
+            />
         </Page>
     );
 }
@@ -199,6 +234,8 @@ function SettingsNav(props: {
 }) {
     const { title, text, icon, route } = props;
     const router = useRouter();
+    const colors = useColors();
+    const settingStyles = useMemo(() => createSettingStyles(colors), [colors]);
     return (
         <TouchableOpacity
             style={[settingStyles.container, settingStyles.horizontalContainer]}
@@ -219,156 +256,174 @@ function SettingsNav(props: {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        gap: 25
-    },
-    responsiveContainer: {
-        width: "100%",
-        alignSelf: "center",
-        maxWidth: getResponsiveMaxWidth()
-    },
-    //
-    // Profile
-    //
-    profileView: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        ...Card,
-        borderRadius: 999,
-        padding: 15
-    },
-    profilePart: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 15
-    },
-    profileAvatar: {
-        textAlign: "center",
-        textAlignVertical: "center",
-        fontSize: 18,
-        fontWeight: "bold",
-        padding: 12,
-        borderRadius: 999,
-        backgroundColor: Colors.primary,
-        color: Colors.white
-    },
-    profileContent: {
-        alignItems: "flex-start"
-    },
-    profileName: {
-        fontSize: 16,
-        fontWeight: 600,
-        textAlign: "center"
-    },
-    profileCampus: {
-        fontSize: 10,
-        textAlign: "center",
-        maxWidth: "100%",
-        wordWrap: "break-word"
-    },
-    profileLogout: {
-        borderRadius: 999,
-        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.1)
-    },
-    profileLogoutIcon: {
-        padding: 10,
-        textAlign: "center",
-        textAlignVertical: "center",
-        fontSize: 20,
-        color: Colors.primary
-    },
-    //
-    // Settings
-    //
-    section: {
-        gap: 10
-    },
-    sectionTitle: {
-        color: Colors.gray,
-        fontSize: 12,
-        fontWeight: 700,
-        textTransform: "uppercase"
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            gap: 25
+        },
+        responsiveContainer: {
+            width: "100%",
+            alignSelf: "center",
+            maxWidth: getResponsiveMaxWidth()
+        },
+        //
+        // Profile
+        //
+        profileView: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            ...getCardStyle(colors),
+            borderRadius: 999,
+            padding: 15
+        },
+        profilePart: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 15
+        },
+        profileAvatar: {
+            textAlign: "center",
+            textAlignVertical: "center",
+            fontSize: 18,
+            fontWeight: "bold",
+            padding: 12,
+            borderRadius: 999,
+            backgroundColor: colors.primary,
+            color: colors.white
+        },
+        profileContent: {
+            alignItems: "flex-start"
+        },
+        profileName: {
+            fontSize: 16,
+            fontWeight: 600,
+            textAlign: "center"
+        },
+        profileCampus: {
+            fontSize: 10,
+            textAlign: "center",
+            maxWidth: "100%",
+            wordWrap: "break-word"
+        },
+        profileActions: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10
+        },
+        profileTheme: {
+            borderRadius: 999,
+            backgroundColor: colors.light
+        },
+        profileThemeIcon: {
+            padding: 10,
+            textAlign: "center",
+            textAlignVertical: "center",
+            fontSize: 20,
+            color: colors.darkGray
+        },
+        profileLogout: {
+            borderRadius: 999,
+            backgroundColor: colors.hexWithOpacity(colors.primary, 0.1)
+        },
+        profileLogoutIcon: {
+            padding: 10,
+            textAlign: "center",
+            textAlignVertical: "center",
+            fontSize: 20,
+            color: colors.primary
+        },
+        //
+        // Settings
+        //
+        section: {
+            gap: 10
+        },
+        sectionTitle: {
+            color: colors.gray,
+            fontSize: 12,
+            fontWeight: 700,
+            textTransform: "uppercase"
+        }
+    });
 
-const settingStyles = StyleSheet.create({
-    //
-    // Setting navigation style
-    //
-    container: {
-        ...Card,
-        padding: 15,
-        gap: 15
-    },
-    horizontalContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between"
-    },
-    verticalContainer: {
-        alignItems: "flex-start"
-    },
-    subContainer: {
-        flexDirection: "row",
-        gap: 15
-    },
-    icon: {
-        fontSize: 20,
-        backgroundColor: Colors.light,
-        color: Colors.darkGray,
-        alignSelf: "center",
-        padding: 5,
-        borderRadius: 10,
-        textAlign: "center",
-        textAlignVertical: "center"
-    },
-    content: {
-        flex: 1,
-        gap: 5
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 600
-    },
-    text: {
-        color: Colors.darkGray,
-        fontWeight: 400
-    },
-    action: {
-        flexDirection: "row",
-        borderRadius: 5,
-        backgroundColor: Colors.primary,
-        padding: 5,
-        gap: 5,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    actionCentered: {
-        alignSelf: "center"
-    },
-    actionIcon: {
-        fontSize: 20,
-        color: Colors.white,
-        textAlign: "center",
-        textAlignVertical: "center"
-    },
-    actionText: {
-        fontSize: 12,
-        color: Colors.white,
-        fontWeight: 600,
-        marginRight: 10
-    },
-    field: {
-        marginTop: 10
-    },
-    fieldTitle: {
-        fontSize: 12,
-        color: Colors.gray,
-        fontWeight: "bold",
-        textTransform: "uppercase"
-    },
-    fieldValue: {
-        fontSize: 24
-    }
-});
+const createSettingStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        //
+        // Setting navigation style
+        //
+        container: {
+            ...getCardStyle(colors),
+            padding: 15,
+            gap: 15
+        },
+        horizontalContainer: {
+            flexDirection: "row",
+            justifyContent: "space-between"
+        },
+        verticalContainer: {
+            alignItems: "flex-start"
+        },
+        subContainer: {
+            flexDirection: "row",
+            gap: 15
+        },
+        icon: {
+            fontSize: 20,
+            backgroundColor: colors.light,
+            color: colors.darkGray,
+            alignSelf: "center",
+            padding: 5,
+            borderRadius: 10,
+            textAlign: "center",
+            textAlignVertical: "center"
+        },
+        content: {
+            flex: 1,
+            gap: 5
+        },
+        title: {
+            fontSize: 18,
+            fontWeight: 600
+        },
+        text: {
+            color: colors.darkGray,
+            fontWeight: 400
+        },
+        action: {
+            flexDirection: "row",
+            borderRadius: 5,
+            backgroundColor: colors.primary,
+            padding: 5,
+            gap: 5,
+            justifyContent: "center",
+            alignItems: "center"
+        },
+        actionCentered: {
+            alignSelf: "center"
+        },
+        actionIcon: {
+            fontSize: 20,
+            color: colors.white,
+            textAlign: "center",
+            textAlignVertical: "center"
+        },
+        actionText: {
+            fontSize: 12,
+            color: colors.white,
+            fontWeight: 600,
+            marginRight: 10
+        },
+        field: {
+            marginTop: 10
+        },
+        fieldTitle: {
+            fontSize: 12,
+            color: colors.gray,
+            fontWeight: "bold",
+            textTransform: "uppercase"
+        },
+        fieldValue: {
+            fontSize: 24
+        }
+    });

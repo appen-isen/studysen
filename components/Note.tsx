@@ -1,9 +1,11 @@
 import { Note } from "@/webAurion/utils/types";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { useMemo } from "react";
 import { Text } from "./Texts";
 import { truncateString } from "@/utils/planning";
 import { getSubjectName } from "@/utils/notes";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { getColorFromNoteCode, getSubjectColor } from "@/utils/colors";
 
 // Composant qui réprésente une note
@@ -13,6 +15,8 @@ export function NoteElement(props: {
 }) {
     const { note } = props;
     const subjectName = getSubjectName(note.subject);
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     return (
         <TouchableOpacity
             style={styles.container}
@@ -49,47 +53,48 @@ export function NoteElement(props: {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: "row",
-        width: "100%",
-        height: 45
-    },
-    titleBox: {
-        width: "60%",
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10
-    },
-    infoBox: {
-        width: "40%",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-end",
-        gap: 10
-    },
-    noteBar: {
-        width: 4,
-        height: "70%",
-        borderRadius: 5
-    },
-    subjectText: {
-        fontSize: 13
-    },
-    noteDate: {
-        fontSize: 12,
-        color: Colors.gray
-    },
-    noteValueBox: {
-        borderRadius: 5,
-        backgroundColor: Colors.light,
-        justifyContent: "center",
-        alignItems: "center",
-        width: 50,
-        height: 30
-    },
-    noteValue: {
-        fontSize: 15,
-        fontWeight: 600
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            flexDirection: "row",
+            width: "100%",
+            height: 45
+        },
+        titleBox: {
+            width: "60%",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10
+        },
+        infoBox: {
+            width: "40%",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: 10
+        },
+        noteBar: {
+            width: 4,
+            height: "70%",
+            borderRadius: 5
+        },
+        subjectText: {
+            fontSize: 13
+        },
+        noteDate: {
+            fontSize: 12,
+            color: colors.gray
+        },
+        noteValueBox: {
+            borderRadius: 5,
+            backgroundColor: colors.light,
+            justifyContent: "center",
+            alignItems: "center",
+            width: 50,
+            height: 30
+        },
+        noteValue: {
+            fontSize: 15,
+            fontWeight: 600
+        }
+    });

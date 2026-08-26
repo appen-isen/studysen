@@ -10,6 +10,8 @@ export const CAMPUS = ["Nantes", "Brest", "Caen", "Rennes", "Paris"] as const;
 
 export type NotificationDelay = "5min" | "15min" | "30min" | "1h";
 
+export type ThemePreference = "light" | "dark" | "system";
+
 type Settings = {
     campus: (typeof CAMPUS)[number];
     username: string;
@@ -17,6 +19,7 @@ type Settings = {
     notificationsDelay: NotificationDelay;
     clubsNotifications: boolean;
     deviceId: string;
+    theme: ThemePreference;
 };
 
 type SettingsState = {
@@ -33,7 +36,8 @@ function getDefaultSettings(): Settings {
         notificationsEnabled: true,
         notificationsDelay: "15min",
         clubsNotifications: true,
-        deviceId: ""
+        deviceId: "",
+        theme: "system"
     };
 }
 

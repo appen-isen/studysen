@@ -9,9 +9,10 @@ import {
     ViewStyle,
     TextStyle
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { CheckboxProps, Checkbox as PaperCheckbox } from "react-native-paper";
 import { Text } from "@/components/Texts";
 
@@ -29,6 +30,8 @@ export function Input(props: TextInputProps & InputProps) {
     );
     const { icon, password, autoComplete, textInputStyle, containerStyle } =
         props;
+    const colors = useColors();
+    const inputStyles = useMemo(() => createInputStyles(colors), [colors]);
 
     useEffect(() => {
         const keyboardHideListener = Keyboard.addListener(
@@ -54,7 +57,7 @@ export function Input(props: TextInputProps & InputProps) {
                 {...props}
                 secureTextEntry={password && !textVisible}
                 placeholder={props.placeholder}
-                placeholderTextColor={Colors.gray}
+                placeholderTextColor={colors.gray}
                 style={[inputStyles.input, textInputStyle]}
                 autoComplete={autoComplete}
             />
@@ -79,6 +82,8 @@ export function Checkbox(
         textStyle?: TextStyle;
     }
 ) {
+    const colors = useColors();
+    const checkboxStyles = useMemo(() => createCheckboxStyles(colors), [colors]);
     return (
         <View style={[checkboxStyles.container, props.containerStyle || {}]}>
             <PaperCheckbox {...props} />
@@ -91,56 +96,58 @@ export function Checkbox(
     );
 }
 
-const inputStyles = StyleSheet.create({
-    //
-    // Container
-    //
-    container: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        backgroundColor: Colors.card,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        borderRadius: 15,
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        gap: 5,
-        width: "100%"
-    },
-    //
-    // Input
-    //
-    input: {
-        flex: 1,
-        fontSize: 18,
-        color: Colors.black,
-        backgroundColor: "transparent"
-    },
-    //
-    // Icon
-    //
-    icon: {
-        fontSize: 24,
-        color: Colors.gray
-    }
-});
+const createInputStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        //
+        // Container
+        //
+        container: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 15,
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+            gap: 5,
+            width: "100%"
+        },
+        //
+        // Input
+        //
+        input: {
+            flex: 1,
+            fontSize: 18,
+            color: colors.black,
+            backgroundColor: "transparent"
+        },
+        //
+        // Icon
+        //
+        icon: {
+            fontSize: 24,
+            color: colors.gray
+        }
+    });
 
-const checkboxStyles = StyleSheet.create({
-    //
-    // Container
-    //
-    container: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    //
-    // Label
-    //
-    label: {
-        color: Colors.darkGray,
-        fontSize: 16
-    }
-});
+const createCheckboxStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        //
+        // Container
+        //
+        container: {
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center"
+        },
+        //
+        // Label
+        //
+        label: {
+            color: colors.darkGray,
+            fontSize: 16
+        }
+    });

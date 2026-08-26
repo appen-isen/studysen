@@ -1,7 +1,8 @@
 import { PlanningEvent } from "@/webAurion/utils/types";
 import { View, StyleSheet, Linking } from "react-native";
 import { Text } from "../Texts";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 
 import { Sheet } from "../Sheet";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -18,6 +19,8 @@ type EventModalProps = {
 };
 export default function EventModal(props: EventModalProps) {
     const { event, visible, setVisible } = props;
+    const colors = useColors();
+    const popupStyles = useMemo(() => createPopupStyles(colors), [colors]);
 
     // Extraire le lien de réunion s'il y en a un
     const { cleanText: learnersText, meetingLink } = useMemo(() => {
@@ -120,71 +123,72 @@ export default function EventModal(props: EventModalProps) {
     );
 }
 
-const popupStyles = StyleSheet.create({
-    container: {
-        padding: 20,
-        gap: 20
-    },
-    headerBox: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10
-    },
-    headerIcon: {
-        width: 22,
-        height: 22,
-        borderRadius: 999,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: 400
-    },
-    headerSubtitle: {
-        fontSize: 12,
-        fontWeight: 400,
-        color: Colors.gray
-    },
-    fieldTitle: {
-        fontSize: 10,
-        fontWeight: 700,
-        color: Colors.gray,
-        textTransform: "uppercase"
-    },
-    fieldBox: {
-        gap: 4,
-        alignItems: "flex-start"
-    },
-    fieldValue: {
-        fontSize: 14,
-        fontWeight: 400
-    },
-    fieldTag: {
-        paddingBlock: 5,
-        paddingInline: 10,
-        borderRadius: 5,
-        textAlign: "center",
-        fontSize: 12,
-        fontWeight: 600
-    },
-    fieldTagLight: {
-        backgroundColor: Colors.light
-    },
-    fieldTagBlack: {
-        backgroundColor: Colors.black,
-        color: Colors.white
-    },
-    meetingButton: {
-        marginTop: 10,
-        alignSelf: "flex-start",
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        backgroundColor: Colors.primary,
-        borderRadius: 8
-    },
-    meetingButtonText: {
-        fontSize: 14,
-        fontWeight: 600
-    }
-});
+const createPopupStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            padding: 20,
+            gap: 20
+        },
+        headerBox: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10
+        },
+        headerIcon: {
+            width: 22,
+            height: 22,
+            borderRadius: 999,
+            justifyContent: "center",
+            alignItems: "center"
+        },
+        headerTitle: {
+            fontSize: 18,
+            fontWeight: 400
+        },
+        headerSubtitle: {
+            fontSize: 12,
+            fontWeight: 400,
+            color: colors.gray
+        },
+        fieldTitle: {
+            fontSize: 10,
+            fontWeight: 700,
+            color: colors.gray,
+            textTransform: "uppercase"
+        },
+        fieldBox: {
+            gap: 4,
+            alignItems: "flex-start"
+        },
+        fieldValue: {
+            fontSize: 14,
+            fontWeight: 400
+        },
+        fieldTag: {
+            paddingBlock: 5,
+            paddingInline: 10,
+            borderRadius: 5,
+            textAlign: "center",
+            fontSize: 12,
+            fontWeight: 600
+        },
+        fieldTagLight: {
+            backgroundColor: colors.light
+        },
+        fieldTagBlack: {
+            backgroundColor: colors.contrast,
+            color: colors.white
+        },
+        meetingButton: {
+            marginTop: 10,
+            alignSelf: "flex-start",
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            backgroundColor: colors.primary,
+            borderRadius: 8
+        },
+        meetingButtonText: {
+            fontSize: 14,
+            fontWeight: 600
+        }
+    });
