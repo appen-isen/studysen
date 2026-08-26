@@ -127,17 +127,19 @@ export default function LoginScreen() {
                     onPress={() => setCampusMenuVisible(true)}
                 >
                     <Text style={styles.campusSelectText}>
-                        Campus de <Bold>{settings.campus}</Bold>
+                        Campus de {settings.campus}
                     </Text>
                     <MaterialIcons
-                        style={styles.campusSelectText}
                         name="keyboard-arrow-down"
-                        size={20}
+                        size={24}
+                        color={colors.black}
                     />
                 </AnimatedPressable>
                 <Dropdown
                     visible={campusMenuVisible}
                     setVisible={setCampusMenuVisible}
+                    title="Campus"
+                    icon="location-city"
                     options={[...CAMPUS]}
                     selectedItem={settings.campus}
                     setSelectedItem={(newCampus) =>
@@ -286,14 +288,18 @@ const createStyles = (colors: ColorPalette) =>
             flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
-            paddingBlock: 10,
-            paddingInline: 25,
-            backgroundColor: colors.primary,
+            paddingHorizontal: 15,
+            paddingVertical: 8,
+            backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: colors.border,
             borderRadius: 999,
             gap: 5
         },
         campusSelectText: {
-            color: colors.white
+            color: colors.black,
+            fontSize: 14,
+            fontWeight: 600
         },
         dropdownBoxStyle: {
             width: 250,

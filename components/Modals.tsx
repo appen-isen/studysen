@@ -4,7 +4,6 @@ import {
     StyleSheet,
     Image,
     TouchableWithoutFeedback,
-    FlatList,
     TouchableOpacity,
     Animated
 } from "react-native";
@@ -14,8 +13,9 @@ import { ReactNode, useEffect, useMemo, useRef } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ColorPalette } from "@/constants/Colors";
 import useColors from "@/hooks/useColors";
-import { FontAwesome6 } from "@expo/vector-icons";
+import { FontAwesome6, MaterialIcons } from "@expo/vector-icons";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
+import type { ThemePreference } from "@/stores/settingsStore";
 
 type ModalProps = {
     visible: boolean;
@@ -33,6 +33,10 @@ type DropdownProps = ModalProps & {
     options: string[];
     setSelectedItem: (item: string) => void;
     selectedItem: string;
+    // Titre optionnel affiché en haut de la modale
+    title?: string;
+    // Icône optionnelle affichée à gauche de chaque option
+    icon?: keyof typeof MaterialIcons.glyphMap;
 };
 
 function ModalBase(props: ModalProps) {
@@ -168,29 +172,120 @@ export function Dropdown(props: DropdownProps) {
             visible={props.visible}
             modalBoxStyle={props.modalBoxStyle}
         >
+            {props.title && (
+                <Text style={styles.optionListTitle}>{props.title}</Text>
+            )}
             {/* Liste des options */}
-            <FlatList
-                data={props.options}
-                keyExtractor={(item, index) => index.toString()}
-                style={styles.flatList}
-                renderItem={({ item }) => (
-                    // Option sélectionnable
-                    <TouchableOpacity
-                        style={styles.dropdownItem}
-                        onPress={() => handleOptionPress(item)}
-                    >
-                        <View style={styles.dropdownItemView}>
-                            <Text style={styles.dropdownText}>{item}</Text>
-                            {props.selectedItem == item && (
+            <View style={styles.optionList}>
+                {props.options.map((item) => {
+                    const selected = props.selectedItem === item;
+                    return (
+                        <TouchableOpacity
+                            key={item}
+                            style={[
+                                styles.optionRow,
+                                selected && styles.optionRowSelected
+                            ]}
+                            onPress={() => handleOptionPress(item)}
+                        >
+                            <View style={styles.optionRowLeft}>
+                                {props.icon && (
+                                    <MaterialIcons
+                                        name={props.icon}
+                                        style={[
+                                            styles.optionIcon,
+                                            selected && styles.optionIconSelected
+                                        ]}
+                                    />
+                                )}
+                                <Text
+                                    style={[
+                                        styles.optionLabel,
+                                        selected && styles.optionLabelSelected
+                                    ]}
+                                >
+                                    {item}
+                                </Text>
+                            </View>
+                            {selected && (
                                 <Ionicons
                                     name="checkmark"
-                                    style={styles.dropdownSelectedIcon}
+                                    style={styles.optionCheck}
                                 />
                             )}
-                        </View>
-                    </TouchableOpacity>
-                )}
-            />
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
+        </ModalBase>
+    );
+}
+
+// Options de la modale de thème
+const THEME_MODAL_OPTIONS: {
+    label: string;
+    value: ThemePreference;
+    icon: keyof typeof MaterialIcons.glyphMap;
+}[] = [
+    { label: "Auto", value: "system", icon: "brightness-auto" },
+    { label: "Clair", value: "light", icon: "light-mode" },
+    { label: "Sombre", value: "dark", icon: "dark-mode" }
+];
+
+// Modal de sélection du thème (Auto / Clair / Sombre)
+export function ThemeModal(props: {
+    visible: boolean;
+    setVisible: (visible: boolean) => void;
+    value: ThemePreference;
+    onSelect: (value: ThemePreference) => void;
+}) {
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
+    return (
+        <ModalBase setVisible={props.setVisible} visible={props.visible}>
+            <Text style={styles.optionListTitle}>Thème</Text>
+            <View style={styles.optionList}>
+                {THEME_MODAL_OPTIONS.map((option) => {
+                    const selected = option.value === props.value;
+                    return (
+                        <TouchableOpacity
+                            key={option.value}
+                            style={[
+                                styles.optionRow,
+                                selected && styles.optionRowSelected
+                            ]}
+                            onPress={() => {
+                                props.onSelect(option.value);
+                                props.setVisible(false);
+                            }}
+                        >
+                            <View style={styles.optionRowLeft}>
+                                <MaterialIcons
+                                    name={option.icon}
+                                    style={[
+                                        styles.optionIcon,
+                                        selected && styles.optionIconSelected
+                                    ]}
+                                />
+                                <Text
+                                    style={[
+                                        styles.optionLabel,
+                                        selected && styles.optionLabelSelected
+                                    ]}
+                                >
+                                    {option.label}
+                                </Text>
+                            </View>
+                            {selected && (
+                                <Ionicons
+                                    name="checkmark"
+                                    style={styles.optionCheck}
+                                />
+                            )}
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
         </ModalBase>
     );
 }
@@ -243,27 +338,50 @@ const createStyles = (colors: ColorPalette) =>
             justifyContent: "space-around",
             width: "100%"
         },
-        // Dropdown
-        dropdownItem: {
-            padding: 10,
-            borderBottomWidth: 1,
-            borderBottomColor: colors.border
+        // Liste d'options (modale de thème, sélecteur de campus, etc.)
+        optionListTitle: {
+            fontSize: 22,
+            fontWeight: 600,
+            textAlign: "center",
+            marginTop: 5,
+            marginBottom: 10
         },
-        dropdownItemView: {
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center"
-        },
-        dropdownText: {
-            fontSize: 16
-        },
-        dropdownSelectedIcon: {
-            color: colors.primary,
-            fontSize: 20,
-            alignSelf: "flex-end"
-        },
-        flatList: {
+        optionList: {
             width: "100%"
+        },
+        optionRow: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingVertical: 14,
+            paddingHorizontal: 12,
+            borderRadius: 12
+        },
+        optionRowSelected: {
+            backgroundColor: colors.hexWithOpacity(colors.primary, 0.1)
+        },
+        optionRowLeft: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 14
+        },
+        optionIcon: {
+            fontSize: 22,
+            color: colors.darkGray
+        },
+        optionIconSelected: {
+            color: colors.primary
+        },
+        optionLabel: {
+            fontSize: 17,
+            fontWeight: 500
+        },
+        optionLabelSelected: {
+            color: colors.primary,
+            fontWeight: 600
+        },
+        optionCheck: {
+            color: colors.primary,
+            fontSize: 22
         }
     });

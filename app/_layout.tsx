@@ -9,7 +9,8 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme_ } from "@/hooks/useColors";
+import useColors, { useColorScheme_ } from "@/hooks/useColors";
+import * as SystemUI from "expo-system-ui";
 import "react-native-reanimated";
 
 //Layout par défaut de l'application
@@ -59,6 +60,12 @@ export default function RootLayout() {
 //Il s'agit de la navigation principale de l'application
 function RootLayoutNav() {
     const colorScheme = useColorScheme_();
+    const colors = useColors();
+
+    useEffect(() => {
+        SystemUI.setBackgroundColorAsync(colors.background);
+    }, [colors.background]);
+
     return (
         <>
             {/* Texte sombre en thème clair, texte clair en thème sombre, fond transparent */}
@@ -69,11 +76,10 @@ function RootLayoutNav() {
                 }}
             >
                 <Stack.Screen name="login" />
-                {/* Les parenthèrese permettent de faire comme si les routes étaient directement à la racine de /app 
-            Par exemple, <Link href="notes-help" /> est possible au lieu de <Link href="(modals)/notes-help" /> 
+                {/* Les parenthèrese permettent de faire comme si les routes étaient directement à la racine de /app
+            Par exemple, <Link href="notes-help" /> est possible au lieu de <Link href="(modals)/notes-help" />
             */}
                 <Stack.Screen name="(tabs)" />
-                {/* //On définit ici les modales */}
                 <Stack.Screen
                     name="(settings)"
                     options={{

@@ -5,10 +5,10 @@ import useSessionStore from "@/stores/sessionStore";
 import { removeSecureStoreItem } from "@/stores/secureStore";
 import { ColorPalette } from "@/constants/Colors";
 import useColors from "@/hooks/useColors";
-import { AnimatedPressable, MultiToggle } from "@/components/Buttons";
-import { ConfirmModal } from "@/components/Modals";
+import { AnimatedPressable } from "@/components/Buttons";
+import { ConfirmModal, ThemeModal } from "@/components/Modals";
 import { useEffect, useMemo, useState } from "react";
-import useSettingsStore, { ThemePreference } from "@/stores/settingsStore";
+import useSettingsStore from "@/stores/settingsStore";
 import { useNotesStore, usePlanningStore } from "@/stores/webaurionStore";
 import { Page } from "@/components/Page";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -25,13 +25,6 @@ import { getCardStyle } from "@/constants/Styles";
 import { stopAutoSync } from "@/services/syncService";
 import { useSyncStore } from "@/stores/syncStore";
 import { usePostsStore } from "@/stores/clubsStore";
-
-// Options du sélecteur de thème
-const THEME_OPTIONS: { label: string; value: ThemePreference }[] = [
-    { label: "Clair", value: "light" },
-    { label: "Sombre", value: "dark" },
-    { label: "Système", value: "system" }
-];
 
 export default function SettingsScreen() {
     const router = useRouter();
@@ -55,6 +48,16 @@ export default function SettingsScreen() {
     // Message de confirmation pour la déconnexion
     const [confirmVisible, setConfirmVisible] = useState(false);
     const confirmMessage = "Êtes-vous sûr de vouloir vous déconnecter ?";
+
+    // Modal de choix du thème
+    const [themeModalVisible, setThemeModalVisible] = useState(false);
+    // Icône reflétant le thème actuellement sélectionné
+    const themeIcon: keyof typeof MaterialIcons.glyphMap =
+        settings.theme === "light"
+            ? "light-mode"
+            : settings.theme === "dark"
+              ? "dark-mode"
+              : "brightness-auto";
 
     //Nom de l'utilisateur
     const [username, setUsername] = useState("");
@@ -81,16 +84,29 @@ export default function SettingsScreen() {
                         </Text>
                     </View>
                 </View>
-                {/* Bouton de déconnexion */}
-                <AnimatedPressable
-                    style={styles.profileLogout}
-                    onPress={() => setConfirmVisible(true)}
-                >
-                    <MaterialIcons
-                        name="logout"
-                        style={styles.profileLogoutIcon}
-                    />
-                </AnimatedPressable>
+                {/* Actions du profil : choix du thème + déconnexion */}
+                <View style={styles.profileActions}>
+                    {/* Bouton de choix du thème */}
+                    <AnimatedPressable
+                        style={styles.profileTheme}
+                        onPress={() => setThemeModalVisible(true)}
+                    >
+                        <MaterialIcons
+                            name={themeIcon}
+                            style={styles.profileThemeIcon}
+                        />
+                    </AnimatedPressable>
+                    {/* Bouton de déconnexion */}
+                    <AnimatedPressable
+                        style={styles.profileLogout}
+                        onPress={() => setConfirmVisible(true)}
+                    >
+                        <MaterialIcons
+                            name="logout"
+                            style={styles.profileLogoutIcon}
+                        />
+                    </AnimatedPressable>
+                </View>
             </View>
             <View style={[styles.section, styles.responsiveContainer]}>
                 <Text style={styles.sectionTitle}>Mon profil étudiant</Text>
@@ -139,26 +155,6 @@ export default function SettingsScreen() {
                         </Text>
                     </View>
                 </TouchableOpacity>
-            </View>
-            <View style={[styles.section, styles.responsiveContainer]}>
-                <Text style={styles.sectionTitle}>Apparence</Text>
-                <View
-                    style={[
-                        settingStyles.container,
-                        settingStyles.horizontalContainer
-                    ]}
-                >
-                    <Text style={settingStyles.title}>Thème</Text>
-                    <MultiToggle
-                        options={THEME_OPTIONS.map((option) => option.label)}
-                        selectedIndex={THEME_OPTIONS.findIndex(
-                            (option) => option.value === settings.theme
-                        )}
-                        onSelect={(index) =>
-                            setSettings("theme", THEME_OPTIONS[index].value)
-                        }
-                    />
-                </View>
             </View>
             <View style={[styles.section, styles.responsiveContainer]}>
                 <Text style={styles.sectionTitle}>Paramètres</Text>
@@ -217,6 +213,14 @@ export default function SettingsScreen() {
                     stopAutoSync();
                     router.replace("/login");
                 }}
+            />
+
+            {/* Modal de choix du thème */}
+            <ThemeModal
+                visible={themeModalVisible}
+                setVisible={setThemeModalVisible}
+                value={settings.theme}
+                onSelect={(value) => setSettings("theme", value)}
             />
         </Page>
     );
@@ -301,6 +305,22 @@ const createStyles = (colors: ColorPalette) =>
             textAlign: "center",
             maxWidth: "100%",
             wordWrap: "break-word"
+        },
+        profileActions: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10
+        },
+        profileTheme: {
+            borderRadius: 999,
+            backgroundColor: colors.light
+        },
+        profileThemeIcon: {
+            padding: 10,
+            textAlign: "center",
+            textAlignVertical: "center",
+            fontSize: 20,
+            color: colors.darkGray
         },
         profileLogout: {
             borderRadius: 999,

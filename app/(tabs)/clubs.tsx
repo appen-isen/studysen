@@ -184,6 +184,8 @@ export default function ClubsScreen() {
                 <Dropdown
                     visible={campusMenuVisible}
                     setVisible={setCampusMenuVisible}
+                    title="Campus"
+                    icon="location-city"
                     options={[...CAMPUS]}
                     selectedItem={settings.campus}
                     setSelectedItem={(newCampus) => {
