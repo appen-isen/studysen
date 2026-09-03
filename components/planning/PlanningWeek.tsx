@@ -147,7 +147,10 @@ export default function PlanningWeek(props: {
     setSelectedEvent: (event: PlanningEvent) => void;
 }) {
     const colors = useColors();
-    const calendarStyles = useMemo(() => createCalendarStyles(colors), [colors]);
+    const calendarStyles = useMemo(
+        () => createCalendarStyles(colors),
+        [colors]
+    );
     const eventStyles = useMemo(() => createEventStyles(colors), [colors]);
     // Regroupement par jour uniquement quand la liste change
     const planning = useMemo(
@@ -288,7 +291,7 @@ export function WeekEvent(props: {
                     ]}
                     numberOfLines={1}
                 >
-                    {getPlanningEventLabel(props.event)}
+                    {getPlanningEventLabel(props.event, false)}
                 </Text>
 
                 {/* On affiche l'heure de début et de fin de l'événement si la durée est supérieure à 45 minutes */}

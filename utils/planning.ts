@@ -11,8 +11,15 @@ export function isTpEvent(event: PlanningEvent): boolean {
 }
 
 // Libellé d'affichage pour le planning (sans modifier la matière d'origine)
-export function getPlanningEventLabel(event: PlanningEvent): string {
-    const baseLabel = (event.subject || event.title || "").trim();
+export function getPlanningEventLabel(
+    event: PlanningEvent,
+    isTitleFirst: boolean = true
+): string {
+    const baseLabel = (
+        isTitleFirst
+            ? event.title || event.subject || ""
+            : event.subject || event.title || ""
+    ).trim();
     if (!baseLabel) return "";
 
     // Si c'est un TP, on ajoute "TP" devant le nom de la matière
