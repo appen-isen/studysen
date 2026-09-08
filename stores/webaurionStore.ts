@@ -5,6 +5,10 @@ import {
     loadStateFromStorage,
     saveStateToStorage
 } from "./storage";
+import {
+    clearPlanningWidgets,
+    syncPlanningToWidgets
+} from "@/utils/widgetSync";
 
 type PlanningState = {
     planning: PlanningEvent[];
@@ -24,10 +28,12 @@ export const usePlanningStore = create<PlanningState>()((set) => ({
     setPlanning: (planning) => {
         set({ planning });
         saveStateToStorage("planning", planning);
+        syncPlanningToWidgets(planning);
     }, // Modifie le planning
     clearPlanning: () => {
         set({ planning: [] });
         clearStateFromStorage("planning");
+        clearPlanningWidgets();
     } // Supprime le planning
 }));
 

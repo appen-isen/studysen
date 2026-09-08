@@ -16,9 +16,6 @@ export function Text(props: TextProps) {
     // Text qui a une couleur par défaut adaptée au thème, surchageable via props.style
     const colors = useColors();
     return (
-        <NativeText
-            {...props}
-            style={[{ color: colors.black }, props.style]}
-        />
+        <NativeText {...props} style={[{ color: colors.black }, props.style]} />
     );
 }
