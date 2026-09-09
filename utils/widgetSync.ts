@@ -46,8 +46,8 @@ function toWidgetEvent(event: PlanningEvent): WidgetPlanningEvent {
         id: event.id,
         title: truncateString(getPlanningEventLabel(event), MAX_TITLE_LENGTH),
         room: event.room || "",
-        start: event.start,
-        end: event.end,
+        start: new Date(event.start).toISOString(),
+        end: new Date(event.end).toISOString(),
         color: getSubjectColor(event.subject),
         dayLabel: getRelativeDayLabel(new Date(event.start))
     };

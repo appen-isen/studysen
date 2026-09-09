@@ -48,10 +48,9 @@ func loadPlanningSnapshot() -> WidgetPlanningSnapshot {
 // Les dates viennent telles quelles de webAurion (ex: "2025-01-06T08:00:00+0100"),
 // sans passer par toISOString() côté JS.
 
-private let isoParser: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+private let isoParser: ISO8601DateFormatter = {
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
     return formatter
 }()
 
@@ -162,9 +161,10 @@ struct PlanningDayWidgetEntryView: View {
                                 .fontWeight(.semibold)
                                 .lineLimit(1)
                             Text(
-                                "\(formatEventTime(event.start)) - \(formatEventTime(event.end))"
+                                "\(formatEventTime(event.start))"
+                                    + (event.room.isEmpty ? "" : " · \(event.room)")
                             )
-                            .font(.system(size: 9))
+                            .font(.caption2)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                         }
