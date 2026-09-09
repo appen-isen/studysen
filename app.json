@@ -14,6 +14,11 @@
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "entitlements": {
+        "com.apple.security.application-groups": [
+          "group.fr.appen.studysen"
+        ]
       }
     },
     "android": {
@@ -76,7 +81,37 @@
       ],
       "expo-web-browser",
       "expo-font",
-      "expo-status-bar"
+      "expo-status-bar",
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "PlanningDayWidget",
+              "label": "Cours du jour",
+              "description": "Affiche les cours du jour",
+              "minWidth": "180dp",
+              "minHeight": "180dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "PlanningNextCourseWidget",
+              "label": "Prochain cours",
+              "description": "Affiche le prochain cours à venir",
+              "minWidth": "180dp",
+              "minHeight": "80dp",
+              "targetCellWidth": 3,
+              "targetCellHeight": 1,
+              "resizeMode": "horizontal",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
+      ],
+      "@bacons/apple-targets"
     ],
     "experiments": {
       "typedRoutes": true

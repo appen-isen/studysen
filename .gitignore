@@ -46,3 +46,13 @@ images/*
 !images/.gitkeep
 
 pnpm-lock.yaml
+
+/android
+/ios
+
+# Native module build output (e.g. modules/*/android/build)
+**/android/build/
+**/android/.cxx/
+**/android/.gradle/
+**/ios/build/
+**/ios/Pods/
