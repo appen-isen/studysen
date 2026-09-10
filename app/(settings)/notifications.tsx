@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Button, MultiToggle } from "@/components/Buttons";
 import { MaterialIcons } from "@expo/vector-icons";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { Bold, Text } from "@/components/Texts";
 import {
     cancelAllScheduledNotifications,
@@ -21,6 +22,8 @@ import { getResponsiveMaxWidth } from "@/utils/responsive";
 // Paramètres des notifications
 export default function NotifSettings() {
     const { settings, setSettings } = useSettingsStore();
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
 
     //Liste des délais de notification
     const delays = ["Off", "5min", "15min", "30min", "1h"];
@@ -101,7 +104,7 @@ export default function NotifSettings() {
                     <MaterialIcons
                         name="warning-amber"
                         size={24}
-                        color={Colors.primary}
+                        color={colors.primary}
                     />
                     <Text style={styles.inDevTitle}>
                         EN COURS DE DÉVELOPPEMENT
@@ -140,64 +143,65 @@ export default function NotifSettings() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        gap: 25
-    },
-    responsiveContainer: {
-        width: "100%",
-        alignSelf: "center",
-        gap: 10,
-        maxWidth: getResponsiveMaxWidth()
-    },
-    //Sections
-    section: {
-        marginTop: 15,
-        maxWidth: getResponsiveMaxWidth()
-    },
-    sectionTitle: {
-        fontSize: 20,
-        letterSpacing: 0.5
-    },
-    subtitle: {
-        color: Colors.gray,
-        fontSize: 14,
-        marginTop: 15,
-        fontWeight: "bold"
-    },
-    //Style de texte
-    paragraph: {
-        color: Colors.black,
-        marginTop: 10
-    },
-    important: {
-        color: Colors.primary,
-        fontWeight: "bold"
-    },
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            gap: 25
+        },
+        responsiveContainer: {
+            width: "100%",
+            alignSelf: "center",
+            gap: 10,
+            maxWidth: getResponsiveMaxWidth()
+        },
+        //Sections
+        section: {
+            marginTop: 15,
+            maxWidth: getResponsiveMaxWidth()
+        },
+        sectionTitle: {
+            fontSize: 20,
+            letterSpacing: 0.5
+        },
+        subtitle: {
+            color: colors.gray,
+            fontSize: 14,
+            marginTop: 15,
+            fontWeight: "bold"
+        },
+        //Style de texte
+        paragraph: {
+            color: colors.black,
+            marginTop: 10
+        },
+        important: {
+            color: colors.primary,
+            fontWeight: "bold"
+        },
 
-    //Style de la boîte d'avertissement
-    inDevBox: {
-        borderRadius: 5,
-        backgroundColor: Colors.hexWithOpacity(Colors.primary, 0.1),
-        padding: 10
-    },
-    inDevTitleContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        marginLeft: 10,
-        gap: 10
-    },
-    inDevTitle: {
-        color: Colors.primary,
-        fontWeight: "bold",
-        fontSize: 16
-    },
-    inDevText: {
-        marginLeft: 40,
-        marginTop: 5
-    },
-    buttonText: {
-        fontSize: 16
-    }
-});
+        //Style de la boîte d'avertissement
+        inDevBox: {
+            borderRadius: 5,
+            backgroundColor: colors.hexWithOpacity(colors.primary, 0.1),
+            padding: 10
+        },
+        inDevTitleContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            marginLeft: 10,
+            gap: 10
+        },
+        inDevTitle: {
+            color: colors.primary,
+            fontWeight: "bold",
+            fontSize: 16
+        },
+        inDevText: {
+            marginLeft: 40,
+            marginTop: 5
+        },
+        buttonText: {
+            fontSize: 16
+        }
+    });

@@ -11,8 +11,15 @@ export function isTpEvent(event: PlanningEvent): boolean {
 }
 
 // Libellé d'affichage pour le planning (sans modifier la matière d'origine)
-export function getPlanningEventLabel(event: PlanningEvent): string {
-    const baseLabel = (event.subject || event.title || "").trim();
+export function getPlanningEventLabel(
+    event: PlanningEvent,
+    isTitleFirst: boolean = true
+): string {
+    const baseLabel = (
+        isTitleFirst
+            ? event.title || event.subject || ""
+            : event.subject || event.title || ""
+    ).trim();
     if (!baseLabel) return "";
 
     // Si c'est un TP, on ajoute "TP" devant le nom de la matière
@@ -154,6 +161,30 @@ export function getCurrentEvent(events: PlanningEvent[]): PlanningEvent | null {
     }
 
     return null;
+}
+
+// Fonction pour obtenir les événements du jour
+export function getTodayEvents(events: PlanningEvent[]): PlanningEvent[] {
+    const now = new Date();
+    return sortPlanningByDate(
+        events.filter(
+            (event) =>
+                event.className !== "CONGES" &&
+                new Date(event.start).toDateString() === now.toDateString()
+        )
+    );
+}
+
+// Fonction pour obtenir le prochain événement à venir, tous jours confondus
+export function getNextUpcomingEvent(
+    events: PlanningEvent[]
+): PlanningEvent | null {
+    const now = new Date();
+    const upcomingEvents = events.filter(
+        (event) => event.className !== "CONGES" && new Date(event.end) > now
+    );
+    const sorted = sortPlanningByDate(upcomingEvents);
+    return sorted.length > 0 ? sorted[0] : null;
 }
 
 // Fonction pour obtenir le prochain événement de la journée

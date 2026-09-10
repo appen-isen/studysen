@@ -1,4 +1,5 @@
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { PlanningEvent } from "@/webAurion/utils/types";
 import {
     FlatList,
@@ -17,8 +18,8 @@ import { formatDateToLocalTime, getWorkdayFromOffset } from "@/utils/date";
 import { getSubjectColor, getSubjectIcon } from "@/utils/colors";
 import { AnimatedPressable } from "../Buttons";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
-import { Card } from "@/constants/Styles";
-import { useState, useEffect } from "react";
+import { getCardStyle } from "@/constants/Styles";
+import { useState, useEffect, useMemo } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export default function PlanningList(props: {
@@ -27,6 +28,8 @@ export default function PlanningList(props: {
     selectedDay: number;
     setSelectedEvent: (event: PlanningEvent) => void;
 }) {
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     // On groupe les événements par jour et on change le planning pour fonctionner avec le mode liste
     const planning = groupEventsByDay(updatePlanningForListMode(props.events));
 
@@ -128,6 +131,8 @@ export function ListEvent(props: {
     handleLayout: (event: LayoutChangeEvent) => void;
 }) {
     const [timeText, setTimeText] = useState("");
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
 
     useEffect(() => {
         // On met à jour le texte de l'heure de l'événement
@@ -219,110 +224,111 @@ export function ListEvent(props: {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: "row",
-        width: "100%",
-        maxWidth: getResponsiveMaxWidth(),
-        alignSelf: "center",
-        gap: 15
-    },
-    timeBar: {
-        width: 4,
-        backgroundColor: Colors.lightGray,
-        borderRadius: 999
-    },
-    timeBarProgress: {
-        width: "100%",
-        backgroundColor: Colors.primary,
-        borderRadius: 999
-    },
-    noData: {
-        fontSize: 14,
-        fontWeight: 400,
-        textAlign: "center",
-        ...Card,
-        padding: 20,
-        width: "100%"
-    },
-    eventBox: {
-        ...Card,
-        paddingBlock: 10,
-        paddingInline: 20,
-        width: "100%",
-        flexDirection: "column",
-        justifyContent: "center",
-        gap: 20
-    },
-    currentEventBorder: {
-        borderColor: Colors.primary,
-        borderWidth: 1.5
-    },
-    headerBox: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10
-    },
-    headerTitle: {
-        flex: 1,
-        fontSize: 18,
-        fontWeight: 600
-    },
-    headerIcon: {
-        width: 20,
-        height: 20,
-        borderRadius: 999,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    // Affichage du temps restant avant le début de l'événement
-    currentTimeText: {
-        backgroundColor: Colors.primary,
-        borderRadius: 15,
-        width: 120,
-        color: Colors.white,
-        textAlign: "center",
-        fontSize: 12,
-        padding: 2,
-        fontWeight: 900
-    },
-    inXMinutesText: {
-        color: Colors.black,
-        backgroundColor: Colors.lightGray,
-        fontSize: 10
-    },
-    // Affichage des informations de l'événement
-    fieldTitle: {
-        fontSize: 10,
-        fontWeight: "bold",
-        color: Colors.gray,
-        textTransform: "uppercase"
-    },
-    fieldValue: {
-        fontSize: 14
-    },
-    tagsBox: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 15
-    },
-    tag: {
-        paddingBlock: 5,
-        paddingInline: 10,
-        borderRadius: 5,
-        fontSize: 14,
-        fontWeight: 600
-    },
-    tagLight: {
-        backgroundColor: Colors.light,
-        color: Colors.black
-    },
-    tagBlack: {
-        backgroundColor: Colors.black,
-        color: Colors.white
-    },
-    tagPrimary: {
-        backgroundColor: Colors.primary,
-        color: Colors.white
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            flexDirection: "row",
+            width: "100%",
+            maxWidth: getResponsiveMaxWidth(),
+            alignSelf: "center",
+            gap: 15
+        },
+        timeBar: {
+            width: 4,
+            backgroundColor: colors.lightGray,
+            borderRadius: 999
+        },
+        timeBarProgress: {
+            width: "100%",
+            backgroundColor: colors.primary,
+            borderRadius: 999
+        },
+        noData: {
+            fontSize: 14,
+            fontWeight: 400,
+            textAlign: "center",
+            ...getCardStyle(colors),
+            padding: 20,
+            width: "100%"
+        },
+        eventBox: {
+            ...getCardStyle(colors),
+            paddingBlock: 10,
+            paddingInline: 20,
+            width: "100%",
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: 20
+        },
+        currentEventBorder: {
+            borderColor: colors.primary,
+            borderWidth: 1.5
+        },
+        headerBox: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10
+        },
+        headerTitle: {
+            flex: 1,
+            fontSize: 18,
+            fontWeight: 600
+        },
+        headerIcon: {
+            width: 20,
+            height: 20,
+            borderRadius: 999,
+            justifyContent: "center",
+            alignItems: "center"
+        },
+        // Affichage du temps restant avant le début de l'événement
+        currentTimeText: {
+            backgroundColor: colors.primary,
+            borderRadius: 15,
+            width: 120,
+            color: colors.white,
+            textAlign: "center",
+            fontSize: 12,
+            padding: 2,
+            fontWeight: 900
+        },
+        inXMinutesText: {
+            color: colors.black,
+            backgroundColor: colors.lightGray,
+            fontSize: 10
+        },
+        // Affichage des informations de l'événement
+        fieldTitle: {
+            fontSize: 10,
+            fontWeight: "bold",
+            color: colors.gray,
+            textTransform: "uppercase"
+        },
+        fieldValue: {
+            fontSize: 14
+        },
+        tagsBox: {
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 15
+        },
+        tag: {
+            paddingBlock: 5,
+            paddingInline: 10,
+            borderRadius: 5,
+            fontSize: 14,
+            fontWeight: 600
+        },
+        tagLight: {
+            backgroundColor: colors.light,
+            color: colors.black
+        },
+        tagBlack: {
+            backgroundColor: colors.contrast,
+            color: colors.white
+        },
+        tagPrimary: {
+            backgroundColor: colors.primary,
+            color: colors.white
+        }
+    });

@@ -1,7 +1,8 @@
 import { AnimatedPressable, MultiToggle } from "@/components/Buttons";
 import NoteModal from "@/components/modals/NoteModal";
 import { Bold, Text } from "@/components/Texts";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { useNotesStore } from "@/stores/webaurionStore";
 import { getSemester } from "@/utils/date";
 import {
@@ -14,7 +15,7 @@ import {
 import { Note, NotesList } from "@/webAurion/utils/types";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
     ScrollView,
     StyleSheet,
@@ -26,12 +27,15 @@ import { Page, PageHeader } from "@/components/Page";
 import { getColorFromNoteCode, getIconFromNoteCode } from "@/utils/colors";
 import { Sheet } from "@/components/Sheet";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
-import { Card } from "@/constants/Styles";
+import { getCardStyle } from "@/constants/Styles";
 import { useSyncStore } from "@/stores/syncStore";
 import { syncData } from "@/services/syncService";
 
 export default function NotesScreen() {
     const router = useRouter();
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
+    const infoStyles = useMemo(() => createInfoStyles(colors), [colors]);
     const [selectedSemester, setSelectedSemester] = useState<0 | 1>(
         getSemester()
     );
@@ -68,8 +72,8 @@ export default function NotesScreen() {
                 <RefreshControl
                     refreshing={isRefreshing}
                     onRefresh={onRefresh}
-                    colors={[Colors.primary]} // Android
-                    tintColor={Colors.primary} // iOS
+                    colors={[colors.primary]} // Android
+                    tintColor={colors.primary} // iOS
                 />
             }
         >
@@ -98,7 +102,11 @@ export default function NotesScreen() {
                                 onPress={() => setInfoVisible(true)}
                                 style={styles.noteAverageInfo}
                             >
-                                <MaterialIcons name="info-outline" size={20} />
+                                <MaterialIcons
+                                    name="info-outline"
+                                    size={20}
+                                    color={colors.black}
+                                />
                                 <Text>En savoir plus</Text>
                             </AnimatedPressable>
                         </View>
@@ -173,6 +181,11 @@ function NotesGroup(props: {
     setCurrentNote: (note: Note) => void;
 }) {
     const notes = props.notesList.notes;
+    const colors = useColors();
+    const notesGroupStyles = useMemo(
+        () => createNotesGroupStyles(colors),
+        [colors]
+    );
     return (
         <View style={notesGroupStyles.container}>
             {/* En-tête du groupe de notes */}
@@ -303,226 +316,229 @@ function NotesGroup(props: {
         </View>
     );
 }
-const styles = StyleSheet.create({
-    container: {
-        gap: 25
-    },
-    topbar: {
-        flexDirection: "row",
-        alignItems: "center"
-    },
-    backIcon: {
-        fontSize: 40,
-        margin: 20,
-        color: Colors.primary
-    },
-    contentView: {
-        flex: 1,
-        justifyContent: "flex-start",
-        alignItems: "center"
-    },
-    title: {
-        fontSize: 25,
-        fontWeight: "bold",
-        color: Colors.primary
-    },
-    // Sélecteur de semestre
-    semesterSelector: {
-        marginTop: 10
-    },
-    selectorText: {
-        fontSize: 18,
-        color: Colors.primary,
-        fontWeight: "bold",
-        marginVertical: 5
-    },
-    // Moyenne générale
-    noteAverageView: {
-        width: "100%",
-        maxWidth: getResponsiveMaxWidth(),
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        ...Card,
-        padding: 20,
-        marginTop: 30
-    },
-    noteAverageTitle: {
-        fontSize: 14,
-        color: Colors.gray,
-        fontWeight: "bold"
-    },
-    // Valeur de la moyenne
-    noteAverageValue: {
-        color: Colors.black,
-        fontWeight: "600",
-        fontSize: 30,
-        marginRight: 10
-    },
-    // Info sur la moyenne
-    noteAverageInfo: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 10,
-        borderRadius: 8,
-        backgroundColor: Colors.light,
-        padding: 6,
-        marginTop: 15
-    },
-    // Conteneur de la liste de notes
-    scrollView: {
-        width: "100%"
-    },
-    scrollContainer: {
-        display: "flex",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        paddingBottom: 40,
-        marginTop: 20
-    },
-    // Message si aucune note n'est disponible
-    noNoteContainer: {
-        marginTop: 40
-    },
-    noNoteText: {
-        fontWeight: "bold",
-        fontSize: 16,
-        textAlign: "center"
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            gap: 25
+        },
+        topbar: {
+            flexDirection: "row",
+            alignItems: "center"
+        },
+        backIcon: {
+            fontSize: 40,
+            margin: 20,
+            color: colors.primary
+        },
+        contentView: {
+            flex: 1,
+            justifyContent: "flex-start",
+            alignItems: "center"
+        },
+        title: {
+            fontSize: 25,
+            fontWeight: "bold",
+            color: colors.primary
+        },
+        // Sélecteur de semestre
+        semesterSelector: {
+            marginTop: 10
+        },
+        selectorText: {
+            fontSize: 18,
+            color: colors.primary,
+            fontWeight: "bold",
+            marginVertical: 5
+        },
+        // Moyenne générale
+        noteAverageView: {
+            width: "100%",
+            maxWidth: getResponsiveMaxWidth(),
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            ...getCardStyle(colors),
+            padding: 20,
+            marginTop: 30
+        },
+        noteAverageTitle: {
+            fontSize: 14,
+            color: colors.gray,
+            fontWeight: "bold"
+        },
+        // Valeur de la moyenne
+        noteAverageValue: {
+            color: colors.black,
+            fontWeight: "600",
+            fontSize: 30,
+            marginRight: 10
+        },
+        // Info sur la moyenne
+        noteAverageInfo: {
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 10,
+            borderRadius: 8,
+            backgroundColor: colors.light,
+            padding: 6,
+            marginTop: 15
+        },
+        // Conteneur de la liste de notes
+        scrollView: {
+            width: "100%"
+        },
+        scrollContainer: {
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            paddingBottom: 40,
+            marginTop: 20
+        },
+        // Message si aucune note n'est disponible
+        noNoteContainer: {
+            marginTop: 40
+        },
+        noNoteText: {
+            fontWeight: "bold",
+            fontSize: 16,
+            textAlign: "center"
+        }
+    });
 
 // Styles pour le composant NotesGroup
-const notesGroupStyles = StyleSheet.create({
-    container: {
-        width: "100%",
-        maxWidth: getResponsiveMaxWidth(),
-        ...Card,
-        padding: 15,
-        marginTop: 20
-    },
-    // En-tête du groupe de notes
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center"
-    },
-    headerSubject: {
-        flex: 1,
-        flexDirection: "row",
-        gap: 10,
-        alignItems: "center"
-    },
-    // Textes de l'en-tête
-    headerSubjectText: {
-        flex: 1,
-        fontSize: 16,
-        fontWeight: 600,
-        color: Colors.black
-    },
-    headerIcon: {
-        width: 30,
-        height: 30,
-        marginTop: 2,
-        borderRadius: 999,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    headerAverage: {
-        backgroundColor: Colors.light,
-        width: 75,
-        height: 40,
-        borderRadius: 5,
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    headerAverageText: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: Colors.black
-    },
-    // Contenu du groupe de notes
-    groupSeparator: {
-        width: 4,
-        height: "100%",
-        borderRadius: 20
-    },
-    content: {
-        flex: 1,
-        width: "100%",
-        flexDirection: "row",
-        marginTop: 5
-    },
-    //Tableau des notes
-    notesTable: {
-        flex: 1,
-        marginLeft: 15
-    },
-    tableTitles: {
-        color: Colors.gray,
-        fontSize: 14,
-        fontWeight: 600
-    },
-    noteRow: {
-        flexDirection: "row",
-        alignItems: "center"
-    },
-    noteCol: {
-        flex: 1,
-        paddingVertical: 5
-    },
-    noteSeparator: {
-        height: 1,
-        marginVertical: 3,
-        backgroundColor: Colors.light
-    },
-    noteContainer: {},
-    noteName: {
-        fontSize: 16,
-        fontWeight: 600,
-        color: Colors.black
-    },
-    noteDate: {
-        fontSize: 14,
-        color: Colors.gray
-    },
-    noteValue: {
-        borderRadius: 5,
-        backgroundColor: Colors.light,
-        width: 60,
-        fontSize: 16,
-        fontWeight: "bold",
-        textAlign: "center"
-    }
-});
+const createNotesGroupStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            width: "100%",
+            maxWidth: getResponsiveMaxWidth(),
+            ...getCardStyle(colors),
+            padding: 15,
+            marginTop: 20
+        },
+        // En-tête du groupe de notes
+        header: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center"
+        },
+        headerSubject: {
+            flex: 1,
+            flexDirection: "row",
+            gap: 10,
+            alignItems: "center"
+        },
+        // Textes de l'en-tête
+        headerSubjectText: {
+            flex: 1,
+            fontSize: 16,
+            fontWeight: 600,
+            color: colors.black
+        },
+        headerIcon: {
+            width: 30,
+            height: 30,
+            marginTop: 2,
+            borderRadius: 999,
+            justifyContent: "center",
+            alignItems: "center"
+        },
+        headerAverage: {
+            backgroundColor: colors.light,
+            width: 75,
+            height: 40,
+            borderRadius: 5,
+            justifyContent: "center",
+            alignItems: "center"
+        },
+        headerAverageText: {
+            fontSize: 18,
+            fontWeight: "bold",
+            color: colors.black
+        },
+        // Contenu du groupe de notes
+        groupSeparator: {
+            width: 4,
+            height: "100%",
+            borderRadius: 20
+        },
+        content: {
+            flex: 1,
+            width: "100%",
+            flexDirection: "row",
+            marginTop: 5
+        },
+        //Tableau des notes
+        notesTable: {
+            flex: 1,
+            marginLeft: 15
+        },
+        tableTitles: {
+            color: colors.gray,
+            fontSize: 14,
+            fontWeight: 600
+        },
+        noteRow: {
+            flexDirection: "row",
+            alignItems: "center"
+        },
+        noteCol: {
+            flex: 1,
+            paddingVertical: 5
+        },
+        noteSeparator: {
+            height: 1,
+            marginVertical: 3,
+            backgroundColor: colors.light
+        },
+        noteContainer: {},
+        noteName: {
+            fontSize: 16,
+            fontWeight: 600,
+            color: colors.black
+        },
+        noteDate: {
+            fontSize: 14,
+            color: colors.gray
+        },
+        noteValue: {
+            borderRadius: 5,
+            backgroundColor: colors.light,
+            width: 60,
+            fontSize: 16,
+            fontWeight: "bold",
+            textAlign: "center"
+        }
+    });
 
 // Styles pour la modal d'information de la moyenne
-const infoStyles = StyleSheet.create({
-    container: {
-        alignItems: "flex-start",
-        padding: 20,
-        gap: 20
-    },
-    subtitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: Colors.black
-    },
-    paragraph: {
-        color: Colors.darkGray
-    },
-    important: {
-        color: Colors.primary,
-        fontWeight: "bold"
-    },
-    link: {
-        flexDirection: "row",
-        gap: 5,
-        alignItems: "center",
-        backgroundColor: Colors.light,
-        paddingBlock: 5,
-        paddingInline: 10,
-        borderRadius: 5
-    }
-});
+const createInfoStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            alignItems: "flex-start",
+            padding: 20,
+            gap: 20
+        },
+        subtitle: {
+            fontSize: 18,
+            fontWeight: "bold",
+            color: colors.black
+        },
+        paragraph: {
+            color: colors.darkGray
+        },
+        important: {
+            color: colors.primary,
+            fontWeight: "bold"
+        },
+        link: {
+            flexDirection: "row",
+            gap: 5,
+            alignItems: "center",
+            backgroundColor: colors.light,
+            paddingBlock: 5,
+            paddingInline: 10,
+            borderRadius: 5
+        }
+    });

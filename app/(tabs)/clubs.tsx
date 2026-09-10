@@ -3,9 +3,10 @@ import { PostType } from "@/utils/types";
 import { FlatList, StyleSheet, View, RefreshControl } from "react-native";
 import { Post } from "../post-details";
 import { DotLoader } from "@/components/Sync";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { API_BASE_URL } from "@/utils/config";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { Bold, Text } from "@/components/Texts";
 import useSettingsStore, { CAMPUS, campusToId } from "@/stores/settingsStore";
 import { usePostsStore } from "@/stores/clubsStore";
@@ -29,6 +30,8 @@ export default function ClubsScreen() {
     const [campusMenuVisible, setCampusMenuVisible] = useState(false);
     const { settings, setSettings } = useSettingsStore();
     const { markPostsAsViewed, setLastSeenPostId } = usePostsStore();
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
 
     // Marquer les posts comme vus quand l'utilisateur ouvre cet onglet
     useFocusEffect(
@@ -139,7 +142,11 @@ export default function ClubsScreen() {
                         <Text style={styles.campusSelectText}>
                             Campus de {settings.campus}
                         </Text>
-                        <MaterialIcons name="keyboard-arrow-down" size={24} />
+                        <MaterialIcons
+                            name="keyboard-arrow-down"
+                            size={24}
+                            color={colors.black}
+                        />
                     </AnimatedPressable>
                 </PageHeader>
                 <FlatList
@@ -151,8 +158,8 @@ export default function ClubsScreen() {
                         <RefreshControl
                             refreshing={isRefreshing}
                             onRefresh={onRefresh}
-                            colors={[Colors.primary]} // Android
-                            tintColor={Colors.primary} // iOS
+                            colors={[colors.primary]} // Android
+                            tintColor={colors.primary} // iOS
                         />
                     }
                     onEndReached={() => {
@@ -177,6 +184,8 @@ export default function ClubsScreen() {
                 <Dropdown
                     visible={campusMenuVisible}
                     setVisible={setCampusMenuVisible}
+                    title="Campus"
+                    icon="location-city"
                     options={[...CAMPUS]}
                     selectedItem={settings.campus}
                     setSelectedItem={(newCampus) => {
@@ -195,53 +204,54 @@ export default function ClubsScreen() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.background
-    },
-    content: {
-        flex: 1,
-        paddingBlock: 10,
-        paddingInline: 20,
-        backgroundColor: Colors.background,
-        gap: 25
-    },
-    scrollContainer: {
-        maxWidth: getResponsiveMaxWidth(),
-        width: "100%",
-        alignSelf: "center",
-        gap: 15,
-        paddingBottom: 10
-    },
-    noPostsText: {
-        fontSize: 20,
-        alignSelf: "center"
-    },
-    //
-    // Campus selection
-    //
-    campusSelect: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        paddingHorizontal: 15,
-        paddingVertical: 8,
-        backgroundColor: Colors.card,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        borderRadius: 999,
-        gap: 5
-    },
-    campusSelectText: {
-        color: Colors.black,
-        fontSize: 14,
-        fontWeight: 600
-    },
-    dropdownBoxStyle: {
-        width: 250,
-        display: "flex",
-        justifyContent: "flex-start",
-        alignItems: "flex-start"
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: colors.background
+        },
+        content: {
+            flex: 1,
+            paddingBlock: 10,
+            paddingInline: 20,
+            backgroundColor: colors.background,
+            gap: 25
+        },
+        scrollContainer: {
+            maxWidth: getResponsiveMaxWidth(),
+            width: "100%",
+            alignSelf: "center",
+            gap: 15,
+            paddingBottom: 10
+        },
+        noPostsText: {
+            fontSize: 20,
+            alignSelf: "center"
+        },
+        //
+        // Campus selection
+        //
+        campusSelect: {
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            paddingHorizontal: 15,
+            paddingVertical: 8,
+            backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 999,
+            gap: 5
+        },
+        campusSelectText: {
+            color: colors.black,
+            fontSize: 14,
+            fontWeight: 600
+        },
+        dropdownBoxStyle: {
+            width: 250,
+            display: "flex",
+            justifyContent: "flex-start",
+            alignItems: "flex-start"
+        }
+    });

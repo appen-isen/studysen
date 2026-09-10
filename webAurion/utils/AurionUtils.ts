@@ -33,6 +33,32 @@ export function getJSFFormParams(
     return params;
 }
 
+// Paramètres nécessaires pour déclencher un comportement (behavior) sur un composant JSF
+// Utilisé pour simuler une interaction de l'utilisateur (ex: le clic sur un cours du calendrier)
+// Source ID : ID du composant qui déclenche l'événement
+// Render IDs : IDs des éléments à mettre à jour (sans le préfixe "form:")
+// Behavior event : nom de l'événement côté serveur (ex: "eventSelect")
+export function getJSFBehaviorParams(
+    sourceId: string,
+    renderIds: string[],
+    behaviorEvent: string,
+    viewState: string
+): URLSearchParams {
+    const params = new URLSearchParams();
+    params.append("javax.faces.partial.ajax", "true");
+    params.append("javax.faces.source", `form:${sourceId}`);
+    params.append("javax.faces.partial.execute", `form:${sourceId}`);
+    params.append(
+        "javax.faces.partial.render",
+        renderIds.map((renderId) => `form:${renderId}`).join(" ")
+    );
+    params.append("javax.faces.behavior.event", behaviorEvent);
+    params.append("javax.faces.partial.event", behaviorEvent);
+    params.append("form", "form");
+    params.append("javax.faces.ViewState", viewState);
+    return params;
+}
+
 // Récupération du prénom / nom de l'utilisateur lors de la connexion
 export function getName(html: string): string {
     const parser = load(html);

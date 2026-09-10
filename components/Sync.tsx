@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
     ActivityIndicator,
     Animated,
@@ -7,12 +7,15 @@ import {
     View
 } from "react-native";
 import { Text } from "./Texts";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { useSyncStore } from "@/stores/syncStore";
 import { MaterialIcons } from "@expo/vector-icons";
 // Badge de synchronisation
 export function SyncBadge() {
     const { syncStatus, lastSyncDate } = useSyncStore();
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     const isVisible = syncStatus === "syncing" || syncStatus === "error";
     // Animation pour la hauteur
     const heightValue = useRef(new Animated.Value(0)).current;
@@ -35,7 +38,7 @@ export function SyncBadge() {
             {syncStatus === "syncing" && (
                 // En cours de synchronisation
                 <>
-                    <ActivityIndicator size={15} color={Colors.black} />
+                    <ActivityIndicator size={15} color={colors.black} />
                     <Text style={styles.syncText}>
                         Synchronisation depuis Internet
                     </Text>
@@ -46,7 +49,7 @@ export function SyncBadge() {
                 <>
                     <MaterialIcons
                         name="warning-amber"
-                        color={Colors.primary}
+                        color={colors.primary}
                         size={15}
                     />
                     <Text style={styles.syncText}>
@@ -61,31 +64,33 @@ export function SyncBadge() {
     );
 }
 
-const styles = StyleSheet.create({
-    syncView: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: Colors.card,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        boxShadow: "0px 4px 40px rgba(0,0,0,0.25)",
-        borderBottomColor: Colors.lightGray,
-        overflow: "hidden", // Cache le contenu quand la hauteur diminue
-        zIndex: 1000
-    },
-    syncText: {
-        marginLeft: 8,
-        color: Colors.black,
-        fontSize: 12,
-        fontWeight: 600
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        syncView: {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            backgroundColor: colors.card,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0px 4px 40px rgba(0,0,0,0.25)",
+            borderBottomColor: colors.lightGray,
+            overflow: "hidden", // Cache le contenu quand la hauteur diminue
+            zIndex: 1000
+        },
+        syncText: {
+            marginLeft: 8,
+            color: colors.black,
+            fontSize: 12,
+            fontWeight: 600
+        }
+    });
 
 // Composant de chargement avec des points animés
 export function DotLoader() {
+    const colors = useColors();
     const dot1 = useRef(new Animated.Value(0)).current;
     const dot2 = useRef(new Animated.Value(0)).current;
     const dot3 = useRef(new Animated.Value(0)).current;
@@ -148,19 +153,19 @@ export function DotLoader() {
             <Animated.View
                 style={[
                     dotLoaderStyles.dot,
-                    getDotStyle(dot1, Colors.primary, 1)
+                    getDotStyle(dot1, colors.primary, 1)
                 ]}
             />
             <Animated.View
                 style={[
                     dotLoaderStyles.dot,
-                    getDotStyle(dot2, Colors.primary, 0.4)
+                    getDotStyle(dot2, colors.primary, 0.4)
                 ]}
             />
             <Animated.View
                 style={[
                     dotLoaderStyles.dot,
-                    getDotStyle(dot3, Colors.primary, 0.4)
+                    getDotStyle(dot3, colors.primary, 0.4)
                 ]}
             />
         </View>

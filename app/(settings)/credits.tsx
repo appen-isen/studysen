@@ -2,8 +2,9 @@ import { View, StyleSheet } from "react-native";
 import { Page, PageHeader } from "@/components/Page";
 import { Text, Bold } from "@/components/Texts";
 import { nativeApplicationVersion, nativeBuildVersion } from "expo-application";
-import Colors from "@/constants/Colors";
-import { useEffect, useState } from "react";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "expo-router";
 import { API_BASE_URL } from "@/utils/config";
 import { getResponsiveMaxWidth } from "@/utils/responsive";
@@ -13,6 +14,8 @@ import { updateId } from "expo-updates";
 //Les crédits
 export default function Credits() {
     const [statusColor, setStatusColor] = useState("#5ebc0bff");
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     useEffect(() => {
         //On regarde si le backend est disponible
         const checkBackend = async () => {
@@ -24,11 +27,11 @@ export default function Credits() {
                     console.log("Backend disponible");
                 } else {
                     console.log("Backend indisponible");
-                    setStatusColor(Colors.primary);
+                    setStatusColor(colors.primary);
                 }
             } catch (err) {
                 console.log("Backend indisponible", err);
-                setStatusColor(Colors.primary);
+                setStatusColor(colors.primary);
             }
         };
         checkBackend();
@@ -109,60 +112,61 @@ export default function Credits() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        gap: 25
-    },
-    responsiveContainer: {
-        width: "100%",
-        alignSelf: "center",
-        maxWidth: getResponsiveMaxWidth()
-    },
-    //Sections
-    sectionTitle: {
-        fontSize: 20,
-        letterSpacing: 0.5
-    },
-    subtitle: {
-        color: Colors.gray,
-        fontSize: 14,
-        marginTop: 15,
-        fontWeight: "bold"
-    },
-    //Style de texte
-    paragraph: {
-        color: Colors.black,
-        marginTop: 10
-    },
-    important: {
-        color: Colors.primary,
-        fontWeight: "bold"
-    },
-    link: {
-        color: Colors.primary,
-        fontWeight: "bold",
-        textDecorationLine: "underline"
-    },
-    nameContainer: {
-        flexDirection: "row",
-        gap: 10
-    },
-    nameBadge: {
-        backgroundColor: Colors.card,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        borderRadius: 8,
-        padding: 8,
-        marginTop: 10
-    },
-    statusContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 8
-    },
-    statusCircle: {
-        width: 10,
-        height: 10,
-        borderRadius: 999
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            gap: 25
+        },
+        responsiveContainer: {
+            width: "100%",
+            alignSelf: "center",
+            maxWidth: getResponsiveMaxWidth()
+        },
+        //Sections
+        sectionTitle: {
+            fontSize: 20,
+            letterSpacing: 0.5
+        },
+        subtitle: {
+            color: colors.gray,
+            fontSize: 14,
+            marginTop: 15,
+            fontWeight: "bold"
+        },
+        //Style de texte
+        paragraph: {
+            color: colors.black,
+            marginTop: 10
+        },
+        important: {
+            color: colors.primary,
+            fontWeight: "bold"
+        },
+        link: {
+            color: colors.primary,
+            fontWeight: "bold",
+            textDecorationLine: "underline"
+        },
+        nameContainer: {
+            flexDirection: "row",
+            gap: 10
+        },
+        nameBadge: {
+            backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 8,
+            padding: 8,
+            marginTop: 10
+        },
+        statusContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8
+        },
+        statusCircle: {
+            width: 10,
+            height: 10,
+            borderRadius: 999
+        }
+    });

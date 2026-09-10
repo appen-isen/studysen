@@ -1,4 +1,4 @@
-import { JSX, useEffect, useRef, useState } from "react";
+import { JSX, useEffect, useMemo, useRef, useState } from "react";
 import {
     ButtonProps,
     Pressable,
@@ -14,7 +14,8 @@ import {
     LayoutChangeEvent
 } from "react-native";
 import { Text } from "@/components/Texts";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { Switch, SwitchProps } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons";
 interface StyledButtonProps {
@@ -35,6 +36,8 @@ export const Button: React.FC<ButtonProps & StyledButtonProps> = ({
     bgColor
 }) => {
     const [pressed, setPressed] = useState(false);
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
 
     return (
         <Pressable
@@ -114,6 +117,8 @@ interface ToggleProps {
 }
 
 export function Toggle(props: ToggleProps) {
+    const colors = useColors();
+    const toggleStyles = useMemo(() => createToggleStyles(colors), [colors]);
     return (
         <AnimatedPressable
             style={toggleStyles.container}
@@ -126,7 +131,7 @@ export function Toggle(props: ToggleProps) {
             <MaterialIcons
                 name={props.stateList[props.state].icon}
                 size={24}
-                color={Colors.primary}
+                color={colors.primary}
             />
         </AnimatedPressable>
     );
@@ -144,6 +149,8 @@ export const MultiToggle = ({
     selectedIndex,
     onSelect
 }: MultiToggleProps) => {
+    const colors = useColors();
+    const mToggleStyles = useMemo(() => createMToggleStyles(colors), [colors]);
     const [dimensions, setDimensions] = useState<
         { width: number; left: number }[]
     >([]);
@@ -220,9 +227,10 @@ export const MultiToggle = ({
 
 // Switch avec les couleurs de l'application
 export const ISENSwitch: React.FC<SwitchProps> = (props) => {
+    const colors = useColors();
     return (
         <Switch
-            color={Colors.primary}
+            color={colors.primary}
             style={Platform.OS !== "ios" ? { transform: [{ scale: 1.2 }] } : {}}
             onValueChange={props.onValueChange}
             value={props.value}
@@ -230,78 +238,81 @@ export const ISENSwitch: React.FC<SwitchProps> = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
-    button: {
-        justifyContent: "center",
-        alignItems: "center",
-        paddingInline: 20,
-        paddingBlock: 10,
-        borderRadius: 10,
-        backgroundColor: Colors.primary
-    },
-    pressedButton: {
-        backgroundColor: Colors.secondary
-    },
-    buttonText: {
-        fontSize: 18,
-        fontWeight: "bold",
-        letterSpacing: 0.25,
-        color: Colors.white,
-        textAlign: "center"
-    },
-    buttonIssueText: {
-        fontSize: 20,
-        fontWeight: "bold",
-        letterSpacing: 0.25,
-        color: Colors.white,
-        textAlign: "center"
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        button: {
+            justifyContent: "center",
+            alignItems: "center",
+            paddingInline: 20,
+            paddingBlock: 10,
+            borderRadius: 10,
+            backgroundColor: colors.primary
+        },
+        pressedButton: {
+            backgroundColor: colors.secondary
+        },
+        buttonText: {
+            fontSize: 18,
+            fontWeight: "bold",
+            letterSpacing: 0.25,
+            color: colors.white,
+            textAlign: "center"
+        },
+        buttonIssueText: {
+            fontSize: 20,
+            fontWeight: "bold",
+            letterSpacing: 0.25,
+            color: colors.white,
+            textAlign: "center"
+        }
+    });
 
-const toggleStyles = StyleSheet.create({
-    container: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 5,
-        paddingHorizontal: 15,
-        paddingVertical: 8,
-        backgroundColor: Colors.card,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        borderRadius: 30
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: 600
-    }
-});
+const createToggleStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 5,
+            paddingHorizontal: 15,
+            paddingVertical: 8,
+            backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 30
+        },
+        label: {
+            fontSize: 14,
+            fontWeight: 600
+        }
+    });
 
 // Styles pour le MultiToggle
-const mToggleStyles = StyleSheet.create({
-    container: {
-        backgroundColor: Colors.card,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        borderRadius: 30,
-        position: "relative",
-        alignSelf: "center",
-        paddingHorizontal: 5,
-        flexDirection: "row"
-    },
-    slider: {
-        position: "absolute",
-        backgroundColor: Colors.black,
-        borderRadius: 30,
-        height: "80%",
-        top: "10%"
-    },
-    optionText: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: Colors.black,
-        paddingVertical: 12
-    },
-    optionTextSelected: {
-        color: Colors.white
-    }
-});
+const createMToggleStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 30,
+            position: "relative",
+            alignSelf: "center",
+            paddingHorizontal: 5,
+            flexDirection: "row"
+        },
+        slider: {
+            position: "absolute",
+            backgroundColor: colors.contrast,
+            borderRadius: 30,
+            height: "80%",
+            top: "10%"
+        },
+        optionText: {
+            fontSize: 14,
+            fontWeight: "600",
+            color: colors.black,
+            paddingVertical: 12
+        },
+        optionTextSelected: {
+            color: colors.white
+        }
+    });

@@ -1,9 +1,10 @@
 import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { Bold, Text } from "@/components/Texts";
 import { Page, PageHeader } from "@/components/Page";
-import Colors from "@/constants/Colors";
+import { ColorPalette } from "@/constants/Colors";
+import useColors from "@/hooks/useColors";
 import { AnimatedPressable, Button, MultiToggle } from "@/components/Buttons";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Checkbox, Input } from "@/components/Inputs";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Sheet } from "@/components/Sheet";
@@ -17,6 +18,8 @@ import { fetch } from "expo/fetch";
 
 export default function Contact() {
     const { settings } = useSettingsStore();
+    const colors = useColors();
+    const styles = useMemo(() => createStyles(colors), [colors]);
     // 0 = Problème, 1 = Suggestion
     const [contactType, setContactType] = useState<number>(0);
     const [description, setDescription] = useState<string>("");
@@ -220,7 +223,7 @@ ${usernameValue}
                         <MaterialIcons
                             name="insert-photo"
                             size={24}
-                            color="black"
+                            color={colors.black}
                         />
                         <Text>
                             {selectedImage
@@ -269,7 +272,7 @@ ${usernameValue}
                     <MaterialIcons
                         name="candlestick-chart"
                         size={20}
-                        color="black"
+                        color={colors.black}
                     />
                     <Text>En savoir plus</Text>
                 </AnimatedPressable>
@@ -278,7 +281,7 @@ ${usernameValue}
                     onPress={() => setAdditionnalData(!additionnalData)}
                     containerStyle={styles.checkboxContainer}
                     textStyle={styles.checkboxLabel}
-                    color={Colors.primary}
+                    color={colors.primary}
                     text="J’accepte que des données supplémentaires soient récoltées."
                 />
             </View>
@@ -291,14 +294,14 @@ ${usernameValue}
                         {isLoading && (
                             <ActivityIndicator
                                 size="small"
-                                color={Colors.white}
+                                color={colors.white}
                             />
                         )}
                         {!isLoading && (
                             <MaterialIcons
                                 name="ios-share"
                                 size={24}
-                                color={Colors.white}
+                                color={colors.white}
                             />
                         )}
                         <Text style={styles.sendButtonText}>
@@ -352,97 +355,98 @@ ${usernameValue}
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        gap: 25,
-        paddingBottom: 50
-    },
-    responsiveContainer: {
-        width: "100%",
-        alignSelf: "center",
-        gap: 10,
-        maxWidth: getResponsiveMaxWidth()
-    },
-    //Sections
-    sectionTitle: {
-        fontSize: 20,
-        letterSpacing: 0.5
-    },
-    subtitle: {
-        color: Colors.gray,
-        fontSize: 14,
-        marginBottom: 5,
-        marginTop: 15,
-        fontWeight: "bold"
-    },
-    important: {
-        color: Colors.primary,
-        fontWeight: "bold"
-    },
-    contentView: {
-        flex: 1
-    },
-    scrollContainer: {
-        width: "100%"
-    },
-    //Style de texte
-    paragraph: {
-        color: Colors.black,
-        marginTop: 10
-    },
-    input: {
-        fontSize: 13,
-        height: 100
-    },
-    nameInput: {
-        height: 50
-    },
-    //Boutons
-    infoButton: {
-        backgroundColor: Colors.card,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 8,
-        marginTop: 10,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        gap: 10,
-        alignSelf: "flex-start"
-    },
-    checkboxContainer: {
-        marginLeft: 15,
-        marginTop: 5
-    },
-    checkboxLabel: {
-        fontSize: 14,
-        color: Colors.black
-    },
-    sendButton: {
-        alignSelf: "flex-start",
-        marginTop: 10
-    },
-    sendButtonView: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 5
-    },
-    sendButtonText: {
-        fontSize: 16,
-        color: Colors.white
-    },
-    //Styles pour le modal d'informations
-    infoSheetContainer: {
-        alignItems: "flex-start",
-        padding: 20,
-        gap: 20
-    },
-    infoTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: Colors.black
-    }
-});
+const createStyles = (colors: ColorPalette) =>
+    StyleSheet.create({
+        container: {
+            gap: 25,
+            paddingBottom: 50
+        },
+        responsiveContainer: {
+            width: "100%",
+            alignSelf: "center",
+            gap: 10,
+            maxWidth: getResponsiveMaxWidth()
+        },
+        //Sections
+        sectionTitle: {
+            fontSize: 20,
+            letterSpacing: 0.5
+        },
+        subtitle: {
+            color: colors.gray,
+            fontSize: 14,
+            marginBottom: 5,
+            marginTop: 15,
+            fontWeight: "bold"
+        },
+        important: {
+            color: colors.primary,
+            fontWeight: "bold"
+        },
+        contentView: {
+            flex: 1
+        },
+        scrollContainer: {
+            width: "100%"
+        },
+        //Style de texte
+        paragraph: {
+            color: colors.black,
+            marginTop: 10
+        },
+        input: {
+            fontSize: 13,
+            height: 100
+        },
+        nameInput: {
+            height: 50
+        },
+        //Boutons
+        infoButton: {
+            backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: colors.border,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: 8,
+            marginTop: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            gap: 10,
+            alignSelf: "flex-start"
+        },
+        checkboxContainer: {
+            marginLeft: 15,
+            marginTop: 5
+        },
+        checkboxLabel: {
+            fontSize: 14,
+            color: colors.black
+        },
+        sendButton: {
+            alignSelf: "flex-start",
+            marginTop: 10
+        },
+        sendButtonView: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 5
+        },
+        sendButtonText: {
+            fontSize: 16,
+            color: colors.white
+        },
+        //Styles pour le modal d'informations
+        infoSheetContainer: {
+            alignItems: "flex-start",
+            padding: 20,
+            gap: 20
+        },
+        infoTitle: {
+            fontSize: 18,
+            fontWeight: "bold",
+            color: colors.black
+        }
+    });

@@ -1,12 +1,11 @@
-import { sendTauriCommand } from "@/utils/desktop";
+import { isTauri, sendTauriCommand } from "@/utils/desktop";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Platform } from "react-native";
 
 // On sauvegarde une clé dans le stockage
 export async function saveStateToStorage(key: string, value: any) {
     try {
         const jsonValue = JSON.stringify(value);
-        if (Platform.OS === "web") {
+        if (isTauri()) {
             //Si on est sur l'appli de bureau, on utilise le secure store de Tauri
             await sendTauriCommand("set_item", {
                 key,
@@ -14,6 +13,8 @@ export async function saveStateToStorage(key: string, value: any) {
             });
             return;
         }
+        // Sur un vrai navigateur (Expo web) ou sur mobile, AsyncStorage suffit
+        // (il est automatiquement backed par localStorage sur web)
         await AsyncStorage.setItem(key, jsonValue);
     } catch (e) {
         console.error("Failed to save the state to AsyncStorage", e);
@@ -22,7 +23,7 @@ export async function saveStateToStorage(key: string, value: any) {
 // On récupère une clé depuis le stockage
 export async function loadStateFromStorage(key: string) {
     try {
-        if (Platform.OS === "web") {
+        if (isTauri()) {
             //Si on est sur l'appli de bureau, on utilise le secure store de Tauri
             let jsonValue = await sendTauriCommand("get_item", { key });
             return jsonValue != undefined ? JSON.parse(jsonValue) : null;
@@ -38,7 +39,7 @@ export async function loadStateFromStorage(key: string) {
 // On supprime une clé depuis le stockage
 export async function clearStateFromStorage(key: string) {
     try {
-        if (Platform.OS === "web") {
+        if (isTauri()) {
             //Si on est sur l'appli de bureau, on utilise le secure store de Tauri
             await sendTauriCommand("delete_item", { key });
             return;

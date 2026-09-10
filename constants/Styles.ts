@@ -1,8 +1,13 @@
-import Colors from "./Colors";
+import { ColorPalette, Light } from "./Colors";
 
-export const Card = {
-    backgroundColor: Colors.card,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 16
-} as const;
+export function getCardStyle(colors: ColorPalette) {
+    return {
+        backgroundColor: colors.card,
+        borderWidth: 1,
+        borderColor: colors.border,
+        borderRadius: 16
+    } as const;
+}
+
+// Conservé pour compatibilité (contextes hors composants, thème clair par défaut)
+export const Card = getCardStyle(Light);
