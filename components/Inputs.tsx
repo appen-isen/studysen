@@ -83,7 +83,10 @@ export function Checkbox(
     }
 ) {
     const colors = useColors();
-    const checkboxStyles = useMemo(() => createCheckboxStyles(colors), [colors]);
+    const checkboxStyles = useMemo(
+        () => createCheckboxStyles(colors),
+        [colors]
+    );
     return (
         <View style={[checkboxStyles.container, props.containerStyle || {}]}>
             <PaperCheckbox {...props} />

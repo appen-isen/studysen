@@ -49,20 +49,16 @@ Note: lorsqu'un club est créé, une demande de validation nous est automatiquem
     ```bash
     npm install
     ```
-3. Lancez l'application :
+3. Build de l'application en mode développement:
+    ```bash
+    npm run build-dev
+    ```
+4. Installer l'application (development build) sur votre smartphone.
+5. Lancer l'application en mode développement :
     ```bash
     npm start
     ```
-4. Scannez le QR code avec l'application Expo Go pour tester sur un appareil physique, ou utilisez un émulateur Android/iOS configuré.
-
-⚠️ Si vous souhaitez lancer le projet sur le réseau de l'ISEN, puisque celui-ci bloque les communications avec les ports non standards. Il faut réaliser les étapes suivantes:
-
-1. Utiliser un VPN pour contourner les restrictions du Wifi (exemple: ProtonVPN)
-2. Puis il faut utiliser cette commande pour lancer le projet:
-    ```bash
-    npx expo start --tunnel
-    ```
-3. Après cela, vous pourrez scanner le QR code avec l'application Expo Go et tout devrait fonctionner.
+Scannez le QR code affiché dans le terminal sur votre smartphone pour tester l'application.
 
 ## Backend
 

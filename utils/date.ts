@@ -70,6 +70,30 @@ export function formatDateToLocalTime(dateISO: string): string {
     return formatter.format(date);
 }
 
+// Fonction pour obtenir un libellé de jour relatif
+export function getRelativeDayLabel(
+    date: Date,
+    now: Date = new Date()
+): string {
+    const startOfDay = (d: Date) => {
+        const copy = new Date(d);
+        copy.setHours(0, 0, 0, 0);
+        return copy;
+    };
+    const diffDays = Math.round(
+        (startOfDay(date).getTime() - startOfDay(now).getTime()) /
+            (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays === 0) return "Aujourd'hui";
+    if (diffDays === 1) return "Demain";
+    if (diffDays > 1 && diffDays < 7) {
+        const weekday = date.toLocaleDateString("fr-FR", { weekday: "long" });
+        return weekday.charAt(0).toUpperCase() + weekday.slice(1);
+    }
+    return formatDate(date);
+}
+
 // Fonction pour obtenir le numéro de la semaine à partir d'une date
 export function weekFromNow(startDate: Date, targetDate: Date): number {
     const start = new Date(startDate);
