@@ -45,9 +45,8 @@ func loadPlanningSnapshot() -> WidgetPlanningSnapshot {
 
 // Formatage des dates
 //
-// Les dates viennent telles quelles de webAurion (ex: "2025-01-06T08:00:00+0100"),
-// sans passer par toISOString() côté JS.
-
+// Les dates sont produites côté JS (utils/widgetSync.ts) via Date(...).toISOString()
+// (ex: "2025-01-06T07:00:00.000Z").
 private let isoParser: ISO8601DateFormatter = {
     let formatter = ISO8601DateFormatter()
     formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]

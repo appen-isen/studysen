@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
     :ios => '16.4',
     :tvos => '16.4'
   }
-  s.source         = { git: '' }
+  s.source         = { :path => '.' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
