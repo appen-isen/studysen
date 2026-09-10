@@ -194,7 +194,8 @@ export function Dropdown(props: DropdownProps) {
                                         name={props.icon}
                                         style={[
                                             styles.optionIcon,
-                                            selected && styles.optionIconSelected
+                                            selected &&
+                                                styles.optionIconSelected
                                         ]}
                                     />
                                 )}

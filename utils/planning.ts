@@ -163,6 +163,30 @@ export function getCurrentEvent(events: PlanningEvent[]): PlanningEvent | null {
     return null;
 }
 
+// Fonction pour obtenir les événements du jour
+export function getTodayEvents(events: PlanningEvent[]): PlanningEvent[] {
+    const now = new Date();
+    return sortPlanningByDate(
+        events.filter(
+            (event) =>
+                event.className !== "CONGES" &&
+                new Date(event.start).toDateString() === now.toDateString()
+        )
+    );
+}
+
+// Fonction pour obtenir le prochain événement à venir, tous jours confondus
+export function getNextUpcomingEvent(
+    events: PlanningEvent[]
+): PlanningEvent | null {
+    const now = new Date();
+    const upcomingEvents = events.filter(
+        (event) => event.className !== "CONGES" && new Date(event.end) > now
+    );
+    const sorted = sortPlanningByDate(upcomingEvents);
+    return sorted.length > 0 ? sorted[0] : null;
+}
+
 // Fonction pour obtenir le prochain événement de la journée
 export function getNextEventToday(
     events: PlanningEvent[]
