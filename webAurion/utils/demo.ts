@@ -758,6 +758,18 @@ export function generateDemoPlanning(): PlanningEvent[] {
     return mergePlanning(adjustedPlanning, newAdjustedPlanning);
 }
 
+// Descriptions de démonstration (comme sur WebAurion, tous les cours n'en ont pas)
+const demoEventDescriptions: Record<string, string> = {
+    "15689502":
+        "Réunion de rentrée : présentation du semestre et des projets à venir.",
+    "15448938":
+        "Conférence animée par un ingénieur en intelligence artificielle, la présence est obligatoire."
+};
+
+export function getDemoEventDescription(eventId: string): string {
+    return demoEventDescriptions[eventId] || "";
+}
+
 export function generateDemoPosts(): PostType[] {
     return [
         {

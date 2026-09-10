@@ -84,6 +84,100 @@ export function planningResponseToEvents(response: string): PlanningEvent[] {
     });
 }
 
+// On retrouve un cours dans une liste fraîchement récupérée depuis WebAurion
+// Les identifiants sont régénérés à chaque chargement du planning: on compare donc les horaires
+export function findEventInSchedule(
+    events: PlanningEvent[],
+    event: PlanningEvent
+): PlanningEvent | undefined {
+    const start = new Date(event.start).getTime();
+    const end = new Date(event.end).getTime();
+
+    const candidates = events.filter(
+        (candidate) =>
+            new Date(candidate.start).getTime() === start &&
+            new Date(candidate.end).getTime() === end
+    );
+    if (candidates.length <= 1) {
+        return candidates[0];
+    }
+
+    // Plusieurs cours sur le même créneau: on départage avec la salle puis le titre
+    return (
+        candidates.find(
+            (candidate) =>
+                candidate.room === event.room && candidate.title === event.title
+        ) ||
+        candidates.find((candidate) => candidate.title === event.title) ||
+        candidates[0]
+    );
+}
+
+// On récupère la description d'un cours depuis la réponse XML du détail d'un événement
+// Tous les cours n'ont pas de description: on retourne alors une chaîne vide
+export function getEventDescriptionFromResponse(response: string): string {
+    // Réponse vide ou invalide (ex: hors ligne)
+    if (typeof response !== "string" || !response.trim()) {
+        return "";
+    }
+
+    const parser = load(response, {
+        xmlMode: true
+    });
+
+    // Le détail du cours est renvoyé dans la balise <update id="form:modaleDetail">
+    const modal = parser("update")
+        .filter((_, element) =>
+            (parser(element).attr("id") || "").endsWith("modaleDetail")
+        )
+        .first();
+
+    const modalHtml = modal.text().trim();
+    if (!modalHtml) {
+        return "";
+    }
+
+    const detailParser = load(modalHtml);
+    let description = "";
+
+    // Le détail est une suite de lignes "libellé / valeur" (div ou tableau selon les blocs)
+    detailParser(".ui-grid-row, tr").each((_, row) => {
+        const cells = detailParser(row).children(".ui-panelgrid-cell");
+        if (cells.length < 2) {
+            return;
+        }
+        const label = cells.eq(0).text().replace(/\s+/g, " ").trim();
+        if (!label.toLowerCase().startsWith("description")) {
+            return;
+        }
+        description = cells.eq(1).text().trim();
+        // On arrête le parcours des lignes
+        return false;
+    });
+
+    return description;
+}
+
+// On récupère les dates de début et de fin de la semaine (lundi 6h -> dimanche) contenant une date donnée
+export function getWeekRange(date: Date): {
+    startTimestamp: number;
+    endTimestamp: number;
+} {
+    const startDate = new Date(date);
+    const day = startDate.getDay();
+    // Calculer la différence pour atteindre le lundi de la semaine (0 = dimanche)
+    const daysToMonday = day === 0 ? -6 : 1 - day;
+    startDate.setDate(startDate.getDate() + daysToMonday);
+    startDate.setHours(6, 0, 0, 0);
+    // Date de fin (dimanche de la même semaine, 6 jours après le début)
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
+    return {
+        startTimestamp: startDate.getTime(),
+        endTimestamp: endDate.getTime()
+    };
+}
+
 // On récupère les dates de début et de fin de l'emploi du temps (par défaut, la semaine actuelle: 0)
 export function getScheduleDates(weeksFromNow: number = 0): {
     startTimestamp: number;
