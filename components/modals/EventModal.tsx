@@ -1,6 +1,6 @@
 import { PlanningEvent } from "@/webAurion/utils/types";
 import { View, StyleSheet, Linking } from "react-native";
-import { Text } from "../Texts";
+import { LoadingText, Text } from "../Texts";
 import { ColorPalette } from "@/constants/Colors";
 import useColors from "@/hooks/useColors";
 
@@ -11,6 +11,7 @@ import { getSubjectColor, getSubjectIcon } from "@/utils/colors";
 import { Button } from "../Buttons";
 import { useCallback, useMemo } from "react";
 import { getPlanningEventLabel } from "@/utils/planning";
+import useEventDescription from "@/hooks/useEventDescription";
 
 type EventModalProps = {
     visible: boolean;
@@ -21,6 +22,12 @@ export default function EventModal(props: EventModalProps) {
     const { event, visible, setVisible } = props;
     const colors = useColors();
     const popupStyles = useMemo(() => createPopupStyles(colors), [colors]);
+
+    // La description n'est pas fournie avec l'emploi du temps: on la récupère à l'ouverture
+    const { description, loading: descriptionLoading } = useEventDescription(
+        event,
+        visible
+    );
 
     // Extraire le lien de réunion s'il y en a un
     const { cleanText: learnersText, meetingLink } = useMemo(() => {
@@ -101,6 +108,19 @@ export default function EventModal(props: EventModalProps) {
                     {event.room || "?"}
                 </Text>
             </View>
+            {/* Description du cours (uniquement si le cours en possède une) */}
+            {(descriptionLoading || description !== "") && (
+                <View>
+                    <Text style={popupStyles.fieldTitle}>Description</Text>
+                    {descriptionLoading ? (
+                        <LoadingText style={popupStyles.fieldValue} />
+                    ) : (
+                        <Text style={popupStyles.fieldValue}>
+                            {description}
+                        </Text>
+                    )}
+                </View>
+            )}
             <View>
                 <Text style={popupStyles.fieldTitle}>Assuré par</Text>
                 <Text style={popupStyles.fieldValue}>{event.instructors}</Text>
