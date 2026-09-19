@@ -1,0 +1,8 @@
+# Default owner for everything not listed below
+* @sony-level
+
+# Specific areas directory
+/webAurion/ @dd060606
+/stores/ @dd060606
+/services/ @dd060606
+/.github/ @sony-level
