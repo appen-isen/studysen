@@ -5,4 +5,7 @@
 /webAurion/ @dd060606
 /stores/ @dd060606
 /services/ @dd060606
+/modules/ @BreizhHardware
+/targets/ @BreizhHardware
+/widgets/ @BreizhHardware
 /.github/ @sony-level
