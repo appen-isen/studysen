@@ -5,10 +5,15 @@ function hexWithOpacity(hex: string, opacity: number) {
     return `${hex}${alpha}`;
 }
 
+// TEMPORAIRE : thème Octobre Rose (à supprimer fin octobre)
+const isOctoberRose = new Date().getMonth() === 9;
+const PRIMARY = isOctoberRose ? "#E91E8C" : "#FA4747";
+const SECONDARY = isOctoberRose ? "#F78FC4" : "#f58b8b";
+
 // Palette pour le thème clair
 export const Light = {
-    primary: "#FA4747",
-    secondary: "#f58b8b",
+    primary: PRIMARY,
+    secondary: SECONDARY,
 
     black: "#141414",
     darkGray: "#505050",
@@ -28,8 +33,8 @@ export const Light = {
 
 // Palette pour le thème sombre
 export const Dark = {
-    primary: "#FA4747",
-    secondary: "#f58b8b",
+    primary: PRIMARY,
+    secondary: SECONDARY,
 
     black: "#F2F2F2",
     darkGray: "#C7C7CC",
