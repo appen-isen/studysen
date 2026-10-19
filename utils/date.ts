@@ -99,7 +99,8 @@ export function weekFromNow(startDate: Date, targetDate: Date): number {
     const start = new Date(startDate);
     const diffInMs = targetDate.getTime() - start.getTime();
     const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-    return Math.ceil(diffInDays / 7);
+    // Math.round (et non ceil) pour absorber le décalage d'1h des changements d'heure (été/hiver)
+    return Math.round(diffInDays / 7);
 }
 
 // Fonction pour obtenir le numéro du jour dans la semaine de travail (0 = lundi, 4 = vendredi)
